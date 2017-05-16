@@ -2,7 +2,7 @@ package com.zzj.gambler.model;
 
 import java.util.ArrayList;
 
-public class RespData {
+public class RespData extends RespBase {
 
 	public int pageCount;
 	public DataGameCount gameCount;

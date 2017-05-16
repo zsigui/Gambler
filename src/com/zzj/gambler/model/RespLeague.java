@@ -1,7 +1,6 @@
 package com.zzj.gambler.model;
 
-public class RespLeague {
+public class RespLeague extends RespBase {
 	
-	public boolean success;
 	public String leagues;
 }

@@ -29,7 +29,7 @@ public class NetConfig {
 	/*
 	 * 数据请求的过程
 	 */
-	public static final String URL_HOST_NAME = "http://www.1559501.com"; 
+	private static final String URL_HOST_NAME = "http://www.1559501.com"; 
 	/**
 	 * 获取登录所需要的验证码 <br />
 	 * GET : timestamp (单位:ms)
@@ -39,7 +39,7 @@ public class NetConfig {
 	 * 请求登录 <br />
 	 * POST : account、password、verifyCode 
 	 */
-	public static final String URL_LOGIN = URL_HOST_NAME + "/login/do";
+	public static final String URL_LOGIN = URL_HOST_NAME + "/login.do";
 	/**
 	 * 获取用户账号信息 <br />
 	 * POST

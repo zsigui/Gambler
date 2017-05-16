@@ -7,6 +7,6 @@ import java.util.ArrayList;
  * @author zsigui
  *
  */
-public class RespOdd {
+public class RespOdd extends RespBase {
 	public ArrayList<Odd> odds;
 }
