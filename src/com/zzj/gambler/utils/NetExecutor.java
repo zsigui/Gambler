@@ -1,14 +1,9 @@
 package com.zzj.gambler.utils;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 public class NetExecutor {
 
@@ -108,8 +103,8 @@ public class NetExecutor {
 
 		@Override
 		public synchronized void start() {
-			_observed.run();
 			super.start();
+			_observed.start();
 		}
 
 		@Override
@@ -153,7 +148,7 @@ public class NetExecutor {
 			super.run();
 			if (_observerRef != null) {
 				ObserverThread o = _observerRef.get();
-				if (o != null && o.isAlive() && o.isInterrupted()) {
+				if (o != null && o.isAlive() && !o.isInterrupted()) {
 					o.setObservedFinished(true);
 					o.interrupt();
 					_observerRef.clear();

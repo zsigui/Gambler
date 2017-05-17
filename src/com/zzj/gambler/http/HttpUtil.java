@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.Proxy.Type;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -23,7 +21,7 @@ import com.zzj.gambler.utils.ByteArrayPool;
 public class HttpUtil {
 
 	private static final int NET_CONNECT_TIMEOUT = 10_000;
-	private static final int NET_READ_TIMEOUT = 5_000;
+	private static final int NET_READ_TIMEOUT = 30_000;
 	public static final String CHARSET = "UTF-8";
 	
 	public interface Method {
@@ -53,7 +51,6 @@ public class HttpUtil {
 			if (request != null) {
 				p = request.configProxy();
 			}
-			p = new Proxy(Type.HTTP, new InetSocketAddress(8888));
 			// 打开HttpURLConnection
 			HttpURLConnection connection;
 			if (p == null) {
@@ -88,14 +85,14 @@ public class HttpUtil {
 	private static void writeOutputStream(HashMap<String, String> bodyMap, String jsonBody, HttpURLConnection connection)
 			throws IOException, UnsupportedEncodingException {
 		if ((bodyMap != null && bodyMap.size() > 0) || (jsonBody != null && !jsonBody.isEmpty())) {
-			// 需要传输数据，所以进行设置DoInput为true
-			connection.setDoInput(true);
+			// 需要传输数据，所以进行设置DoOutput为true
+			connection.setDoOutput(true);
 			String outputContent;
 			if (jsonBody != null) {
-				connection.setRequestProperty("Content-Type", "application/json;charset=" + CHARSET);
+				connection.setRequestProperty("Content-Type", "application/json; charset=" + CHARSET);
 				outputContent = jsonBody;
 			} else {
-				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencode;charset=" + CHARSET);
+				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + CHARSET);
 				outputContent = concatPostData(bodyMap);
 			}
 			BufferedOutputStream bos = new BufferedOutputStream(connection.getOutputStream());
@@ -104,8 +101,8 @@ public class HttpUtil {
 			closeIO(bos);
 
 		} else {
-			connection.setRequestProperty("Content-Type", "text/*;charset=" + CHARSET);
-			connection.setDoInput(false);
+			connection.setRequestProperty("Content-Type", "*/*; charset=" + CHARSET);
+			connection.setDoOutput(false);
 		}
 	}
 
@@ -140,7 +137,7 @@ public class HttpUtil {
 	private static void configDefaultConnection(HttpURLConnection connection) {
 		connection.setConnectTimeout(NET_CONNECT_TIMEOUT);
 		connection.setReadTimeout(NET_READ_TIMEOUT);
-		connection.setDoOutput(true);
+		connection.setDoInput(true);
 		connection.setDefaultUseCaches(false);
 	}
 

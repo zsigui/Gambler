@@ -56,8 +56,16 @@ public class NetConfig {
 	 */
 	public static final String URL_SPORT_LEGUES = URL_HOST_NAME + "/sports/hg/getLeaues.do";
 	/**
+	 * 获取指定盘口的赔率情况 <br />
+	 * POST : data ( json字符串 ) <br />
+	 * 值结构：{"plate":"H", "gameType": (String) , "items": [{"gid": (int), "odds": (String), "type": (String), "project": (String)}]} <br />
+	 * 示例：data={"plate":"H","gameType":"FT_TD_MN","items":[{"gid":2738302,"odds":"0.88","type":"ior_OUH","project":"9"}]} (project根据盘口类型可能不存在)
+	 */
+	public static final String URL_GET_ODD = URL_HOST_NAME + "/sports/hg/getOdds.do";
+	/**
 	 * 执行下注请求 <br />
-	 * POST : {"money": (float), "accptBestOdds": (boolean), "plate":"H", "gameType": (String) , "items": []}
+	 * POST : data ( 值结构： {"money": (String), "acceptBestOdds": (boolean), "plate":"H", "gameType": (String) , "items": []} ) <br />
+	 * 值结构 ：跟上面的除了多了 money 跟 accptBestOdds 两个外其它一致
 	 */
 	public static final String URL_BET = "/sports/hg/bet/bet.do";
 }

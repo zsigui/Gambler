@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
+import com.zzj.gambler.model.ReqBetData;
 
 public class GsonWorker {
 	
@@ -30,5 +31,13 @@ public class GsonWorker {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public <T> T StringToObject(String json, Type t) {
+			return getGson().fromJson(json, t);
+	}
+	
+	public String ObjectToJson(ReqBetData reqBetData) {
+		return getGson().toJson(reqBetData);
 	}
 }

@@ -13,7 +13,8 @@ public class RespData extends RespBase {
 	 */
 	public ArrayList<ArrayList<Object>> games;
 	/**
-	 * 暂时作用不打，不理会
+	 * 按顺序代表 games 每一项里面每个值的头
+	 * 
 	 */
 	public ArrayList<String> headers;
 }
