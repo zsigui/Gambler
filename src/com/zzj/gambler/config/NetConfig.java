@@ -43,5 +43,5 @@ public final class NetConfig {
 	 * POST : data ( 值结构： {"money": (String), "acceptBestOdds": (boolean), "plate":"H", "gameType": (String) , "items": []} ) <br />
 	 * 值结构 ：跟上面的除了多了 money 跟 accptBestOdds 两个外其它一致
 	 */
-	public static final String URL_BET = "/sports/hg/bet/bet.do";
+	public static final String URL_BET = URL_HOST_NAME + "/sports/hg/bet/bet.do";
 }

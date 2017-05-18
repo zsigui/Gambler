@@ -1,10 +1,13 @@
 package com.zzj.gambler.xinpujin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.reflect.TypeToken;
 import com.zzj.gambler.config.ErrorMsg;
 import com.zzj.gambler.config.NetConfig;
 import com.zzj.gambler.http.HttpUtil;
@@ -20,6 +23,7 @@ import com.zzj.gambler.model.RespUser;
 import com.zzj.gambler.utils.GsonWorker;
 import com.zzj.gambler.utils.HttpClient;
 import com.zzj.gambler.utils.LogUtil;
+import com.zzj.gambler.utils.MD5Util;
 import com.zzj.gambler.utils.VerifyCodeUtil;
 
 
@@ -50,6 +54,7 @@ public class XPJClient {
 		mUsername = username;
 		mPassowrd = password;
 		mSessoin = session;
+		mJSessionId = MD5Util.digestInHex(UUID.randomUUID().toString(), HttpUtil.CHARSET);
 		initStoredHeader();
 	}
 
@@ -332,7 +337,7 @@ public class XPJClient {
 				"pageNo", String.valueOf(pageNo),
 				"sortType", String.valueOf(sortType));
 		if (leagues != null && leagues.length > 0) {
-			postMap.put("showLegs", leagues.toString());
+			postMap.put("showLegs", GsonWorker.get().ObjectToJson(leagues, new TypeToken<String[]>(){}.getType()));
 		}
 		HttpCallback<RespData> callback = new HttpCallback<RespData>() {
 
@@ -362,7 +367,8 @@ public class XPJClient {
 	 * 请求特定盘口数据
 	 */
 	public void requestSpecificOdd(ReqBetData reqBetData, final RespCallback<RespOdd> respCallback) {
-		HashMap<String, String> postMap = constructKeyValMap("data", GsonWorker.get().ObjectToJson(reqBetData));
+		HashMap<String, String> postMap = constructKeyValMap("data",
+				GsonWorker.get().ObjectToJson(reqBetData, ReqBetData.class));
 		HttpCallback<RespOdd> callback = new HttpCallback<RespOdd>() {
 
 			@Override
@@ -391,7 +397,8 @@ public class XPJClient {
 	 * 请求下注
 	 */
 	public void requestBet(ReqBetData reqBetData, final RespCallback<RespBet> respCallback) {
-		HashMap<String, String> postMap = constructKeyValMap("data", GsonWorker.get().ObjectToJson(reqBetData));
+		HashMap<String, String> postMap = constructKeyValMap("data",
+				GsonWorker.get().ObjectToJson(reqBetData, ReqBetData.class));
 		HttpCallback<RespBet> callback = new HttpCallback<RespBet>() {
 
 			@Override
@@ -436,22 +443,22 @@ public class XPJClient {
 	 * CH : 冠军
 	 */
 	public interface GameType {
-		String RB_FT_MN = "RB_FT_MN";
-		String RB_FT_TI = "RB_FT_TI";
-		String RB_FT_BC = "RB_FT_BC";
-		String RB_FT_HF = "RB_FT_HF";
+		String FT_RB_MN = "FT_RB_MN";
+		String FT_RB_TI = "FT_RB_TI";
+		String FT_RB_BC = "FT_RB_BC";
+		String FT_RB_HF = "FT_RB_HF";
 		
-		String RB_BK_MN = "RB_BK_MN";
+		String BK_RB_MN = "BK_RB_MN";
 		
-		String TD_FT_MN = "TD_FT_MN";
-		String TD_FT_TI = "TD_FT_TI";
-		String TD_FT_BC = "TD_FT_BC";
-		String TD_FT_HF = "TD_FT_HF";
-		String TD_FT_MX = "TD_FT_MX";
-		String TD_FT_CH = "TD_FT_CH";
+		String FT_TD_MN = "FT_TD_MN";
+		String FT_TD_TI = "FT_TD_TI";
+		String FT_TD_BC = "FT_TD_BC";
+		String FT_TD_HF = "FT_TD_HF";
+		String FT_TD_MX = "FT_TD_MX";
+		String FT_TD_CH = "FT_TD_CH";
 		
-		String TD_BK_MN = "TD_BK_MN";
-		String TD_BK_MX = "TD_BK_MX";
+		String BK_TD_MN = "BK_TD_MN";
+		String BK_TD_MX = "BK_TD_MX";
 		
 		String FT_FT_MN = "FT_FT_MN";
 		String FT_FT_TI = "FT_FT_TI";
@@ -460,9 +467,9 @@ public class XPJClient {
 		String FT_FT_MX = "FT_FT_MX";
 		String FT_FT_CH = "FT_FT_CH";
 		
-		String FT_BK_MN = "FT_BK_MN";
-		String FT_BK_MX = "FT_BK_MX";
-		String FT_BK_CH = "FT_BK_CH";
+		String BK_FT_MN = "BK_FT_MN";
+		String BK_FT_MX = "BK_FT_MX";
+		String BK_FT_CH = "BK_FT_CH";
 		
 	}
 	
@@ -495,5 +502,33 @@ public class XPJClient {
 		 *            执行错误抛出的异常
 		 */
 		void onError(Throwable t);
+	}
+
+	/**
+	 * 返回找到的第一个符合搜索条件的比赛盘口数据
+	 * 
+	 * @param data
+	 * @param host
+	 * @param client
+	 * @param league
+	 * @return
+	 */
+	public static ArrayList<String> searchMatch(RespData data, String host, String client, String league) {
+		for (ArrayList<String> item : data.games) {
+			if (item.get(1).equalsIgnoreCase(host)
+					&& item.get(2).equalsIgnoreCase(client)
+					&& item.get(5).equalsIgnoreCase(league)) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
+	public static int searchIorIndex(ArrayList<String> header, String ior){
+		for (int i = 0; i < header.size(); i++) {
+			if (header.get(i).equalsIgnoreCase(ior))
+				return i;
+		}
+		return -1;
 	}
 }

@@ -23,12 +23,13 @@ public class GsonWorker {
 	}
 	
 	public <T> T byteArrayToObject(byte[] bs, Type t) {
+		String string = "";
 		try {
-			String string = new String(bs, "UTF-8");
-			System.out.println(string);
+			string = new String(bs, "UTF-8");
 			return getGson().fromJson(string, t);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LogUtil.log("to parse : " + string);
+			LogUtil.log(e);
 			return null;
 		}
 	}
@@ -37,7 +38,7 @@ public class GsonWorker {
 			return getGson().fromJson(json, t);
 	}
 	
-	public String ObjectToJson(ReqBetData reqBetData) {
-		return getGson().toJson(reqBetData);
+	public String ObjectToJson(Object obj, Type t) {
+		return getGson().toJson(obj, t);
 	}
 }

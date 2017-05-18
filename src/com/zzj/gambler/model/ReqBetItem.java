@@ -9,4 +9,8 @@ public class ReqBetItem {
 	public String type;
 	
 	public String project;
+	
+	public String scoreH;
+	
+	public String scoreC;
 }

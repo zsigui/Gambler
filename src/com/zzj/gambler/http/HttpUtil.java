@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ public class HttpUtil {
 			}
 			// 打开HttpURLConnection
 			HttpURLConnection connection;
+			p = new Proxy(Type.HTTP.HTTP, new InetSocketAddress(8888));
 			if (p == null) {
 				connection = (HttpURLConnection) url.openConnection();
 			} else {
