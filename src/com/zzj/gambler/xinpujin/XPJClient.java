@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.zzj.gambler.config.ErrorMsg;
 import com.zzj.gambler.config.NetConfig;
 import com.zzj.gambler.http.HttpUtil;
 import com.zzj.gambler.http.HttpUtil.HttpCallback;
@@ -21,6 +22,7 @@ import com.zzj.gambler.utils.HttpClient;
 import com.zzj.gambler.utils.LogUtil;
 import com.zzj.gambler.utils.VerifyCodeUtil;
 
+
 public class XPJClient {
 
 	private String mUsername;
@@ -33,6 +35,7 @@ public class XPJClient {
 	private final String KEY_SESSION = "SESSION";
 	private final String KEY_JSESSION_ID = "JSESSIONID";
 
+	private static final int MAX_RETRY_LOGIN_COUNT = 4;
 	/**
 	 * 传入用于登录的用户名和密码，会默认生成一个随机的UUID作为SESSION用于Http请求操作
 	 */
@@ -124,7 +127,46 @@ public class XPJClient {
 		}
 	}
 
+	private <T extends RespBase> void respOnError(RespCallback<T> callback, Throwable t) {
+		LogUtil.log(t);
+		if (callback != null) {
+			callback.onError(t);
+		}
+	}
+	
+	private <T extends RespBase> void respOnFail(RespCallback<T> callback, int httpStatus, T data, String note) {
+		if (callback != null) {
+			if (!HttpUtil.isSucc(httpStatus)) {
+				callback.onFailed(httpStatus, ErrorMsg.C_BAD_HTTP_REQUEST);
+			} else if (data != null && data.msg != null && !data.msg.isEmpty()) {
+				callback.onFailed(httpStatus, data.msg);
+			} else if (note != null && !note.isEmpty()){
+				callback.onFailed(httpStatus, note);
+			} else {
+				callback.onFailed(httpStatus, ErrorMsg.C_BAD_RESP_DATA);
+			}
+		}
+	}
+	
+	private <T extends RespBase> void respOnSuccess(RespCallback<T> callback, T data) {
+		if (callback != null) {
+			callback.onSuccess(data);
+		}
+	}
+	
+	/**
+	 * 执行登录请求，默认重试4次（针对验证码错误）
+	 */
 	public void login(final RespCallback<RespLogin> respCallback) {
+		login(respCallback, MAX_RETRY_LOGIN_COUNT);
+	}
+	
+	/**
+	 * 执行指定次数的登录请求（针对验证码错误进行重试）
+	 * @param respCallback
+	 * @param retryCount 当val<0时表示无重复次数限制
+	 */
+	public void login(final RespCallback<RespLogin> respCallback, final int retryCount) {
 		HashMap<String, String> queryMap = constructKeyValMap("timestamp", String.valueOf(System.currentTimeMillis()));
 		
 		HttpCallback<byte[]> callback = new HttpCallback<byte[]>() {
@@ -135,23 +177,29 @@ public class XPJClient {
 			}
 
 			@Override
-			public void onFinish(int code, byte[] data, Map<String, List<String>> headers) {
+			public void onFinish(final int code, final byte[] data, Map<String, List<String>> headers) {
 				if (HttpUtil.isSucc(code) && data != null) {
 					handleResponseHeaderForCookie(headers);
 					String vc = VerifyCodeUtil.readCode(data);
 					if (vc.isEmpty() || vc.length() != 4) {
+						if (retryCount == 0) {
+							respOnFail(respCallback, code, null, ErrorMsg.C_FAIL_TO_VERIFY_CODE);
+							return;
+						}
 						// 重新进行验证码请求
-						login(respCallback);
+						login(respCallback, retryCount - 1);
 					} else {
-						loginInternal(vc, respCallback);
+						loginInternal(vc, respCallback, retryCount);
 					}
+					return;
 				}
 				// 其他登录失败情况，地址或者获取失败等
+				respOnFail(respCallback, code, null, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
-				e.printStackTrace();
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doGet(NetConfig.URL_VERICODE, queryMap, storedHeaders, callback);
@@ -162,7 +210,7 @@ public class XPJClient {
 	 * @param code 请求会话对应的验证码
 	 * @param respCallback
 	 */
-	public void loginInternal(String code, final RespCallback<RespLogin> respCallback) {
+	public void loginInternal(String code, final RespCallback<RespLogin> respCallback, final int retryCount) {
 		HashMap<String, String> postMap = constructKeyValMap(
 				"account", mUsername,
 				"password", mPassowrd,
@@ -175,21 +223,30 @@ public class XPJClient {
 			}
 
 			@Override
-			public void onFinish(int code, RespLogin data, Map<String, List<String>> headers) {
+			public void onFinish(final int code, final RespLogin data, Map<String, List<String>> headers) {
 				LogUtil.log("code = " + code);
 				LogUtil.log("data = " + (data == null ? null : data.toString()));
 				if (HttpUtil.isSucc(code) && data != null) {
-					if (!data.success && data.msg.equals("验证码错误！")) {
+					if (!data.success && ErrorMsg.S_BAD_CODE.equalsIgnoreCase(data.msg)) {
+						if (retryCount == 0) {
+							respOnFail(respCallback, code, data, null);
+							return;
+						}
 						// 重新再请求一次
-						login(respCallback);
+						login(respCallback, retryCount - 1);
+						return;
 					}
+					
 					handleResponseHeaderForCookie(headers);
+					respOnSuccess(respCallback, data);
+					return;
 				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
-				e.printStackTrace();
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_LOGIN, postMap, null, storedHeaders, callback);
@@ -198,7 +255,7 @@ public class XPJClient {
 	/**
 	 * 获取用户当前账号的余额
 	 */
-	public void requestUserInfo(RespCallback<RespUser> respCallback) {
+	public void requestUserInfo(final RespCallback<RespUser> respCallback) {
 		HttpCallback<RespUser> callback = new HttpCallback<RespUser>() {
 
 			@Override
@@ -208,13 +265,17 @@ public class XPJClient {
 
 			@Override
 			public void onFinish(int code, RespUser data, Map<String, List<String>> headers) {
-				if (HttpUtil.isSucc(code) && data != null) {
+				if (HttpUtil.isSucc(code) && data != null && data.success) {
 					mRemainMoney = data.money;
+					respOnSuccess(respCallback, data);
+					return;
 				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_USER_INFO, null, null, storedHeaders, callback);
@@ -223,7 +284,7 @@ public class XPJClient {
 	/**
 	 * 获取指定游戏类型的所有联赛名称
 	 */
-	public void requestLeagueData(String gameType, RespCallback<RespLeague> respCallback) {
+	public void requestLeagueData(String gameType, final RespCallback<RespLeague> respCallback) {
 		HashMap<String, String> postMap = constructKeyValMap("gameType", gameType);
 		HttpCallback<RespLeague> callback = new HttpCallback<RespLeague>() {
 
@@ -233,14 +294,17 @@ public class XPJClient {
 			}
 
 			@Override
-			public void onFinish(int code, RespLeague data, Map<String, List<String>> headers) {
-				if (HttpUtil.isSucc(code) && data != null) {
-					System.out.println(data.leagues);
+			public void onFinish(final int code, final RespLeague data, Map<String, List<String>> headers) {
+				if (HttpUtil.isSucc(code) && data != null && data.success) {
+					respOnSuccess(respCallback, data);
+					return;
 				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_SPORT_LEGUES, postMap, null, storedHeaders, callback);
@@ -262,7 +326,7 @@ public class XPJClient {
 	 * @param leagues 指定联赛名称数组
 	 * @param respCallback
 	 */
-	public void requestOddData(String gameType, int pageNo, int sortType, String[] leagues, RespCallback<RespData> respCallback) {
+	public void requestOddData(String gameType, int pageNo, int sortType, String[] leagues, final RespCallback<RespData> respCallback) {
 		HashMap<String, String> postMap = constructKeyValMap(
 				"gameType", gameType,
 				"pageNo", String.valueOf(pageNo),
@@ -278,11 +342,17 @@ public class XPJClient {
 			}
 
 			@Override
-			public void onFinish(int code, RespData data, Map<String, List<String>> headers) {
+			public void onFinish(final int code, final RespData data, Map<String, List<String>> headers) {
+				if (HttpUtil.isSucc(code) && data != null && data.games != null) {
+					respOnSuccess(respCallback, data);
+					return;
+				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_SPORT_DATA, postMap, null, storedHeaders, callback);
@@ -291,7 +361,7 @@ public class XPJClient {
 	/**
 	 * 请求特定盘口数据
 	 */
-	public void requestSpecificOdd(ReqBetData reqBetData, RespCallback<RespOdd> respCallback) {
+	public void requestSpecificOdd(ReqBetData reqBetData, final RespCallback<RespOdd> respCallback) {
 		HashMap<String, String> postMap = constructKeyValMap("data", GsonWorker.get().ObjectToJson(reqBetData));
 		HttpCallback<RespOdd> callback = new HttpCallback<RespOdd>() {
 
@@ -301,11 +371,17 @@ public class XPJClient {
 			}
 
 			@Override
-			public void onFinish(int code, RespOdd data, Map<String, List<String>> headers) {
+			public void onFinish(final int code, final RespOdd data, Map<String, List<String>> headers) {
+				if (HttpUtil.isSucc(code) && data != null && data.odds != null) {
+					respOnSuccess(respCallback, data);
+					return;
+				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_GET_ODD, postMap, null, storedHeaders, callback);
@@ -314,7 +390,7 @@ public class XPJClient {
 	/**
 	 * 请求下注
 	 */
-	public void requestBet(ReqBetData reqBetData, RespCallback<RespBet> respCallback) {
+	public void requestBet(ReqBetData reqBetData, final RespCallback<RespBet> respCallback) {
 		HashMap<String, String> postMap = constructKeyValMap("data", GsonWorker.get().ObjectToJson(reqBetData));
 		HttpCallback<RespBet> callback = new HttpCallback<RespBet>() {
 
@@ -325,15 +401,74 @@ public class XPJClient {
 
 			@Override
 			public void onFinish(int code, RespBet data, Map<String, List<String>> headers) {
+				if (HttpUtil.isSucc(code) && data != null && data.success) {
+					respOnSuccess(respCallback, data);
+					return;
+				}
+				respOnFail(respCallback, code, data, null);
 			}
 
 			@Override
 			public void onError(Throwable e) {
+				respOnError(respCallback, e);
 			}
 		};
 		HttpClient.doPost(NetConfig.URL_BET, postMap, null, storedHeaders, callback);
 	}
 
+	/**
+	 * 定义可以请求的GameType类型 <br />
+	 * 
+	 * gameType 类型参数值说明：由三部分组成，用 '_' 进行连接，FT_FT_MN <br />
+	 * 1.<br />
+	 * RB : 滚球
+	 * TD : 今日赛事
+	 * FT :  早盘
+	 * 2. <br />
+	 * FT : 足球
+	 * BK : 篮球
+	 * 3.<br />
+	 * MN : 独赢 ＆ 让球 ＆ 大小 ＆ 单 / 双
+	 * TI : 波胆
+	 * BC : 总入球
+	 * HF : 半场 / 全场
+	 * MX : 综合过关
+	 * CH : 冠军
+	 */
+	public interface GameType {
+		String RB_FT_MN = "RB_FT_MN";
+		String RB_FT_TI = "RB_FT_TI";
+		String RB_FT_BC = "RB_FT_BC";
+		String RB_FT_HF = "RB_FT_HF";
+		
+		String RB_BK_MN = "RB_BK_MN";
+		
+		String TD_FT_MN = "TD_FT_MN";
+		String TD_FT_TI = "TD_FT_TI";
+		String TD_FT_BC = "TD_FT_BC";
+		String TD_FT_HF = "TD_FT_HF";
+		String TD_FT_MX = "TD_FT_MX";
+		String TD_FT_CH = "TD_FT_CH";
+		
+		String TD_BK_MN = "TD_BK_MN";
+		String TD_BK_MX = "TD_BK_MX";
+		
+		String FT_FT_MN = "FT_FT_MN";
+		String FT_FT_TI = "FT_FT_TI";
+		String FT_FT_BC = "FT_FT_BC";
+		String FT_FT_HF = "FT_FT_HF";
+		String FT_FT_MX = "FT_FT_MX";
+		String FT_FT_CH = "FT_FT_CH";
+		
+		String FT_BK_MN = "FT_BK_MN";
+		String FT_BK_MX = "FT_BK_MX";
+		String FT_BK_CH = "FT_BK_CH";
+		
+	}
+	
+	/**
+	 * 执行网络请求之后的回调接口
+	 */
 	public interface RespCallback<T extends RespBase> {
 		/**
 		 * 网络请求成功，并过滤服务器错误后返回成功结果

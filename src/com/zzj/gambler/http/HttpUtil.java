@@ -232,7 +232,7 @@ public class HttpUtil {
 	public interface HttpCallback<T> {
 		T convertBytes(byte[] data);
 
-		void onFinish(int code, T data, Map<String, List<String>> headers);
+		void onFinish(final int code, final T data, Map<String, List<String>> headers);
 
 		void onError(Throwable e);
 	}

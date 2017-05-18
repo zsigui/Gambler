@@ -5,7 +5,7 @@ public class RespBet extends RespBase {
 	/**
 	 * 失败时新的赔率值
 	 */
-	public int newOdds;
+	public float newOdds;
 	
 	/**
 	 * 成功时的下注单号
