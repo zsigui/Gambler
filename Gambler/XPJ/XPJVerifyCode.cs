@@ -16,9 +16,18 @@ namespace Gambler.XPJ
         private static readonly int VAL_DIFF_COLOR = 650;
         private static readonly int RGB_WHITE = -1;
         private static readonly int RGB_BLACK = -16777216;
-        private static readonly string DEFAULT_TRAIN_DIR_NAME = "trainData";
+        private static readonly string DEFAULT_TRAIN_DIR_NAME =  "trainData";
 
-        public Dictionary<Bitmap, char> sTrainDict;
+        private Dictionary<Bitmap, char> sTrainDict;
+        private string _trainDataPath;
+
+        public XPJVerifyCode(string trainDataPath)
+        {
+            if (trainDataPath == null || trainDataPath == "")
+                this._trainDataPath = DEFAULT_TRAIN_DIR_NAME;
+            else 
+                this._trainDataPath = trainDataPath;
+        }
 
         public Bitmap Binarization(Bitmap srcImg)
         {
@@ -263,7 +272,7 @@ namespace Gambler.XPJ
         {
             Bitmap validBmp = new Bitmap(stream);
             List<Bitmap> bmpList = SpiltImage(validBmp);
-            Dictionary<Bitmap, char> dict = LoadTrainData(DEFAULT_TRAIN_DIR_NAME);
+            Dictionary<Bitmap, char> dict = LoadTrainData(this._trainDataPath);
             StringBuilder builder = new StringBuilder("");
             foreach (Bitmap bmp in bmpList)
             {

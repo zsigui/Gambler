@@ -55,17 +55,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\XPJ\DataGameCount.cs" />
-    <Compile Include="Model\XPJ\ReqBetData.cs" />
-    <Compile Include="Model\XPJ\ReqBetItem.cs" />
-    <Compile Include="Model\XPJ\RespBase.cs" />
-    <Compile Include="Model\XPJ\RespBet.cs" />
-    <Compile Include="Model\XPJ\RespData.cs" />
-    <Compile Include="Model\XPJ\RespLeague.cs" />
-    <Compile Include="Model\XPJ\RespLogin.cs" />
-    <Compile Include="Model\XPJ\RespOdd.cs" />
-    <Compile Include="Model\XPJ\OddItem.cs" />
-    <Compile Include="Model\XPJ\RespUser.cs" />
+    <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
+    <Compile Include="XPJ\Model\DataGameCount.cs" />
+    <Compile Include="XPJ\Model\ReqBetData.cs" />
+    <Compile Include="XPJ\Model\ReqBetItem.cs" />
+    <Compile Include="XPJ\Model\RespBase.cs" />
+    <Compile Include="XPJ\Model\RespBet.cs" />
+    <Compile Include="XPJ\Model\RespData.cs" />
+    <Compile Include="XPJ\Model\RespLeague.cs" />
+    <Compile Include="XPJ\Model\RespLogin.cs" />
+    <Compile Include="XPJ\Model\RespOdd.cs" />
+    <Compile Include="XPJ\Model\OddItem.cs" />
+    <Compile Include="XPJ\Model\RespUser.cs" />
     <Compile Include="UI\Form\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,7 +78,6 @@
     <Compile Include="Utils\FileUtil.cs" />
     <Compile Include="Utils\HashUtil.cs" />
     <Compile Include="Utils\HttpUtil.cs" />
-    <Compile Include="Utils\IHttpCallback.cs" />
     <Compile Include="Utils\ImageUtil.cs" />
     <Compile Include="Utils\Interface\IDataAdapter.cs" />
     <Compile Include="Utils\Interface\IVerifyCode.cs" />
@@ -85,6 +85,8 @@
     <Compile Include="Utils\Log\LogThread.cs" />
     <Compile Include="Utils\Log\LogUtil.cs" />
     <Compile Include="Utils\ThreadUtil.cs" />
+    <Compile Include="XPJ\XPJClient.cs" />
+    <Compile Include="XPJ\XPJVerifyCode.cs" />
     <EmbeddedResource Include="UI\Form\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Delegate\" />
+    <Folder Include="Resources\" />
     <Folder Include="UI\Widget\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

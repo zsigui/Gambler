@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Gambler.XPJ
 {
     public class XPJClient
     {
-        IVerifyCode _verifyCode = new XPJVerifyCode();
+        IVerifyCode _verifyCode = new XPJVerifyCode(Application.StartupPath + "\Resources\trainData");
     }
 }
