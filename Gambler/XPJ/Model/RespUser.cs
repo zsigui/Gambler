@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Gambler.Model.XPJ
 {
     [JsonObject(MemberSerialization.OptOut)]
-    class RespUser : RespBase
+    public class RespUser : RespBase
     {
         public bool login;
         public float money;

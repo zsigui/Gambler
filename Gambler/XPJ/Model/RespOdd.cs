@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Gambler.Model.XPJ
 {
     [JsonObject(MemberSerialization.OptOut)]
-    class RespOdd : RespBase
+    public class RespOdd : RespBase
     {
         public List<OddItem> odds;
     }

@@ -56,6 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
+    <Compile Include="Utils\Interface\IRespCallback.cs" />
+    <Compile Include="Utils\IOUtil.cs" />
+    <Compile Include="Utils\JsonUtil.cs" />
+    <Compile Include="Utils\Md5Util.cs" />
+    <Compile Include="Utils\TimeUtil.cs" />
     <Compile Include="XPJ\Model\DataGameCount.cs" />
     <Compile Include="XPJ\Model\ReqBetData.cs" />
     <Compile Include="XPJ\Model\ReqBetItem.cs" />
@@ -86,6 +91,9 @@
     <Compile Include="Utils\Log\LogUtil.cs" />
     <Compile Include="Utils\ThreadUtil.cs" />
     <Compile Include="XPJ\XPJClient.cs" />
+    <Compile Include="XPJ\XPJConfig.cs" />
+    <Compile Include="XPJ\XPJErrorMsg.cs" />
+    <Compile Include="XPJ\XPJRatioHelper.cs" />
     <Compile Include="XPJ\XPJVerifyCode.cs" />
     <EmbeddedResource Include="UI\Form\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

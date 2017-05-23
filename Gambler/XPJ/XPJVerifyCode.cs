@@ -1,9 +1,7 @@
 ﻿using Gambler.Utils.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using Gambler.Utils;
 using System.IO;
@@ -268,16 +266,18 @@ namespace Gambler.XPJ
             return result;
         }
 
-        public override string ParseCode(Stream stream)
+        public override string ParseCode(byte[] imgBytes)
         {
-            Bitmap validBmp = new Bitmap(stream);
+            Bitmap validBmp = ImageUtil.BytesToBitmap(imgBytes);
             List<Bitmap> bmpList = SpiltImage(validBmp);
             Dictionary<Bitmap, char> dict = LoadTrainData(this._trainDataPath);
             StringBuilder builder = new StringBuilder("");
             foreach (Bitmap bmp in bmpList)
             {
                 if (bmp != null)
+                {
                     builder.Append(FindSinleCharOcr(bmp, dict));
+                }
             }
             return builder.ToString();
         }

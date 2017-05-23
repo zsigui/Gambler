@@ -30,6 +30,15 @@ namespace Gambler.Utils
         /// <summary>
         /// 调用Log4net写日志，日志等级为 ：信息（Info）
         /// </summary>
+        /// <param name="e">抛出异常信息</param>
+        public static void Write(Exception e)
+        {
+            LogThread.GetOrInit().Write(null, null, Log4NetLevel.Info, e);
+        }
+
+        /// <summary>
+        /// 调用Log4net写日志，日志等级为 ：信息（Info）
+        /// </summary>
         /// <param name="type">类的类型，指定日志中错误的具体类。例如：typeof(Index)，Index是类名，如果为空表示不指定类</param>
         /// <param name="logContent">日志内容</param>
         public static void Write(Type type, string logContent)
