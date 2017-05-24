@@ -137,7 +137,6 @@ namespace Gambler.XPJ
                },
                (statusCode, data, cookies) =>
                {
-                   Console.WriteLine("返回: " + statusCode);
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null)
                    {
                        _cookies.Add(cookies);

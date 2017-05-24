@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using Gambler.Utils;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Gambler.XPJ
 {
@@ -66,7 +67,7 @@ namespace Gambler.XPJ
             for (y = 0; y < height; y++)
             {
                 srcImg.SetPixel(0, y, Color.White);
-                srcImg.SetPixel(width - 1, height, Color.White);
+                srcImg.SetPixel(width - 1, y, Color.White);
             }
 
             width -= 1;
@@ -115,7 +116,7 @@ namespace Gambler.XPJ
             return color.R + color.B + color.G < VAL_DIFF_COLOR;
         }
 
-        private List<Bitmap> SpiltImage(Bitmap srcImg)
+        private List<Bitmap> SpiltImage(Bitmap srcImg, string filename)
         {
             List<Bitmap> subImgs = new List<Bitmap>();
             int maxWidth = 18;
@@ -128,6 +129,8 @@ namespace Gambler.XPJ
             bool isBlackInColume;
 
             int startX, startY, endX, endY, spiltIndex;
+
+            int k = 0;
             while (true)
             {
                 startX = width;
@@ -139,13 +142,13 @@ namespace Gambler.XPJ
                 for (; x < rwidth; x++)
                 {
                     isBlackInColume = false;
-                    for (y = 1; y < height - 1; y++)
+                    for (y = 1; y < rheight; y++)
                     {
                         if (IsBlack(srcImg.GetPixel(x, y)))
                         {
                             if (startY > y)
                                 startY = y;
-                            else if (endY > y)
+                            else if (endY < y)
                                 endY = y;
 
                             isBlackInColume = true;
@@ -175,10 +178,15 @@ namespace Gambler.XPJ
 
 
                 if (endX != 0 && endY != 0)
-                    subImgs.Add(GetSubImage(srcImg, startX, startY, endX - startX + 1, endY - startY + 1));
+                {
+                    Bitmap b = GetSubImage(srcImg, startX, startY, endX - startX + 1, endY - startY + 1);
+                    ImageUtil.Write(b, Application.StartupPath + "\\Resources\\train\\" + (k++) + "-" + filename + ".jpg");
+                    subImgs.Add(b);
+                }
                 else
+                {
                     subImgs.Add(null);
-
+                }
                 // 表示结尾的剩余空白不够继续
                 if (width - x < minWidth)
                     break;
@@ -190,13 +198,11 @@ namespace Gambler.XPJ
         private Bitmap GetSubImage(Bitmap srcImg, int x, int y, int width, int height)
         {
             Bitmap subBmp = new Bitmap(width, height);
-            int srcW = x + width;
-            int srcH = y + height;
-            for (int i = 0; x < srcW; i++, x++)
+            for (int i = 0, u = x; i < width; i++, u++)
             {
-                for (int j = 0; y < srcH; j++, y++)
+                for (int j = 0, v = y; j < height; j++, v++)
                 {
-                    subBmp.SetPixel(i, j, srcImg.GetPixel(x, y));
+                    subBmp.SetPixel(i, j, srcImg.GetPixel(u, v));
                 }
             }
             return subBmp;
@@ -207,7 +213,7 @@ namespace Gambler.XPJ
             if (sTrainDict == null || sTrainDict.Count == 0)
             {
                 sTrainDict = new Dictionary<Bitmap, char>();
-                IEnumerable<string> paths = FileUtil.ReadFromPath(trainDir, new string[]{"png", "jpg", "jpeg"});
+                IEnumerable<string> paths = FileUtil.ReadFromPath(trainDir, new string[]{".png", ".jpg", ".jpeg"});
                 string filename;
                 foreach (string path in paths)
                 {
@@ -231,8 +237,10 @@ namespace Gambler.XPJ
                 count = 0;
                 subW = bmp.Width;
                 subH = bmp.Height;
-                if (Math.Abs(bmp.Width - width) > 2)
+                if (Math.Abs(subW - width) > 2)
+                {
                     continue;
+                }
                 minW = Math.Min(subW, width);
                 minH = Math.Min(subH, height);
 
@@ -253,7 +261,9 @@ namespace Gambler.XPJ
                     }
 
                     if (jumpInnerBreak)
+                    {
                         break;
+                    }
                 }
 
                 if (count < min)
@@ -269,7 +279,13 @@ namespace Gambler.XPJ
         public override string ParseCode(byte[] imgBytes)
         {
             Bitmap validBmp = ImageUtil.BytesToBitmap(imgBytes);
-            List<Bitmap> bmpList = SpiltImage(validBmp);
+            string name = new Random().Next().ToString();
+            // 二值化处理
+            validBmp = Binarization(validBmp);
+            // 消除噪声点
+            validBmp = RemoveNoise(validBmp);
+            // 进行图形切割
+            List<Bitmap> bmpList = SpiltImage(validBmp, name);
             Dictionary<Bitmap, char> dict = LoadTrainData(this._trainDataPath);
             StringBuilder builder = new StringBuilder("");
             foreach (Bitmap bmp in bmpList)
@@ -279,7 +295,11 @@ namespace Gambler.XPJ
                     builder.Append(FindSinleCharOcr(bmp, dict));
                 }
             }
-            return builder.ToString();
+
+            string result = builder.ToString();
+            if (result.Contains("_"))
+                return "";
+            return result;
         }
     }
 }

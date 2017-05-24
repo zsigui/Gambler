@@ -58,5 +58,14 @@ namespace Gambler.Utils
             }
             return bmp;
         }
+
+        public static void Write(Bitmap bitmap, string filepath)
+        {
+
+            Bitmap newBmp = new Bitmap(bitmap.Width, bitmap.Height);
+            Graphics g = Graphics.FromImage(newBmp);
+            g.DrawImage(bitmap, 0, 0);
+            newBmp.Save(filepath);
+        }
     }
 }

@@ -29,12 +29,28 @@ namespace Gambler.Utils
 
         public static string toJson<T>(T obj)
         {
-            return JsonConvert.SerializeObject(obj, Formatting.None, DefaultSetting());
+            try
+            {
+                return JsonConvert.SerializeObject(obj, Formatting.None, DefaultSetting());
+            }
+            catch (Exception e)
+            {
+                LogUtil.Write(e);
+                return "";
+            }
         }
 
         public static T fromJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, DefaultSetting());
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json, DefaultSetting());
+            }
+            catch (Exception e)
+            {
+                LogUtil.Write(e);
+                return default(T);
+            }
         }
     }
 }
