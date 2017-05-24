@@ -8,7 +8,7 @@ namespace Gambler.XPJ
 {
     public class XPJConfig
     {
-        public static readonly string URL_DOMAIN = ".1559501.com";
+        public static readonly string URL_DOMAIN = "www.1559501.com";
         /*
 	     * 数据请求的过程
 	     */
@@ -27,12 +27,12 @@ namespace Gambler.XPJ
          * 获取用户账号信息 <br />
          * POST
          */
-        public static readonly string URL_USER_INFO = URL_HOST_NAME + "/curstinfo.do";
+        public static readonly string URL_USER_INFO = URL_HOST_NAME + "/meminfo.do";
         /**
          * 获取下注数据名称 <br />
          * POST : gameType、pageNo、sortType、showLegs
          */
-        public static readonly string URL_SPORT_DATA = URL_HOST_NAME + "/sports/hg/getData.do";
+        public static readonly string URL_ODD_DATA = URL_HOST_NAME + "/sports/hg/getData.do";
         /**
          * 获取请求的联赛名称 <br />
          * POST : gameType <br />

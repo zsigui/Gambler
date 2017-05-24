@@ -55,23 +55,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Module\HF\HFClient.cs" />
+    <Compile Include="Module\HF\HFConfig.cs" />
+    <Compile Include="Module\HF\HFVerifyCode.cs" />
+    <Compile Include="Module\HF\Model\HFRespBase.cs" />
+    <Compile Include="Module\HF\Model\HFUser.cs" />
+    <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
     <Compile Include="Utils\Interface\IRespCallback.cs" />
     <Compile Include="Utils\IOUtil.cs" />
     <Compile Include="Utils\JsonUtil.cs" />
     <Compile Include="Utils\Md5Util.cs" />
+    <Compile Include="Utils\SearchHelper.cs" />
     <Compile Include="Utils\TimeUtil.cs" />
-    <Compile Include="XPJ\Model\DataGameCount.cs" />
-    <Compile Include="XPJ\Model\ReqBetData.cs" />
-    <Compile Include="XPJ\Model\ReqBetItem.cs" />
-    <Compile Include="XPJ\Model\RespBase.cs" />
-    <Compile Include="XPJ\Model\RespBet.cs" />
-    <Compile Include="XPJ\Model\RespData.cs" />
-    <Compile Include="XPJ\Model\RespLeague.cs" />
-    <Compile Include="XPJ\Model\RespLogin.cs" />
-    <Compile Include="XPJ\Model\RespOdd.cs" />
-    <Compile Include="XPJ\Model\OddItem.cs" />
-    <Compile Include="XPJ\Model\RespUser.cs" />
+    <Compile Include="Module\XPJ\Model\DataGameCount.cs" />
+    <Compile Include="Module\XPJ\Model\ReqBetData.cs" />
+    <Compile Include="Module\XPJ\Model\ReqBetItem.cs" />
+    <Compile Include="Module\XPJ\Model\RespBase.cs" />
+    <Compile Include="Module\XPJ\Model\RespBet.cs" />
+    <Compile Include="Module\XPJ\Model\RespData.cs" />
+    <Compile Include="Module\XPJ\Model\RespLeague.cs" />
+    <Compile Include="Module\XPJ\Model\RespLogin.cs" />
+    <Compile Include="Module\XPJ\Model\RespOdd.cs" />
+    <Compile Include="Module\XPJ\Model\OddItem.cs" />
+    <Compile Include="Module\XPJ\Model\RespUser.cs" />
     <Compile Include="UI\Form\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,11 +97,11 @@
     <Compile Include="Utils\Log\LogThread.cs" />
     <Compile Include="Utils\Log\LogUtil.cs" />
     <Compile Include="Utils\ThreadUtil.cs" />
-    <Compile Include="XPJ\XPJClient.cs" />
-    <Compile Include="XPJ\XPJConfig.cs" />
-    <Compile Include="XPJ\XPJErrorMsg.cs" />
-    <Compile Include="XPJ\XPJRatioHelper.cs" />
-    <Compile Include="XPJ\XPJVerifyCode.cs" />
+    <Compile Include="Module\XPJ\XPJClient.cs" />
+    <Compile Include="Module\XPJ\XPJConfig.cs" />
+    <Compile Include="Module\XPJ\XPJErrorMsg.cs" />
+    <Compile Include="Module\XPJ\XPJRatioHelper.cs" />
+    <Compile Include="Module\XPJ\XPJVerifyCode.cs" />
     <EmbeddedResource Include="UI\Form\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

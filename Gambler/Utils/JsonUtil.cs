@@ -48,6 +48,7 @@ namespace Gambler.Utils
             }
             catch (Exception e)
             {
+                Console.WriteLine(json);
                 LogUtil.Write(e);
                 return default(T);
             }

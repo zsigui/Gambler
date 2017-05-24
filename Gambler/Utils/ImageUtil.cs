@@ -65,6 +65,9 @@ namespace Gambler.Utils
             Bitmap newBmp = new Bitmap(bitmap.Width, bitmap.Height);
             Graphics g = Graphics.FromImage(newBmp);
             g.DrawImage(bitmap, 0, 0);
+            string parent = Path.GetDirectoryName(filepath);
+            if (!Directory.Exists(parent))
+                Directory.CreateDirectory(parent);
             newBmp.Save(filepath);
         }
     }

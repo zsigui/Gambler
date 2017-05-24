@@ -10,6 +10,7 @@ namespace Gambler.Model.XPJ
     [JsonObject(MemberSerialization.OptOut)]
     public class RespUser : RespBase
     {
+        public string account;
         public bool login;
         public float money;
     }

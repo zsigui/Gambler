@@ -100,8 +100,9 @@ namespace Gambler.Utils
             {
                 request = WebRequest.Create(realUrl) as HttpWebRequest;
             }
-            
+
             // 添加Cookie信息，与Header分开处理
+            proxy = new WebProxy("127.0.0.1", 8888);
             if (proxy != null)
             {
                 request.Proxy = proxy;
@@ -147,7 +148,8 @@ namespace Gambler.Utils
 
             if (String.IsNullOrEmpty(requestUrl))
                 throw new ArgumentNullException("requestUrl");
-            
+            try
+            {
                 using (var response = RequestForResponse(requestUrl, method, headers, cookies, proxy,
                     queryDict, bodyDict, jsonBody))
                 {
@@ -171,9 +173,19 @@ namespace Gambler.Utils
                         {
                             data = default(P);
                         }
+
                         onFinish.Invoke(statusCode, data, cookie);
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                if (onError != null)
+                {
+                    onError.Invoke(e);
+                }
+                LogUtil.Write(e);
+            }
         }
 
         public static void RequestAsync<P>(string requestUrl, Method method, WebHeaderCollection headers, CookieCollection cookies, WebProxy proxy,
