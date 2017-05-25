@@ -127,6 +127,8 @@ namespace Gambler.Utils
             request.ReadWriteTimeout = NET_READ_TIMEOUT;
             request.Timeout = NET_CONNECT_TIMEOUT;
 
+            // 默认不进行自动重定向
+            request.AllowAutoRedirect = false;
 
             // 设置默认的 UserAgent
             String ua = request.Headers.Get("User-Agent");
@@ -207,6 +209,13 @@ namespace Gambler.Utils
             OnFinishHandler<P> onFinish, OnErrorHandler onError)
         {
             RequestSync(requestUrl, Method.POST, headers, cookies, null, null, bodyDict, null, converData, onFinish, onError);
+        }
+
+        public static void Post<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies, Dictionary<string, string> queryDict,
+            Dictionary<string, string> bodyDict, ConvertDataHandler<P> converData,
+            OnFinishHandler<P> onFinish, OnErrorHandler onError)
+        {
+            RequestSync(requestUrl, Method.POST, headers, cookies, null, queryDict, bodyDict, null, converData, onFinish, onError);
         }
 
         public static void Get<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies,

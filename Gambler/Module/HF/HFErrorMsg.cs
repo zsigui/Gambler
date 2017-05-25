@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Gambler.Module.HF
 {
-    public class HFErrorMsg
+    public class HFErrorMsg : BaseError
     {
         #region 错误码说明
         /*
@@ -522,5 +522,42 @@ namespace Gambler.Module.HF
         }
          */
         #endregion
+
+        private static HashSet<int> SET_SUCC = new HashSet<int>()
+        {
+            103001, // 获取KG主账户成功
+            103121, // 获取AG余额成功
+            103122, // 获取BBIN余额成功
+            103123, // 获取H8余额成功
+            103124, // 获取MG余额成功
+            201001, // 登录成功
+            211037, // 获取用户积分成功
+            201013, // 处于登录中
+        };
+
+        public static int I_LOGOUT = 211014;
+
+        private static Dictionary<int, string> DICT_FAIL = new Dictionary<int, string>()
+        {
+            {211002, "登录失败，请稍后再试"},
+            {211003, "用户名或密码错误"},
+            {113124, "获取KG主账户失败"},
+            {113125, "获取AG余额失败"},
+            {113126, "获取BBIN余额失败"},
+            {113127, "获取H8余额失败"},
+            {113128, "获取MG余额失败"},
+            {211014, "用户已经登出"},
+            {211030, "验证码错误"}
+        };
+
+        internal static bool IsSuccess(int code)
+        {
+            return SET_SUCC.Contains(code);
+        }
+
+        internal static string GetMessageByCode(int code)
+        {
+            return DICT_FAIL[code];
+        }
     }
 }

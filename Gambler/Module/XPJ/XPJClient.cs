@@ -1,5 +1,6 @@
 ﻿using Gambler.Model;
 using Gambler.Model.XPJ;
+using Gambler.Module;
 using Gambler.Utils;
 using Gambler.Utils.Interface;
 using System;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 namespace Gambler.XPJ
 {
-    public class XPJClient
+    public class XPJClient : BaseClient
     {
 
         private readonly string KEY_SESSION = "SESSION";
@@ -67,33 +68,8 @@ namespace Gambler.XPJ
                 _cookies.Add(new Cookie(KEY_JSESSION_ID, _session, "/", XPJConfig.URL_DOMAIN));
             }
         }
-
-        /// <summary>
-        /// 统一构造键值对字典
-        /// </summary>
-        /// <param name="data">键值列表：k1,v1,k2,v2,...</param>
-        /// <returns></returns>
-        private Dictionary<string, string> ConstructKeyValDict(params string[] data)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            int len = data.Length - 1;
-            for (int i = 0; i < len; i += 2)
-            {
-                dict.Add(data[i], data[i + 1]);
-            }
-            return dict;
-        }
-
-        private void RespOnError(OnErrorHandler callback, Exception t)
-        {
-            LogUtil.Write(t);
-            if (callback != null)
-            {
-                callback.Invoke(t);
-            }
-        }
-
-        private void RespOnFail(OnFailedHandler callback, int httpStatus, RespBase data)
+        
+        protected void RespOnFail(OnFailedHandler callback, int httpStatus, RespBase data)
         {
             if (callback != null)
             {
@@ -111,15 +87,7 @@ namespace Gambler.XPJ
                 }
             }
         }
-
-        private void RespOnSuccess<T>(OnSuccessHandler<T> callback, T data) where T : RespBase
-        {
-            if (callback != null)
-            {
-                callback.Invoke(data);
-            }
-        }
-
+        
         public void Login(OnSuccessHandler<RespLogin> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Login(4, onSuccess, onFail, onError);
@@ -353,12 +321,6 @@ namespace Gambler.XPJ
                    RespOnError(onError, e);
                });
         }
-
-        public delegate void OnSuccessHandler<T>(T data) where T : RespBase;
-
-        public delegate void OnFailedHandler(int httpStatus, int errcode, String errorMsg);
-
-        public delegate void OnErrorHandler(Exception e);
 
         /**
          * 定义可以请求的GameType类型 <br />
