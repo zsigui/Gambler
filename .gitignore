@@ -1,0 +1,9 @@
+train/
+test/
+temp/
+*~
+test/
+result/
+img2/
+bin/
+
