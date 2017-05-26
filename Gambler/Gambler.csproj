@@ -55,9 +55,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Module\BaseClient.cs" />
+    <Compile Include="Module\BaseError.cs" />
     <Compile Include="Module\HF\HFClient.cs" />
     <Compile Include="Module\HF\HFConfig.cs" />
+    <Compile Include="Module\HF\HFErrorMsg.cs" />
     <Compile Include="Module\HF\HFVerifyCode.cs" />
+    <Compile Include="Module\HF\Model\HFLiveEventIdNote.cs" />
+    <Compile Include="Module\HF\Model\HFLiveEvent.cs" />
     <Compile Include="Module\HF\Model\HFRespBase.cs" />
     <Compile Include="Module\HF\Model\HFUser.cs" />
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
