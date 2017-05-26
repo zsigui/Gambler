@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using HtmlAgilityPack;
 
 namespace Gambler.Module.HF
 {
@@ -20,6 +22,13 @@ namespace Gambler.Module.HF
         private HFVerifyCode _verifyCode = new HFVerifyCode(Application.StartupPath + "\\Resources\\HF_trainData");
 
         private CookieCollection _cookiesForH8;
+
+        public HFClient(string account, string password)
+        {
+            _account = account;
+            _password = password;
+            InitStoredHeader();
+        }
 
         private void InitStoredHeader()
         {
@@ -207,7 +216,7 @@ namespace Gambler.Module.HF
                  "oid", _user.oid,
                  "lottoType", "PC",
                  "r", "" + new Random().NextDouble());
-            HttpUtil.Get(HFConfig.URL_LOGIN, _headers, _cookies, queryDict,
+            HttpUtil.Get(HFConfig.URL_LOGIN_H8, _headers, _cookies, queryDict,
                 (data) =>
                 {
                     return IOUtil.ReadString(data);
@@ -265,7 +274,10 @@ namespace Gambler.Module.HF
                 });
         }
 
-        public  void GetOddData(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        /**
+         * 获取今日直播比赛的ID列表
+         */
+        public void GetOddData(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             // 实际不需要Cookie就可以直接请求= =
             InitDefaultH8Cookie();
@@ -273,23 +285,26 @@ namespace Gambler.Module.HF
             Dictionary<string, string> queryDict = ConstructKeyValDict(
                 "ov", "1",
                 "ot", "r",
+                "mt", "0",
+                "t", "" + TimeUtil.CurrentTimeMillis(),
                 "tf", "-1",
                 "TFStatus", "0",
                 "update", "false",
-                "mt", "0",
-                "r", "96410617",
-                "t", "" + TimeUtil.CurrentTimeMillis());
-            HttpUtil.Post(HFConfig.URL_ODD_DATA, _headers, _cookies, queryDict,
+                "r", "1889011725");
+            //             string data = FileUtil.ReadContentFromFilePath(Application.StartupPath + "\\data.html", Encoding.GetEncoding("GBK"));
+            //              //执行成功会重定向操作
+            //              //返回的为 XML文件，需要进行解析
+            //             ParseOddDataXml(data);
+            //             RespOnSuccess(onSuccess, data);
+            HttpUtil.Post(HFConfig.URL_ODD_DATA_BS, _headers, _cookiesForH8, queryDict, null,
                 (data) =>
                 {
                     return IOUtil.ReadString(data);
                 },
                 (statusCode, data, cookies) =>
                 {
-                    // 执行成功会重定向操作
                     if (HttpUtil.IsCodeSucc(statusCode) && !String.IsNullOrEmpty(data))
                     {
-                        // 返回的为 XML文件，需要进行解析
                         ParseOddDataXml(data);
                         RespOnSuccess(onSuccess, data);
                         return;
@@ -302,8 +317,155 @@ namespace Gambler.Module.HF
                 });
         }
 
-        private void ParseOddDataXml(string data)
+        private void ParseOddDataXml(string htmlContent)
         {
+            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+            HtmlAgilityPack.HtmlNode node = htmlDoc.DocumentNode
+                .SelectSingleNode("//tr[@class='GridHeaderRun']").ParentNode;
+            HtmlAgilityPack.HtmlNodeCollection nodes = node.ChildNodes;
+
+            List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
+            string newsetLeague = "";
+            int count = nodes.Count;
+            string clsValue;
+            HtmlAttribute atrrs;
+            for (int i = 0; i < count; i++)
+            {
+                node = nodes[i];
+                atrrs = node.Attributes["class"];
+                if (atrrs != null)
+                {
+                    clsValue = atrrs.Value;
+                    if (!String.IsNullOrEmpty(clsValue))
+                    {
+                        switch (clsValue)
+                        {
+                            case "GridRunItem":
+                                // 该节点可能是联赛名节点，进行判别 < tr class="GridRunItem" />
+                                if (node.ChildNodes.Count > 1)
+                                {
+                                    //有两个子节点，判断为赛事节点（多个<td /> 节点）
+                                    matchs.Add(ExtractMatchFromNode(node, newsetLeague));
+                                }
+                                else
+                                {
+                                    newsetLeague = node.FirstChild.InnerText;
+                                }
+                                break;
+                            case "GridAltRunItem":
+                                // 该节点为赛事节点<tr class="GridAltRunItem" />
+                                matchs.Add(ExtractMatchFromNode(node, newsetLeague));
+                                break;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < matchs.Count; i++)
+            {
+                HFSimpleMatch tmpMatch = matchs[i];
+                Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
+                    tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
+            }
         }
+
+        private HFSimpleMatch ExtractMatchFromNode(HtmlNode node, string league)
+        {
+            HFSimpleMatch match = new HFSimpleMatch();
+            match.League = league;
+            HtmlNodeCollection list = node.ChildNodes;
+            HtmlNodeCollection tmpList = list[0].ChildNodes;
+            match.Score = tmpList[0].InnerText;
+            match.Time = tmpList[1].InnerText;
+            tmpList = list[1].FirstChild.FirstChild.ChildNodes;
+            HtmlNodeCollection tmpList2 = tmpList[1].FirstChild.ChildNodes;
+            match.Home = tmpList2[0].InnerText;
+            match.Away = tmpList2[1].InnerText;
+            match.MID = FindMatchPattern(tmpList[1].ParentNode.InnerHtml, @"LiveCast.aspx\?Id=(\d+)?");
+            return match;
+        }
+
+        //         private void ParseOddDataXml(string htmlContent)
+        //         {
+        //             List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
+        //             string newsetLeague = "";
+        //             
+        //             Lexer lexer = new Lexer(htmlContent);
+        // 
+        //             Parser parser = new Parser(lexer);
+        //             NodeFilter filter = new HasAttributeFilter("class", "GridHeaderRun");
+        //             NodeList nodes = parser.Parse(filter);
+        //             if (nodes.Count > 0)
+        //             {
+        //                 nodes = nodes[0].Parent.Children;
+        //             }
+        // 
+        //             ITag tmpTag;
+        //             string clsValue;
+        //             HFSimpleMatch tmpMatch;
+        //             for (int i = 0; i < nodes.Count; i++)
+        //             {
+        //                 tmpTag = nodes[i] as ITag;
+        //                 clsValue = tmpTag.GetAttribute("class");
+        //                 if (clsValue != null)
+        //                 {
+        //                     switch (clsValue)
+        //                     {
+        //                         case "GridRunItem":
+        //                              该节点可能是联赛名节点，进行判别 <tr class="GridRunItem" />
+        //                             if (tmpTag.Children.Count > 1)
+        //                             {
+        //                                  有两个子节点，判断为赛事节点（多个 <td /> 节点）
+        //                                 tmpMatch = ExtractMatchFromNode(tmpTag, newsetLeague);
+        //                                 matchs.Add(tmpMatch);
+        //                             } else
+        //                             {
+        //                                 newsetLeague = tmpTag.FirstChild.FirstChild.FirstChild.FirstChild.Children[2].FirstChild.GetText();
+        //                             }
+        //                             break;
+        //                         case "GridAltRunItem":
+        //                              该节点为赛事节点 <tr class="GridAltRunItem" />
+        //                             tmpMatch = ExtractMatchFromNode(tmpTag, newsetLeague);
+        //                             matchs.Add(tmpMatch);
+        //                             break;
+        //                     }
+        //                 }
+        //             }
+        // 
+        //             for (int i = 0; i < matchs.Count; i++)
+        //             {
+        //                 tmpMatch = matchs[i];
+        //                 Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
+        //                     tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
+        //             }
+        //         }
+        // 
+        //         private HFSimpleMatch ExtractMatchFromNode(ITag tmpTag, string league)
+        //         {
+        //             HFSimpleMatch match = new HFSimpleMatch();
+        //             match.League = league;
+        //             NodeList list = tmpTag.Children;
+        //             NodeList tmpList = list[0].Children;
+        //             match.Score = tmpList[0].GetText();
+        //             match.Time = tmpList[1].FirstChild.GetText();
+        //             tmpList = list[1].FirstChild.FirstChild.FirstChild.Children;
+        //             NodeList tmpList2 = tmpList[1].FirstChild.FirstChild.Children;
+        //             match.Home = tmpList2[0].FirstChild.FirstChild.GetText();
+        //             match.Away = tmpList2[1].FirstChild.FirstChild.GetText();
+        //             match.MID = FindMatchPattern(tmpList[2].ToString(), @"LiveCast.aspx\?Id=(\d+)?");
+        //             return match;
+        //         }
+
+        private string FindMatchPattern(string source, string pattern)
+        {
+            Regex regex = new Regex(pattern);
+            Match mc = regex.Match(source);
+            // 查找不到通常说明没有该直播Live标签，则ID为空
+            if (mc.Success)
+                return mc.Groups[1].Value;
+            return "";
+        }
+        
     }
 }

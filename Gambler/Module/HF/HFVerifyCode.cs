@@ -11,8 +11,10 @@ namespace Gambler.Module.HF
 {
     public class HFVerifyCode : AbsVerifyCode
     {
+        
         public HFVerifyCode(string trainDataPath) : base(trainDataPath)
         {
+            VAL_DIFF_COLOR = 450;
         }
     }
 }

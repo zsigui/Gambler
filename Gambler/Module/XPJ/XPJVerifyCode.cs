@@ -11,6 +11,7 @@ namespace Gambler.XPJ
 {
     public class XPJVerifyCode : AbsVerifyCode
     {
+
         public XPJVerifyCode(string trainDataPath) : base(trainDataPath)
         {
         }

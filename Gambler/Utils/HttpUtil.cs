@@ -62,10 +62,10 @@ namespace Gambler.Utils
         private static void WriteOutputData(ref Dictionary<string, string> bodyDict, string jsonBody, HttpWebRequest request)
         {
             byte[] data = null;
+            request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
             if (bodyDict != null && bodyDict.Count > 0)
             {
                 data = Encoding.UTF8.GetBytes(ConcatBodyData(bodyDict));
-                request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
             }
             else if (jsonBody != null && jsonBody != "")
             {
@@ -78,6 +78,10 @@ namespace Gambler.Utils
                 {
                     stream.Write(data, 0, data.Length);
                 }
+            }
+            else
+            {
+                request.ContentLength = 0;
             }
         }
 
@@ -107,7 +111,7 @@ namespace Gambler.Utils
             {
                 request.Proxy = proxy;
             }
-            if (request.Headers != null)
+            if (headers != null)
             {
                 request.Headers = headers;
             }

@@ -9,7 +9,7 @@ namespace Gambler.Utils.Interface
     public class AbsVerifyCode : IVerifyCode
     {
         // 二值化的判断阈值
-        private static readonly int VAL_DIFF_COLOR = 650;
+        protected int VAL_DIFF_COLOR = 650;
         private static readonly int RGB_WHITE = -1;
         private static readonly int RGB_BLACK = -16777216;
         private static readonly string DEFAULT_TRAIN_DIR_NAME = "trainData";
@@ -113,7 +113,7 @@ namespace Gambler.Utils.Interface
             return color.R + color.B + color.G < VAL_DIFF_COLOR;
         }
 
-        private List<Bitmap> SpiltImage(Bitmap srcImg, string filename)
+        private List<Bitmap> SpiltImage(Bitmap srcImg)
         {
             List<Bitmap> subImgs = new List<Bitmap>();
             int maxWidth = 18;
@@ -276,13 +276,12 @@ namespace Gambler.Utils.Interface
         public string ParseCode(byte[] imgBytes)
         {
             Bitmap validBmp = ImageUtil.BytesToBitmap(imgBytes);
-            string name = new Random().Next().ToString();
             // 二值化处理
             validBmp = Binarization(validBmp);
             // 消除噪声点
             validBmp = RemoveNoise(validBmp);
             // 进行图形切割
-            List<Bitmap> bmpList = SpiltImage(validBmp, name);
+            List<Bitmap> bmpList = SpiltImage(validBmp);
             Dictionary<Bitmap, char> dict = LoadTrainData(this._trainDataPath);
             StringBuilder builder = new StringBuilder("");
             foreach (Bitmap bmp in bmpList)
@@ -298,5 +297,81 @@ namespace Gambler.Utils.Interface
                 return "";
             return result;
         }
+
+        public void TrainData(string trainPath, string outputPath)
+        {
+            if (!Directory.Exists(trainPath))
+            {
+                Console.WriteLine("找不到文件夹: " + trainPath);
+                return;
+            }
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+
+            Bitmap tmpBmp;
+            List<Bitmap> subImgs;
+            int index = 0;
+            foreach (string fImg in FileUtil.ReadFromPath(trainPath, new string[] { ".jpg", ".jpeg", ".png" }))
+            {
+                tmpBmp = Binarization(ImageUtil.Read(fImg));
+                subImgs = SpiltImage(tmpBmp);
+                tmpBmp.Dispose();
+                for (int j = 0; j < subImgs.Count; j++)
+                {
+                    tmpBmp = subImgs[j];
+                    if (tmpBmp != null)
+                        ImageUtil.Write(tmpBmp, String.Format("{0}\\{1}-{2}.jpg", outputPath, Path.GetFileName(fImg).ToCharArray()[j], (index ++)));
+                }
+            }
+
+        }
+
+        //         protected Dictionary<string, string> ConstructKeyValDict(params string[] data)
+        //         {
+        //             Dictionary<string, string> dict = new Dictionary<string, string>();
+        //             int len = data.Length - 1;
+        //             for (int i = 0; i < len; i += 2)
+        //             {
+        //                 dict.Add(data[i], data[i + 1]);
+        //             }
+        //             return dict;
+        //         }
+        //         private void DownloadHFValid()
+        //         {
+        //             ThreadUtil.RunOnThread(() =>
+        //             {
+        //                 Console.WriteLine("开始下载!");
+        //                 for (int i = 0; i < 30; i++)
+        //                 {
+        //                     Dictionary<string, string> queryDict = ConstructKeyValDict("s", "" + new Random().NextDouble());
+        // 
+        //                     HttpUtil.Get<byte[]>(HFConfig.URL_VERICODE, null, null, queryDict,
+        //                        (data) =>
+        //                        {
+        //                            return IOUtil.Read(data);
+        //                        },
+        //                        (statusCode, data, cookies) =>
+        //                        {
+        //                        if (HttpUtil.IsCodeSucc(statusCode) && data != null)
+        //                        {
+        //                            string dir = Application.StartupPath + "\\Resources\\Download";
+        //                            if (!Directory.Exists(dir))
+        //                                Directory.CreateDirectory(dir);
+        // 
+        //                            using (FileStream fs = File.OpenWrite(dir + "\\" + i + ".jpg"))
+        //                            {
+        //                                fs.Write(data, 0, data.Length);
+        //                                fs.Flush();
+        //                            }
+        //                            Console.WriteLine(i + "的验证码：" + vedo.ParseCode(data));
+        //                                Console.WriteLine(i + " Finished!");
+        //                            }
+        // 
+        //                        }, null);
+        //                 }
+        //             });
+        //         }
     }
 }

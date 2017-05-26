@@ -24,17 +24,22 @@ namespace Gambler.Utils
         // 摘要：
         //     从指定的文件路径中读取文件，如果该路径下文件不存在或者不可读，返回 null。
         // 
-        public static string ReadContentFromFilePath(string path)
+        public static string ReadContentFromFilePath(string path, Encoding encoding)
         {
             if (path == null || path == "")
                 return null;
 
             if (File.Exists(path))
             {
-                return File.ReadAllText(path);
+                return File.ReadAllText(path, encoding);
             }
 
             return null;
+        }
+
+        public static string ReadContentFromFilePath(string path)
+        {
+            return ReadContentFromFilePath(path, Encoding.UTF8);
         }
 
         public static bool WriteContentToFilePath(string path, string content)
@@ -42,7 +47,7 @@ namespace Gambler.Utils
             if (path == null || path == "")
                 return false;
 
-            File.WriteAllText(path, content);
+            File.WriteAllText(path, content, Encoding.UTF8);
             return true;
         }
     }

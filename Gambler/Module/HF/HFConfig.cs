@@ -32,6 +32,7 @@ namespace Gambler.Module.HF
          * 
          */
         public static readonly string URL_LOGIN = URL_HOST_ACTION + "login";
+        public static readonly string URL_LOGIN_H8 = URL_HOST_NAME + "/php/login.php";
         /**
          * 请求退出登录 <br />
          * POST : username、oid 
@@ -50,22 +51,65 @@ namespace Gambler.Module.HF
          * lottoType : 登录代理，移动设备PM，计算机PC
          */
         public static readonly string URL_H8_HOST = "http://sp4ywqb1.mywinday.com/";
-        /**
+        /*
          * H8 游戏数据
+         *
          * 
          * URL参数: ov=0&ot=t&tf=-1&TFStatus=0&update=false&r=2105276540&mt=0&wd=&t=1495619773291
          * 
+         * GET参数说明： 
+         * ot 取值 e（早盘） r（滚球） t（今日）
+         * ov 取值 0（热门排序） 1（时间排序）
+         * mt 取值 0（全部盘口） 1（主要盘口）
          * POST
          * 
          * COOKIE : ASP.NET_SessionId=ycpvbs55lxxo1i45hwslm1qu;(固定值，不添加会变成英文)、.ASPXAUTH（其实没什么作用）、a=1、td_cookide(非必须)
+         *
+         * 实际请求链接： URL_H8_HOST + "_view/OddsXGenRun.aspx"
+         * X 取值 2 亚盘&大小   3   4 混合   5 全场/上半场 单/双 & 1X2   DC 双重机会
          */
-        public static readonly string URL_ODD_DATA = URL_H8_HOST + "_view/Odds2GenRun.aspx";
 
+        /// <summary>
+        /// 亚盘&大小
+        /// </summary>
+        public static readonly string URL_ODD_DATA_BS = URL_H8_HOST + "_view/Odds2GenRun.aspx";
+        /// <summary>
+        /// 混合
+        /// </summary>
+        public static readonly string URL_ODD_DATA_MIX = URL_H8_HOST + "_view/Odds4Gen.aspx";
+        /// <summary>
+        /// 全场/上半场 单/双 & 1X2
+        /// </summary>
+        public static readonly string URL_ODD_DATA_OU = URL_H8_HOST + "_view/Odds5GenRun.aspx";
+        /// <summary>
+        /// 全场/上半场 波胆
+        /// </summary>
+        public static readonly string URL_ODD_DATA_CS = URL_H8_HOST + "_view/CSOdds1GenRun.aspx";
+        /// <summary>
+        /// 全场/半场
+        /// </summary>
+        public static readonly string URL_ODD_DATA_M = URL_H8_HOST + "_view/HTFTOdds1Gen.aspx";
+        /// <summary>
+        /// 全场/上半场 总入球
+        /// </summary>
+        public static readonly string URL_ODD_DATA_TG = URL_H8_HOST + "_view/TGOdds1GenRun.aspx";
+        /// <summary>
+        /// 全场/上半场 最先得分/最后得分
+        /// </summary>
+        public static readonly string URL_ODD_DATA_FGLG = URL_H8_HOST + "_view/FGLGOdds1Gen.aspx";
+        /// <summary>
+        /// 冠军
+        /// </summary>
+        public static readonly string URL_ODD_DATA_CPN = URL_H8_HOST + "_view/Odds50Gen.aspx";
         /**
          * 直播跳转，不过实际无作用
          */
         public static readonly string URL_LIVE_CAST = URL_H8_HOST + "_view/LiveCast.aspx?Id=824432&SocOddsId=7182293&isShowLiveCast=1";
 
+        /**
+         * 获取联赛数据
+         */
+        public static readonly string URL_LEAGUE_DATA = URL_H8_HOST + "_View/SelectLeague.aspx ";
         /**
          * referer: https://realtime.inplay.club/livecenter/match.html?k=b8477a2902424b02a22e4a93d5338d98&us=3r88kaokkyyzz&l=CN
          * 
