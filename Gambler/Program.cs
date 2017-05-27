@@ -1,4 +1,5 @@
-﻿using Gambler.Utils;
+﻿using Gambler.UI;
+using Gambler.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ namespace Gambler
             //LogUtil.Initial();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new FormAddUser());
         }
     }
 }

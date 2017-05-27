@@ -77,6 +77,13 @@
     <Compile Include="Module\HF\Model\HFUser.cs" />
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
+    <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
+    <Compile Include="UI\FormAddUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormAddUser.Designer.cs">
+      <DependentUpon>FormAddUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
     <Compile Include="Utils\Interface\IRespCallback.cs" />
     <Compile Include="Utils\IOUtil.cs" />
@@ -96,11 +103,11 @@
     <Compile Include="Module\XPJ\Model\RespOdd.cs" />
     <Compile Include="Module\XPJ\Model\OddItem.cs" />
     <Compile Include="Module\XPJ\Model\RespUser.cs" />
-    <Compile Include="UI\Form\Form1.cs">
+    <Compile Include="UI\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Form\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="UI\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -119,8 +126,11 @@
     <Compile Include="Module\XPJ\XPJErrorMsg.cs" />
     <Compile Include="Module\XPJ\XPJRatioHelper.cs" />
     <Compile Include="Module\XPJ\XPJVerifyCode.cs" />
-    <EmbeddedResource Include="UI\Form\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="UI\FormAddUser.resx">
+      <DependentUpon>FormAddUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

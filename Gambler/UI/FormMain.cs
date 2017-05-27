@@ -4,28 +4,22 @@ using Gambler.Utils;
 using Gambler.XPJ;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gambler
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
         HFVerifyCode vedo;
-        public Form1()
+        public FormMain()
         {
             InitializeComponent();
             //vedo = new HFVerifyCode(Application.StartupPath + "\\Resources\\HF_trainData");
             //DownloadHFValid();
             //Test();
-            TestHF();
+            //TestHF();
             //new HFVerifyCode("").TrainData(Application.StartupPath + "\\Resources\\Train", Application.StartupPath + "\\Resources\\HF_trainData");
 
         }
@@ -105,8 +99,27 @@ namespace Gambler
                                                       client.GetSpecLiveEvent(entry.Key,
                                                           (eventData) =>
                                                           {
-                                                              Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，下一事件ID：{4}",
-                                                                  m.League, m.Home, m.Away, eventData.Info, eventData.EID));
+                                                              Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
+                                                                  m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
+                                                              HFLiveEventIdNote note = new HFLiveEventIdNote();
+                                                              if (eventData.CID.Equals(note.POSSIBLE_PENALTY))
+                                                              {
+                                                                  MessageBox.Show(String.Format("可能点球！", m.Home));
+                                                              }
+                                                              else if (eventData.CID.Equals(note.PEN1))
+                                                              {
+                                                                  MessageBox.Show(String.Format("{0}（主队）点球！", m.Home));
+                                                              } else if (eventData.CID.Equals(note.PEN2))
+                                                              {
+                                                                  MessageBox.Show(String.Format("{0}（客队）点球！", m.Away));
+                                                              } else if (eventData.CID.Equals(note.CPEN1))
+                                                              {
+                                                                  MessageBox.Show(String.Format("{0}（主队）点球取消！", m.Home));
+                                                              }
+                                                              else if (eventData.CID.Equals(note.CPEN2))
+                                                              {
+                                                                  MessageBox.Show(String.Format("{0}（客队）点球取消！", m.Away));
+                                                              }
                                                           }, null, null);
                                                   }
                                               } else
@@ -203,6 +216,20 @@ namespace Gambler
                     });
 
             });
+        }
+
+        private void TSMI_File_Exit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void TSMI_User_Add_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("显示");
+        }
+
+        private void FormMain_KeyDown(object sender, KeyEventArgs e)
+        {
         }
     }
 }

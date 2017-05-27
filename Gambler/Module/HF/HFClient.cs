@@ -27,6 +27,7 @@ namespace Gambler.Module.HF
         private Dictionary<string, HFSimpleMatch> _liveMatchs;
         private Dictionary<string, int> _liveNewsetEventIds;
 
+        
         public Dictionary<string, HFSimpleMatch> LiveMatchs
         {
             get

@@ -23,7 +23,7 @@ namespace Gambler.Utils
             {
                 return requestUrl;
             }
-
+            
             StringBuilder builder = new StringBuilder(requestUrl);
             int index = requestUrl.IndexOf("?");
             if (index == -1)
