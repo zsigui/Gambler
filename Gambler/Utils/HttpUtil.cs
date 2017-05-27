@@ -111,17 +111,24 @@ namespace Gambler.Utils
             {
                 request.Proxy = proxy;
             }
+
             if (headers != null)
             {
                 request.Headers = headers;
             }
+            else if (request.Headers == null)
+            {
+                request.Headers = new WebHeaderCollection();
+            }
 
+
+            // 初始化Cookie防止返回接收不到Response.SetCookie
+            if (request.CookieContainer == null)
+            {
+                request.CookieContainer = new CookieContainer();
+            }
             if (cookies != null)
             {
-                if (request.CookieContainer == null)
-                {
-                    request.CookieContainer = new CookieContainer();
-                }
                 request.CookieContainer.Add(cookies);
             }
             request.Accept = "text/plain, */*; q=0.01";

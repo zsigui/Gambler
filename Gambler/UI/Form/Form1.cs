@@ -1,4 +1,5 @@
 ﻿using Gambler.Module.HF;
+using Gambler.Module.HF.Model;
 using Gambler.Utils;
 using Gambler.XPJ;
 using System;
@@ -9,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -73,6 +75,7 @@ namespace Gambler
             });
         }
 
+        private System.Threading.Timer _timer;
         public void TestHF()
         {
             ThreadUtil.RunOnThread(() =>
@@ -88,18 +91,41 @@ namespace Gambler
                               {
                                   Console.WriteLine("H8登录成功!");
                                   client.GetOddData(
-                                      (htmlData) =>
+                                      (matchData) =>
                                       {
-                                          Console.WriteLine("获取Odd数据!");
-
+                                          Console.WriteLine("OddData: 获取Odd数据!");
+                                          _timer = ThreadUtil.RunOnTimer((state) =>
+                                          {
+                                              Console.WriteLine("TimerCallback 执行中...");
+                                              if (client.LiveMatchs != null)
+                                              {
+                                                  foreach (KeyValuePair<string, HFSimpleMatch> entry in client.LiveMatchs)
+                                                  {
+                                                      HFSimpleMatch m = entry.Value;
+                                                      client.GetSpecLiveEvent(entry.Key,
+                                                          (eventData) =>
+                                                          {
+                                                              Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，下一事件ID：{4}",
+                                                                  m.League, m.Home, m.Away, eventData.Info, eventData.EID));
+                                                          }, null, null);
+                                                  }
+                                              } else
+                                              {
+                                                  Console.Write("当前直播列表为空");
+                                                  _timer.Change(Timeout.Infinite, 0);
+                                              }
+                                          },
+                                          null,
+                                          500,
+                                          1000);
                                       },
                                       (status, code, msg) =>
                                       {
-                                          Console.WriteLine("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
+                                          Console.WriteLine("OddData : Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
                                       },
                                       (e) =>
                                       {
-                                          Console.WriteLine(e.Message);
+                                          Console.WriteLine("OddData : " + e.Message);
                                       });
                               },
                               (status, code, msg) =>

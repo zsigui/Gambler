@@ -107,7 +107,7 @@ namespace Gambler.Module.HF
         public static readonly string URL_LIVE_CAST = URL_H8_HOST + "_view/LiveCast.aspx?Id=824432&SocOddsId=7182293&isShowLiveCast=1";
 
         /**
-         * 获取联赛数据
+         * 获取联赛数据，这个设置应该是绑定Cookie来的，需要解析HTML获取和设置，暂无必要
          */
         public static readonly string URL_LEAGUE_DATA = URL_H8_HOST + "_View/SelectLeague.aspx ";
         /**
@@ -139,7 +139,7 @@ namespace Gambler.Module.HF
          *  
          *
          */
-        public static readonly string URL_REAL_TIME = "https://realtime.inplay.club/livecenter/data.aspx?matchId=824432&_=1495676642812";
+        public static readonly string URL_REAL_TIME = "https://realtime.inplay.club/livecenter/data.aspx";
        
 
     }

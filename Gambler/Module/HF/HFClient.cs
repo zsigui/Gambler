@@ -18,10 +18,27 @@ namespace Gambler.Module.HF
         private HFUser _user;
         private CookieCollection _cookies;
         private WebHeaderCollection _headers;
-
+        // 进行验证码验证
         private HFVerifyCode _verifyCode = new HFVerifyCode(Application.StartupPath + "\\Resources\\HF_trainData");
 
+        // 存放体育H8频道的请求Cookie
         private CookieCollection _cookiesForH8;
+
+        private Dictionary<string, HFSimpleMatch> _liveMatchs;
+        private Dictionary<string, int> _liveNewsetEventIds;
+
+        public Dictionary<string, HFSimpleMatch> LiveMatchs
+        {
+            get
+            {
+                return _liveMatchs;
+            }
+
+            set
+            {
+                _liveMatchs = value;
+            }
+        }
 
         public HFClient(string account, string password)
         {
@@ -68,10 +85,32 @@ namespace Gambler.Module.HF
             }
         }
 
+        protected void RespOnFail(OnFailedHandler callback, int httpStatus)
+        {
+            if (callback != null)
+            {
+                if (!HttpUtil.IsCodeSucc(httpStatus))
+                {
+                    callback.Invoke(httpStatus, HFErrorMsg.I_C_BAD_HTTP_REQUEST, HFErrorMsg.C_BAD_HTTP_REQUEST);
+                }
+                else
+                {
+                    callback.Invoke(httpStatus, HFErrorMsg.I_C_BAD_RESP_DATA, HFErrorMsg.C_BAD_RESP_DATA);
+                }
+            }
+        }
+
 
         private Boolean IsSuccess<T>(int statusCode, HFRespBase<T> data)
         {
             return HttpUtil.IsCodeSucc(statusCode) && data != null && HFErrorMsg.IsSuccess(data.code);
+        }
+
+        private bool JudgeAndDoRetryLogin(int retryCount)
+        {
+            if (retryCount == 0)
+                return false;
+            return true;
         }
 
         public void Login(OnSuccessHandler<HFRespBase<HFUser>> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
@@ -91,7 +130,7 @@ namespace Gambler.Module.HF
                },
                (statusCode, data, cookies) =>
                {
-                   if (HttpUtil.IsCodeSucc(statusCode) && data != null)
+                   if (statusCode == 200 && data != null)
                    {
                        string vc = _verifyCode.ParseCode(data);
                        Console.WriteLine("验证码: " + vc);
@@ -105,8 +144,6 @@ namespace Gambler.Module.HF
                            }
 
                            Login(retryCount - 1, onSuccess, onFail, onError);
-
-                           // 重新进行验证码请求
                        }
                        else
                        {
@@ -115,11 +152,20 @@ namespace Gambler.Module.HF
                        }
                        return;
                    }
-
+                   if (retryCount != 0)
+                   {
+                       Login(retryCount - 1, onSuccess, onFail, onError);
+                       return;
+                   }
                    RespOnFail<HFUser>(onFail, statusCode, null);
                },
                (e) =>
                {
+                   if (retryCount != 0)
+                   {
+                       Login(retryCount - 1, onSuccess, onFail, onError);
+                       return;
+                   }
                    RespOnError(onError, e);
                });
         }
@@ -158,6 +204,11 @@ namespace Gambler.Module.HF
                },
                (e) =>
                {
+                   if (retryCount != 0)
+                   {
+                       Login(retryCount - 1, onSuccess, onFail, onError);
+                       return;
+                   }
                    Logout(null, null, null);
                    RespOnError(onError, e);
                });
@@ -230,7 +281,7 @@ namespace Gambler.Module.HF
                         LoginForH8Valid(data, onSuccess, onFail, onError);
                         return;
                     }
-                    RespOnFail<string>(onFail, statusCode, null);
+                    RespOnFail(onFail, statusCode);
                 }, 
                 (e) =>
                 {
@@ -266,7 +317,7 @@ namespace Gambler.Module.HF
                         RespOnSuccess(onSuccess, data);
                         return;
                     }
-                    RespOnFail<string>(onFail, statusCode, null);
+                    RespOnFail(onFail, statusCode);
                 },
                 (e) =>
                 {
@@ -277,7 +328,7 @@ namespace Gambler.Module.HF
         /**
          * 获取今日直播比赛的ID列表
          */
-        public void GetOddData(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        public void GetOddData(OnSuccessHandler<List<HFSimpleMatch>> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             // 实际不需要Cookie就可以直接请求= =
             InitDefaultH8Cookie();
@@ -291,11 +342,6 @@ namespace Gambler.Module.HF
                 "TFStatus", "0",
                 "update", "false",
                 "r", "1889011725");
-            //             string data = FileUtil.ReadContentFromFilePath(Application.StartupPath + "\\data.html", Encoding.GetEncoding("GBK"));
-            //              //执行成功会重定向操作
-            //              //返回的为 XML文件，需要进行解析
-            //             ParseOddDataXml(data);
-            //             RespOnSuccess(onSuccess, data);
             HttpUtil.Post(HFConfig.URL_ODD_DATA_BS, _headers, _cookiesForH8, queryDict, null,
                 (data) =>
                 {
@@ -305,11 +351,12 @@ namespace Gambler.Module.HF
                 {
                     if (HttpUtil.IsCodeSucc(statusCode) && !String.IsNullOrEmpty(data))
                     {
-                        ParseOddDataXml(data);
-                        RespOnSuccess(onSuccess, data);
+                        List<HFSimpleMatch> matchList = HFHtmlParser.ParseOddDataXml(data);
+                        ResetLiveMatch(matchList);
+                        RespOnSuccess(onSuccess, matchList);
                         return;
                     }
-                    RespOnFail<string>(onFail, statusCode, null);
+                    RespOnFail(onFail, statusCode);
                 },
                 (e) =>
                 {
@@ -317,155 +364,126 @@ namespace Gambler.Module.HF
                 });
         }
 
-        private void ParseOddDataXml(string htmlContent)
+        private void ResetLiveMatch(List<HFSimpleMatch> matchList)
         {
-            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
-            htmlDoc.LoadHtml(htmlContent);
-            HtmlAgilityPack.HtmlNode node = htmlDoc.DocumentNode
-                .SelectSingleNode("//tr[@class='GridHeaderRun']").ParentNode;
-            HtmlAgilityPack.HtmlNodeCollection nodes = node.ChildNodes;
+            if (LiveMatchs == null)
+                LiveMatchs = new Dictionary<string, HFSimpleMatch>();
 
-            List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
-            string newsetLeague = "";
-            int count = nodes.Count;
-            string clsValue;
-            HtmlAttribute atrrs;
-            for (int i = 0; i < count; i++)
+            LiveMatchs.Clear();
+
+            foreach (HFSimpleMatch m in matchList)
             {
-                node = nodes[i];
-                atrrs = node.Attributes["class"];
-                if (atrrs != null)
+                if (!String.IsNullOrEmpty(m.MID) && !LiveMatchs.ContainsKey(m.MID))
                 {
-                    clsValue = atrrs.Value;
-                    if (!String.IsNullOrEmpty(clsValue))
-                    {
-                        switch (clsValue)
-                        {
-                            case "GridRunItem":
-                                // 该节点可能是联赛名节点，进行判别 < tr class="GridRunItem" />
-                                if (node.ChildNodes.Count > 1)
-                                {
-                                    //有两个子节点，判断为赛事节点（多个<td /> 节点）
-                                    matchs.Add(ExtractMatchFromNode(node, newsetLeague));
-                                }
-                                else
-                                {
-                                    newsetLeague = node.FirstChild.InnerText;
-                                }
-                                break;
-                            case "GridAltRunItem":
-                                // 该节点为赛事节点<tr class="GridAltRunItem" />
-                                matchs.Add(ExtractMatchFromNode(node, newsetLeague));
-                                break;
-                        }
-                    }
+                    LiveMatchs.Add(m.MID, m);
                 }
             }
+        }
 
-            for (int i = 0; i < matchs.Count; i++)
+        private void AddMatchEventId(string matchId, int newsetEId)
+        {
+            if (LiveMatchs == null)
+                return;
+            if (_liveNewsetEventIds == null)
+                _liveNewsetEventIds = new Dictionary<string, int>();
+
+            if (LiveMatchs.ContainsKey(matchId))
             {
-                HFSimpleMatch tmpMatch = matchs[i];
-                Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
-                    tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
+                _liveNewsetEventIds.Remove(matchId);
+                _liveNewsetEventIds.Add(matchId, newsetEId);
             }
         }
 
-        private HFSimpleMatch ExtractMatchFromNode(HtmlNode node, string league)
+        public void GetAllLiveEvent(string matchId, OnSuccessHandler<List<HFLiveEvent>> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            HFSimpleMatch match = new HFSimpleMatch();
-            match.League = league;
-            HtmlNodeCollection list = node.ChildNodes;
-            HtmlNodeCollection tmpList = list[0].ChildNodes;
-            match.Score = tmpList[0].InnerText;
-            match.Time = tmpList[1].InnerText;
-            tmpList = list[1].FirstChild.FirstChild.ChildNodes;
-            HtmlNodeCollection tmpList2 = tmpList[1].FirstChild.ChildNodes;
-            match.Home = tmpList2[0].InnerText;
-            match.Away = tmpList2[1].InnerText;
-            match.MID = FindMatchPattern(tmpList[1].ParentNode.InnerHtml, @"LiveCast.aspx\?Id=(\d+)?");
-            return match;
+            Dictionary<string, string> queryDict = ConstructKeyValDict(
+                "matchId", matchId,
+                "_", TimeUtil.CurrentTimeMillis() + "");
+            HttpUtil.Get(HFConfig.URL_REAL_TIME, null, null, queryDict,
+                (data) =>
+                {
+                    return JsonUtil.fromJson<List<HFLiveEvent>>(IOUtil.ReadString(data));
+                },
+                (statusCode, data, cookies) =>
+                {
+                    if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.Count > 0)
+                    {
+                        AddMatchEventId(matchId, data[data.Count - 1].EID);
+                        RespOnSuccess(onSuccess, data);
+                        return;
+                    }
+                    RespOnFail(onFail, statusCode);
+                },
+                (e) =>
+                {
+                    RespOnError(onError, e);
+                });
         }
 
-        //         private void ParseOddDataXml(string htmlContent)
-        //         {
-        //             List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
-        //             string newsetLeague = "";
-        //             
-        //             Lexer lexer = new Lexer(htmlContent);
-        // 
-        //             Parser parser = new Parser(lexer);
-        //             NodeFilter filter = new HasAttributeFilter("class", "GridHeaderRun");
-        //             NodeList nodes = parser.Parse(filter);
-        //             if (nodes.Count > 0)
-        //             {
-        //                 nodes = nodes[0].Parent.Children;
-        //             }
-        // 
-        //             ITag tmpTag;
-        //             string clsValue;
-        //             HFSimpleMatch tmpMatch;
-        //             for (int i = 0; i < nodes.Count; i++)
-        //             {
-        //                 tmpTag = nodes[i] as ITag;
-        //                 clsValue = tmpTag.GetAttribute("class");
-        //                 if (clsValue != null)
-        //                 {
-        //                     switch (clsValue)
-        //                     {
-        //                         case "GridRunItem":
-        //                              该节点可能是联赛名节点，进行判别 <tr class="GridRunItem" />
-        //                             if (tmpTag.Children.Count > 1)
-        //                             {
-        //                                  有两个子节点，判断为赛事节点（多个 <td /> 节点）
-        //                                 tmpMatch = ExtractMatchFromNode(tmpTag, newsetLeague);
-        //                                 matchs.Add(tmpMatch);
-        //                             } else
-        //                             {
-        //                                 newsetLeague = tmpTag.FirstChild.FirstChild.FirstChild.FirstChild.Children[2].FirstChild.GetText();
-        //                             }
-        //                             break;
-        //                         case "GridAltRunItem":
-        //                              该节点为赛事节点 <tr class="GridAltRunItem" />
-        //                             tmpMatch = ExtractMatchFromNode(tmpTag, newsetLeague);
-        //                             matchs.Add(tmpMatch);
-        //                             break;
-        //                     }
-        //                 }
-        //             }
-        // 
-        //             for (int i = 0; i < matchs.Count; i++)
-        //             {
-        //                 tmpMatch = matchs[i];
-        //                 Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
-        //                     tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
-        //             }
-        //         }
-        // 
-        //         private HFSimpleMatch ExtractMatchFromNode(ITag tmpTag, string league)
-        //         {
-        //             HFSimpleMatch match = new HFSimpleMatch();
-        //             match.League = league;
-        //             NodeList list = tmpTag.Children;
-        //             NodeList tmpList = list[0].Children;
-        //             match.Score = tmpList[0].GetText();
-        //             match.Time = tmpList[1].FirstChild.GetText();
-        //             tmpList = list[1].FirstChild.FirstChild.FirstChild.Children;
-        //             NodeList tmpList2 = tmpList[1].FirstChild.FirstChild.Children;
-        //             match.Home = tmpList2[0].FirstChild.FirstChild.GetText();
-        //             match.Away = tmpList2[1].FirstChild.FirstChild.GetText();
-        //             match.MID = FindMatchPattern(tmpList[2].ToString(), @"LiveCast.aspx\?Id=(\d+)?");
-        //             return match;
-        //         }
-
-        private string FindMatchPattern(string source, string pattern)
+        public void GetSpecLiveEvent(string matchId, int startEventId,
+            OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            Regex regex = new Regex(pattern);
-            Match mc = regex.Match(source);
-            // 查找不到通常说明没有该直播Live标签，则ID为空
-            if (mc.Success)
-                return mc.Groups[1].Value;
-            return "";
+            Dictionary<string, string> queryDict = ConstructKeyValDict(
+                "matchId", matchId,
+                "startEventId", startEventId + "",
+                "endEventId", (startEventId + 20) + "",
+                "_", TimeUtil.CurrentTimeMillis() + "");
+            HttpUtil.Get(HFConfig.URL_REAL_TIME, null, null, queryDict,
+                (data) =>
+                {
+                    return JsonUtil.fromJson<List<HFLiveEvent>>(IOUtil.ReadString(data));
+                },
+                (statusCode, data, cookies) =>
+                {
+                    if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.Count > 0)
+                    {
+                        HFLiveEvent ev = data[0];
+                        AddMatchEventId(matchId, ev.EID);
+                        RespOnSuccess(onSuccess, ev);
+                        return;
+                    }
+                    RespOnFail(onFail, statusCode);
+                },
+                (e) =>
+                {
+                    RespOnError(onError, e);
+                });
         }
-        
+
+        public void GetSpecLiveEvent(string matchId, OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            int startId;
+            if (_liveNewsetEventIds != null && _liveNewsetEventIds.TryGetValue(matchId, out startId))
+            {
+                GetSpecLiveEvent(matchId, startId, onSuccess, onFail, onError);
+            }
+            else
+            {
+
+                Dictionary<string, string> queryDict = ConstructKeyValDict(
+                    "matchId", matchId,
+                    "_", TimeUtil.CurrentTimeMillis() + "");
+                HttpUtil.Get(HFConfig.URL_REAL_TIME, null, null, queryDict,
+                    (data) =>
+                    {
+                        return JsonUtil.fromJson<List<HFLiveEvent>>(IOUtil.ReadString(data));
+                    },
+                    (statusCode, data, cookies) =>
+                    {
+                        if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.Count > 0)
+                        {
+                            HFLiveEvent ev = data[data.Count - 1];
+                            AddMatchEventId(matchId, ev.EID);
+                            GetSpecLiveEvent(matchId, ev.EID, onSuccess, onFail, onError);
+                            return;
+                        }
+                        RespOnFail(onFail, statusCode);
+                    },
+                    (e) =>
+                    {
+                        RespOnError(onError, e);
+                    });
+            }
+        }
     }
 }
