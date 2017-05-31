@@ -24,6 +24,7 @@ namespace Gambler.Utils
         /// <param name="logContent">日志内容</param>
         public static void Write(string logContent)
         {
+            Console.WriteLine(logContent);
             LogThread.GetOrInit().Write(null, logContent, Log4NetLevel.Info, null);
         }
 
@@ -33,6 +34,7 @@ namespace Gambler.Utils
         /// <param name="e">抛出异常信息</param>
         public static void Write(Exception e)
         {
+            Console.WriteLine(e.Message);
             LogThread.GetOrInit().Write(null, null, Log4NetLevel.Info, e);
         }
 

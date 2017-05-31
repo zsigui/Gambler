@@ -20,7 +20,7 @@ namespace Gambler
             //LogUtil.Initial();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormAddUser());
+            Application.Run(new FormMain());
         }
     }
 }

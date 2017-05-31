@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\GlobalSetting.cs" />
     <Compile Include="Module\BaseClient.cs" />
     <Compile Include="Module\BaseError.cs" />
     <Compile Include="Module\HF\HFClient.cs" />
@@ -83,6 +84,12 @@
     </Compile>
     <Compile Include="UI\FormAddUser.Designer.cs">
       <DependentUpon>FormAddUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Widget\WidgetLeagues.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Widget\WidgetLeagues.Designer.cs">
+      <DependentUpon>WidgetLeagues.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
     <Compile Include="Utils\Interface\IRespCallback.cs" />
@@ -141,6 +148,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\Widget\WidgetLeagues.resx">
+      <DependentUpon>WidgetLeagues.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -158,7 +168,6 @@
   <ItemGroup>
     <Folder Include="Delegate\" />
     <Folder Include="Resources\" />
-    <Folder Include="UI\Widget\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
