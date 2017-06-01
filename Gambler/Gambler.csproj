@@ -79,11 +79,35 @@
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
     <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
+    <Compile Include="UI\DialogConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\DialogConfirm.Designer.cs">
+      <DependentUpon>DialogConfirm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\FormAddUser.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\FormAddUser.Designer.cs">
       <DependentUpon>FormAddUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FormAutoBetSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormAutoBetSetting.Designer.cs">
+      <DependentUpon>FormAutoBetSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FormInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormInfo.Designer.cs">
+      <DependentUpon>FormInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FormSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormSetting.Designer.cs">
+      <DependentUpon>FormSetting.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Widget\WidgetLeagues.cs">
       <SubType>UserControl</SubType>
@@ -133,8 +157,14 @@
     <Compile Include="Module\XPJ\XPJErrorMsg.cs" />
     <Compile Include="Module\XPJ\XPJRatioHelper.cs" />
     <Compile Include="Module\XPJ\XPJVerifyCode.cs" />
+    <EmbeddedResource Include="UI\DialogConfirm.resx">
+      <DependentUpon>DialogConfirm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\FormAddUser.resx">
       <DependentUpon>FormAddUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FormAutoBetSetting.resx">
+      <DependentUpon>FormAutoBetSetting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
@@ -148,6 +178,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\FormSetting.resx">
+      <DependentUpon>FormSetting.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Widget\WidgetLeagues.resx">
       <DependentUpon>WidgetLeagues.cs</DependentUpon>
     </EmbeddedResource>

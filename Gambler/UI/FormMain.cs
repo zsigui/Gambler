@@ -1,5 +1,7 @@
-﻿using Gambler.Module.HF;
+﻿using Gambler.Config;
+using Gambler.Module.HF;
 using Gambler.Module.HF.Model;
+using Gambler.UI;
 using Gambler.Utils;
 using Gambler.XPJ;
 using System;
@@ -21,6 +23,7 @@ namespace Gambler
             //Test();
             //TestHF();
             //new HFVerifyCode("").TrainData(Application.StartupPath + "\\Resources\\Train", Application.StartupPath + "\\Resources\\HF_trainData");
+            RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
 
         }
         protected Dictionary<string, string> ConstructKeyValDict(params string[] data)
@@ -230,6 +233,26 @@ namespace Gambler
 
         private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
+        }
+
+        private void TSMI_User_Remove_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TSMI_File_Setting_Click(object sender, EventArgs e)
+        {
+            FormSetting setting = new FormSetting();
+            if (setting.ShowDialog() == DialogResult.OK)
+            {
+                // 重置刷新
+                RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
+            }
+        }
+
+        private void RefreshTime(int t)
+        {
+            BTN_Refresh.Text = String.Format("刷新：{0}s", t);
         }
     }
 }

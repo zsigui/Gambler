@@ -22,7 +22,8 @@ namespace Gambler.Config
         }
 
         private static readonly string SETTING_PATH = System.Windows.Forms.Application.StartupPath + "//Config";
-        private readonly string IS_AUTO_LOGIN = "isAutoLogin";
+        private readonly string AUTO_REFRESH_TIME = "autoRefreshTime";
+        private readonly string IS_AUTO_SAVE = "isAutoSaveUser";
         private readonly string IS_AUTO_BET = "isAutoBet";
         private readonly string IS_SHOW_BET_DIALOG = "isShowBetDialog";
         private readonly string BET_TYPE = "betType";
@@ -55,6 +56,14 @@ namespace Gambler.Config
             if (_settings == null)
             {
                 _settings = new Dictionary<string, object>();
+                _settings.Add(AUTO_REFRESH_TIME, null);
+                _settings.Add(IS_AUTO_SAVE, null);
+                _settings.Add(IS_AUTO_BET, null);
+                _settings.Add(IS_SHOW_BET_DIALOG, null);
+                _settings.Add(BET_TYPE, null);
+                _settings.Add(BET_MONEY_LEAST, null);
+                _settings.Add(BET_MONEY_MOST, null);
+                _settings.Add(BET_METHOD, null);
             }
         }
 
@@ -77,18 +86,34 @@ namespace Gambler.Config
 
         #region 属性
         /// <summary>
-        /// 是否自动登录，默认自动登录
+        /// 直播赛事列表页面的自动刷新间隔时间（单位：秒），默认10
+        /// </summary>
+        public int AutoRefreshTime
+        {
+            get
+            {
+                object o = _settings[AUTO_REFRESH_TIME];
+                return o == null ? 10 : (int)o;
+            }
+            set
+            {
+                _settings[AUTO_REFRESH_TIME] = value;
+            }
+        }
+
+        /// <summary>
+        /// 是否自动保存添加用户，默认自动保存
         /// </summary>
         /// <returns></returns>
-        public bool IsAutoLogin
+        public bool IsAutoSaveUser
         {
             get {
-                object o = _settings[IS_AUTO_LOGIN];
+                object o = _settings[IS_AUTO_SAVE];
                 return o == null || (bool)o;
             }
             set
             {
-                _settings[IS_AUTO_LOGIN] = value;
+                _settings[IS_AUTO_SAVE] = value;
             }
         }
 
@@ -133,7 +158,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[BET_MONEY_MOST];
-                return o == null ? 0 : (int)o;
+                return o == null ? 50 : (int)o;
             }
             set
             {
@@ -149,7 +174,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[BET_MONEY_LEAST];
-                return o == null ? 0 : (int)o;
+                return o == null ? 50 : (int)o;
             }
             set
             {
@@ -164,6 +189,7 @@ namespace Gambler.Config
         {
             get
             {
+                
                 object o = _settings[BET_TYPE];
                 return o == null ? BetType.BigOrSmall : (BetType)o;
             }
