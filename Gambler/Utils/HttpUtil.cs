@@ -222,6 +222,13 @@ namespace Gambler.Utils
             RequestSync(requestUrl, Method.POST, headers, cookies, null, null, bodyDict, null, converData, onFinish, onError);
         }
 
+        public static void Post<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies, WebProxy proxy,
+            Dictionary<string, string> bodyDict, ConvertDataHandler<P> converData,
+            OnFinishHandler<P> onFinish, OnErrorHandler onError)
+        {
+            RequestSync(requestUrl, Method.POST, headers, cookies, proxy, null, bodyDict, null, converData, onFinish, onError);
+        }
+
         public static void Post<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies, Dictionary<string, string> queryDict,
             Dictionary<string, string> bodyDict, ConvertDataHandler<P> converData,
             OnFinishHandler<P> onFinish, OnErrorHandler onError)
@@ -229,11 +236,25 @@ namespace Gambler.Utils
             RequestSync(requestUrl, Method.POST, headers, cookies, null, queryDict, bodyDict, null, converData, onFinish, onError);
         }
 
+        public static void Post<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies, Dictionary<string, string> queryDict, WebProxy proxy,
+            Dictionary<string, string> bodyDict, ConvertDataHandler<P> converData,
+            OnFinishHandler<P> onFinish, OnErrorHandler onError)
+        {
+            RequestSync(requestUrl, Method.POST, headers, cookies, proxy, queryDict, bodyDict, null, converData, onFinish, onError);
+        }
+
         public static void Get<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies,
             Dictionary<string, string> queryDict, ConvertDataHandler<P> converData,
             OnFinishHandler<P> onFinish, OnErrorHandler onError)
         {
             RequestSync(requestUrl, Method.GET, headers, cookies, null, queryDict, null, null, converData, onFinish, onError);
+        }
+
+        public static void Get<P>(string requestUrl, WebHeaderCollection headers, CookieCollection cookies, WebProxy proxy,
+            Dictionary<string, string> queryDict, ConvertDataHandler<P> converData,
+            OnFinishHandler<P> onFinish, OnErrorHandler onError)
+        {
+            RequestSync(requestUrl, Method.GET, headers, cookies, proxy, queryDict, null, null, converData, onFinish, onError);
         }
 
         public static bool IsCodeSucc(int code)

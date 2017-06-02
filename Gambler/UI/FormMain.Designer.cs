@@ -29,6 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MS_Menu = new System.Windows.Forms.MenuStrip();
             this.TSMI_File = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Setting = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,8 +48,8 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.BTN_JumpBet = new System.Windows.Forms.Button();
-            this.TC_XPJUser = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.TC_User = new System.Windows.Forms.TabControl();
+            this.TP_XPJ = new System.Windows.Forms.TabPage();
             this.CLB_XPJUser = new System.Windows.Forms.CheckedListBox();
             this.CMS_User = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TSMI_UserAdd = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,6 +61,12 @@
             this.SS_Bottom = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
+            this.DGC_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Host = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Away = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Attention = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.MS_Menu.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -61,8 +74,8 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.TC_XPJUser.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.TC_User.SuspendLayout();
+            this.TP_XPJ.SuspendLayout();
             this.CMS_User.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).BeginInit();
@@ -174,7 +187,7 @@
             // 
             this.groupBox3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox3.Controls.Add(this.BTN_JumpBet);
-            this.groupBox3.Controls.Add(this.TC_XPJUser);
+            this.groupBox3.Controls.Add(this.TC_User);
             this.groupBox3.Location = new System.Drawing.Point(12, 8);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(309, 305);
@@ -192,26 +205,26 @@
             this.BTN_JumpBet.Text = "跳转对应下注界面";
             this.BTN_JumpBet.UseVisualStyleBackColor = true;
             // 
-            // TC_XPJUser
+            // TC_User
             // 
-            this.TC_XPJUser.Controls.Add(this.tabPage1);
-            this.TC_XPJUser.Location = new System.Drawing.Point(11, 22);
-            this.TC_XPJUser.Name = "TC_XPJUser";
-            this.TC_XPJUser.SelectedIndex = 0;
-            this.TC_XPJUser.Size = new System.Drawing.Size(285, 239);
-            this.TC_XPJUser.TabIndex = 2;
+            this.TC_User.Controls.Add(this.TP_XPJ);
+            this.TC_User.Location = new System.Drawing.Point(11, 22);
+            this.TC_User.Name = "TC_User";
+            this.TC_User.SelectedIndex = 0;
+            this.TC_User.Size = new System.Drawing.Size(285, 239);
+            this.TC_User.TabIndex = 0;
             // 
-            // tabPage1
+            // TP_XPJ
             // 
-            this.tabPage1.Controls.Add(this.CLB_XPJUser);
-            this.tabPage1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(277, 213);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "新葡京";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TP_XPJ.Controls.Add(this.CLB_XPJUser);
+            this.TP_XPJ.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TP_XPJ.Location = new System.Drawing.Point(4, 22);
+            this.TP_XPJ.Name = "TP_XPJ";
+            this.TP_XPJ.Padding = new System.Windows.Forms.Padding(3);
+            this.TP_XPJ.Size = new System.Drawing.Size(277, 213);
+            this.TP_XPJ.TabIndex = 0;
+            this.TP_XPJ.Text = "新葡京";
+            this.TP_XPJ.UseVisualStyleBackColor = true;
             // 
             // CLB_XPJUser
             // 
@@ -258,10 +271,40 @@
             // 
             // DGV_Live
             // 
+            this.DGV_Live.AllowUserToAddRows = false;
+            this.DGV_Live.AllowUserToDeleteRows = false;
+            this.DGV_Live.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DGV_Live.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Live.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.DGV_Live.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DGV_Live.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DGC_ID,
+            this.DGC_Time,
+            this.DGC_League,
+            this.DGC_Host,
+            this.DGC_Away,
+            this.DGC_Attention});
             this.DGV_Live.Location = new System.Drawing.Point(10, 49);
             this.DGV_Live.Name = "DGV_Live";
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Live.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            this.DGV_Live.RowHeadersVisible = false;
             this.DGV_Live.RowTemplate.Height = 23;
+            this.DGV_Live.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.DGV_Live.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Live.Size = new System.Drawing.Size(720, 245);
             this.DGV_Live.TabIndex = 1;
             // 
@@ -327,6 +370,59 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
+            // DGC_ID
+            // 
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.Format = "N0";
+            dataGridViewCellStyle9.NullValue = null;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_ID.DefaultCellStyle = dataGridViewCellStyle9;
+            this.DGC_ID.HeaderText = "ID";
+            this.DGC_ID.Name = "DGC_ID";
+            this.DGC_ID.ReadOnly = true;
+            // 
+            // DGC_Time
+            // 
+            this.DGC_Time.HeaderText = "时间";
+            this.DGC_Time.Name = "DGC_Time";
+            this.DGC_Time.ReadOnly = true;
+            // 
+            // DGC_League
+            // 
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle10;
+            this.DGC_League.HeaderText = "联赛";
+            this.DGC_League.Name = "DGC_League";
+            this.DGC_League.ReadOnly = true;
+            // 
+            // DGC_Host
+            // 
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle11;
+            this.DGC_Host.HeaderText = "主队";
+            this.DGC_Host.Name = "DGC_Host";
+            this.DGC_Host.ReadOnly = true;
+            // 
+            // DGC_Away
+            // 
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle12;
+            this.DGC_Away.HeaderText = "客队";
+            this.DGC_Away.Name = "DGC_Away";
+            this.DGC_Away.ReadOnly = true;
+            // 
+            // DGC_Attention
+            // 
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.NullValue = false;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle13;
+            this.DGC_Attention.HeaderText = "是否关注";
+            this.DGC_Attention.Name = "DGC_Attention";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -348,8 +444,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
-            this.TC_XPJUser.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.TC_User.ResumeLayout(false);
+            this.TP_XPJ.ResumeLayout(false);
             this.CMS_User.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).EndInit();
@@ -377,8 +473,8 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button BTN_JumpBet;
-        private System.Windows.Forms.TabControl TC_XPJUser;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabControl TC_User;
+        private System.Windows.Forms.TabPage TP_XPJ;
         private System.Windows.Forms.CheckedListBox CLB_XPJUser;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.DataGridView DGV_Live;
@@ -391,6 +487,12 @@
         private System.Windows.Forms.ToolStripMenuItem TSMI_UserAdd;
         private System.Windows.Forms.ToolStripMenuItem TSMI_UserRemove;
         private System.Windows.Forms.ToolStripMenuItem TSMI_User_Remove;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_League;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Host;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Away;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn DGC_Attention;
     }
 }
 

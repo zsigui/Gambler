@@ -295,9 +295,20 @@ namespace Gambler.Module.HF
             if (_cookiesForH8 == null)
             {
                 _cookiesForH8 = new CookieCollection();
-                // 英文为默认，50ikpw55hofypvu1m44ssh55 
-                _cookiesForH8.Add(new Cookie("ASP.NET_SessionId", "ycpvbs55lxxo1i45hwslm1qu", "/", "sp4ywqb1.mywinday.com"));
+                //_cookiesForH8.Add(new Cookie("ASP.NET_SessionId", "ycpvbs55lxxo1i45hwslm1qu", "/", "sp4ywqb1.mywinday.com"));
             }
+        }
+
+        /// <summary>
+        /// 直接添加H8 Cookie，然后就可以不用通过之前登录步骤的请求了
+        /// </summary>
+        /// <param name="sesseionId"></param>
+        /// <param name="auth"></param>
+        public void AddH8Cookie(string sesseionId, string auth)
+        {
+            InitDefaultH8Cookie();
+            _cookiesForH8.Add(new Cookie("ASP.NET_SessionId", sesseionId, "/", "sp4ywqb1.mywinday.com"));
+            _cookiesForH8.Add(new Cookie(".ASPXAUTH", auth, "/", "sp4ywqb1.mywinday.com"));
         }
 
         private void LoginForH8Valid(string url, OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)

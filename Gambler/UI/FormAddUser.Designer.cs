@@ -69,6 +69,7 @@
             this.TB_Password.Name = "TB_Password";
             this.TB_Password.Size = new System.Drawing.Size(220, 21);
             this.TB_Password.TabIndex = 3;
+            this.TB_Password.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormAddUser_KeyDown);
             this.TB_Password.Validating += new System.ComponentModel.CancelEventHandler(this.TB_Password_Validating);
             // 
             // label2
@@ -98,6 +99,7 @@
             this.TB_Account.Size = new System.Drawing.Size(220, 21);
             this.TB_Account.TabIndex = 0;
             this.TB_Account.WordWrap = false;
+            this.TB_Account.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TB_Account_KeyDown);
             this.TB_Account.Validating += new System.ComponentModel.CancelEventHandler(this.TB_Account_Validating);
             // 
             // groupBox2
@@ -213,6 +215,8 @@
             this.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "添加账户";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormAddUser_FormClosed);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormAddUser_KeyDown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

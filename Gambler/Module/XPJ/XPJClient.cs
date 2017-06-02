@@ -30,9 +30,18 @@ namespace Gambler.XPJ
         //
         private string _account;
         private string _password;
+        private WebProxy _proxy;
 
         private string _session;
         private string _jsessionId;
+
+        public WebProxy Proxy
+        {
+            set
+            {
+                _proxy = value;
+            }
+        }
 
         public XPJClient(string account, string password)
         {
@@ -98,7 +107,7 @@ namespace Gambler.XPJ
 
             Dictionary<string, string> queryDict = ConstructKeyValDict("timestamp", "" + TimeUtil.CurrentTimeMillis());
 
-            HttpUtil.Get<byte[]>(XPJConfig.URL_VERICODE, _headers, _cookies, queryDict,
+            HttpUtil.Get<byte[]>(XPJConfig.URL_VERICODE, _headers, _cookies, _proxy, queryDict,
                (data) =>
                {
                    return IOUtil.Read(data);
@@ -144,7 +153,7 @@ namespace Gambler.XPJ
                  "account", _account,
                  "password", _password,
                  "verifyCode", code);
-            HttpUtil.Post(XPJConfig.URL_LOGIN, _headers, _cookies, bodyDict,
+            HttpUtil.Post(XPJConfig.URL_LOGIN, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespLogin>(IOUtil.ReadString(data));
@@ -183,7 +192,7 @@ namespace Gambler.XPJ
 
         public void GetUserInfo(OnSuccessHandler<RespUser> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            HttpUtil.Post(XPJConfig.URL_USER_INFO, _headers, _cookies, null,
+            HttpUtil.Post(XPJConfig.URL_USER_INFO, _headers, _cookies, _proxy, null,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespUser>(IOUtil.ReadString(data));
@@ -209,7 +218,7 @@ namespace Gambler.XPJ
             OnSuccessHandler<RespLeague> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> bodyDict = ConstructKeyValDict("gameType", gameType);
-            HttpUtil.Post(XPJConfig.URL_SPORT_LEGUES, _headers, _cookies, bodyDict,
+            HttpUtil.Post(XPJConfig.URL_SPORT_LEGUES, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespLeague>(IOUtil.ReadString(data));
@@ -248,7 +257,7 @@ namespace Gambler.XPJ
             {
                 bodyDict.Add("showLegs", JsonUtil.toJson(leagues));
             }
-            HttpUtil.Post(XPJConfig.URL_ODD_DATA, _headers, _cookies, bodyDict,
+            HttpUtil.Post(XPJConfig.URL_ODD_DATA, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespData>(IOUtil.ReadString(data));
@@ -274,7 +283,7 @@ namespace Gambler.XPJ
             OnSuccessHandler<RespOdd> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> bodyDict = ConstructKeyValDict("data", JsonUtil.toJson(reqBetData));
-            HttpUtil.Post(XPJConfig.URL_GET_ODD, _headers, _cookies, bodyDict,
+            HttpUtil.Post(XPJConfig.URL_GET_ODD, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespOdd>(IOUtil.ReadString(data));
@@ -300,7 +309,7 @@ namespace Gambler.XPJ
             OnSuccessHandler<RespBet> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> bodyDict = ConstructKeyValDict("data", JsonUtil.toJson(reqBetData));
-            HttpUtil.Post(XPJConfig.URL_BET, _headers, _cookies, bodyDict,
+            HttpUtil.Post(XPJConfig.URL_BET, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     return JsonUtil.fromJson<RespBet>(IOUtil.ReadString(data));
