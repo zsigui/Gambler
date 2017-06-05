@@ -126,8 +126,7 @@ namespace Gambler.Utils.Interface
             bool isBlackInColume;
 
             int startX, startY, endX, endY, spiltIndex;
-
-            int k = 0;
+            
             while (true)
             {
                 startX = width;
@@ -210,7 +209,6 @@ namespace Gambler.Utils.Interface
             {
                 sTrainDict = new Dictionary<Bitmap, char>();
                 IEnumerable<string> paths = FileUtil.ReadFromPath(trainDir, new string[] { ".png", ".jpg", ".jpeg" });
-                string filename;
                 foreach (string path in paths)
                 {
                     sTrainDict.Add(ImageUtil.Read(path), Path.GetFileName(path).ToCharArray()[0]);

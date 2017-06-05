@@ -20,7 +20,8 @@ namespace Gambler
         public static readonly int TAB_XPJ = 0;
 
         private static FormMain sInstance;
-        public static FormMain GetInstance() {
+        public static FormMain GetInstance()
+        {
             if (sInstance == null)
             {
                 sInstance = new FormMain();
@@ -75,118 +76,301 @@ namespace Gambler
             InitializeComponent();
             RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
             OnStartInit();
-            //TestHF2();
         }
 
         #region 初始化
         private void OnStartInit()
         {
-            DataTable dt = new DataTable();
+            RefreshState(false, false);
+            DoInitAndLoginH8();
         }
 
-        private System.Threading.Timer _timer;
-        private HFClient client;
-        public void TestHF2()
+        private static readonly long DEFAULT_EMPTY_TIME_DIFF = 60000;
+        // 记录上一次获取到非空数据的时间
+        private long _lastGetDataTime;
+        // 自动刷新的倒计时
+        private int _autoRefreshCuountdown;
+        private System.Threading.Timer _liveTimer;
+        private System.Threading.Timer _h8DataTimer;
+        private HFClient _h8Client;
+        private HFLiveEventIdNote _eventIdInfo = new HFLiveEventIdNote();
+        // 选择关注的直播赛事列表
+        private List<string> _checkedLiveList = new List<string>(); 
+
+        private void UpdateDGVData(Dictionary<string, HFSimpleMatch> matchs)
+        {
+            ThreadUtil.WorkOnUI(
+                this,
+                new Action<Dictionary<string, HFSimpleMatch>>((data) => {
+
+                    DGV_Live.Rows.Clear();
+                    if (data == null || data.Count == 0)
+                    {
+                        _checkedLiveList.Clear();
+                    }
+                    else
+                    {
+                        _checkedLiveList.Clear();
+                        DataGridViewRow dr;
+                        foreach (HFSimpleMatch m in data.Values)
+                        {
+                            _checkedLiveList.Add(m.MID);
+                            dr = new DataGridViewRow();
+                            dr.CreateCells(DGV_Live);
+                            dr.Cells[0].Value = m.MID;
+                            dr.Cells[1].Value = String.Format("{0} / {1}", m.Score, m.Time);
+                            dr.Cells[2].Value = m.League;
+                            dr.Cells[3].Value = m.Home;
+                            dr.Cells[4].Value = m.Away;
+                            dr.Cells[5].Value = true;
+                            DGV_Live.Rows.Add(dr);
+                        }
+                    }
+                }),
+                matchs);
+            
+        }
+
+        private void DoGetLiveMatchAfterGetData(bool resetTimer)
+        {
+            if (_h8Client == null || !_h8Client.IsH8Login)
+            {
+                DoInitAndLoginH8();
+                return;
+            }
+            if (_liveTimer != null)
+            {
+                if (resetTimer)
+                {
+                    _liveTimer.Change(0, 1000);
+                }
+                return;
+            }
+            _liveTimer = ThreadUtil.RunOnTimer((state) =>
+            {
+                Console.WriteLine("TimerCallback 执行中...");
+                if (_h8Client.LiveMatchs != null)
+                {
+                    Dictionary<string, HFSimpleMatch> lives = new Dictionary<string, HFSimpleMatch>(_h8Client.LiveMatchs);
+                    foreach (KeyValuePair<string, HFSimpleMatch> entry in lives)
+                    {
+                        HFSimpleMatch m = entry.Value;
+                        _h8Client.GetSpecLiveEvent(entry.Key,
+                            (eventData) =>
+                            {
+                                Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
+                                    m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
+                                if (_checkedLiveList.Contains(eventData.MID.ToString()))
+                                {
+                                    DealWithTargetMatch(m, eventData.CID);
+                                }
+
+                            }, null, null);
+                    }
+                }
+                else
+                {
+                    Console.Write("当前直播列表为空，停止直播任务事件监听");
+                    _liveTimer.Change(Timeout.Infinite, 0);
+                }
+            },
+            null,
+            0,
+            1000);
+        }
+
+        private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】\n\n";
+        private void DealWithTargetMatch(HFSimpleMatch m, string cid)
+        {
+            ThreadUtil.WorkOnUI<object>(this, new Action(()=> {
+                if (_eventIdInfo.POSSIBLE_PENALTY.Equals(cid))
+                {
+                    // 可能点球
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "可能发生点球事件"));
+                }
+                else if (_eventIdInfo.PEN1.Equals(cid))
+                {
+                    // 主队点球
+                    MessageBox.Show(String.Format("【{0}】{1}(主队)-进行点球", m.League, m.Home),
+                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球事件"));
+                }
+                else if (_eventIdInfo.PEN2.Equals(cid))
+                {
+                    // 客队点球
+                    MessageBox.Show(String.Format("【{0}】{1}(客队)-进行点球", m.League, m.Away),
+                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球事件"));
+                }
+                else if (_eventIdInfo.PENALTY_MISS.Equals(cid)
+                    || _eventIdInfo.CPEN1.Equals(cid) || _eventIdInfo.CPEN2.Equals(cid))
+                {
+                    // 点球取消
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "点球取消事件"));
+                }
+                else if (_eventIdInfo.MPEN1.Equals(cid))
+                {
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球失误事件"));
+                }
+                else if (_eventIdInfo.MPEN2.Equals(cid))
+                {
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球失误事件"));
+                }
+                else if (_eventIdInfo.GOAL_PEN1.Equals(cid))
+                {
+                    // 主队点球得分
+                    MessageBox.Show(String.Format("【{0}】{1}(主队)-点球得分", m.League, m.Home),
+                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分事件"));
+                }
+                else if (_eventIdInfo.GOAL_PEN2.Equals(cid))
+                {
+                    // 客队点球得分
+                    MessageBox.Show(String.Format("【{0}】{1}(客队)-点球得分", m.League, m.Away),
+                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分事件"));
+                }
+                else if(_eventIdInfo.SAFE.Equals(cid) || _eventIdInfo.SAFE1.Equals(cid) || _eventIdInfo.SAFE2.Equals(cid))
+                {
+                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+                       m.Score, m.Time, m.League, m.Home, m.Away, "控球事件"));
+                }
+            }));
+        }
+
+        #region 获取Live数据方式1，需要回传获取中文数据的Cookie
+
+        private void DoGetLiveDataAfterInitAndLogin(bool resetTimer)
+        {
+            if (_h8Client == null || !_h8Client.IsH8Login)
+            {
+                DoInitAndLoginH8();
+                return;
+            }
+            if (_h8DataTimer != null)
+            {
+                if (resetTimer)
+                {
+                    // 重置定时器自动刷新时间s
+                    _autoRefreshCuountdown = 1;
+                    _h8DataTimer.Change(0, CB_IsAutoRefresh.Checked ? 1000 : Timeout.Infinite);
+                }
+                return;
+            }
+
+            _h8DataTimer = ThreadUtil.RunOnTimer(
+                (tobj) =>
+                {
+                    RefreshTime(--_autoRefreshCuountdown);
+                    if (_autoRefreshCuountdown > 0)
+                    {
+                        return;
+                    }
+                    _autoRefreshCuountdown = GlobalSetting.GetInstance().AutoRefreshTime;
+                    RefreshState(false, false);
+
+                    _h8Client.GetOddData(
+                        (matchData) =>
+                        {
+                            RefreshState(true, false);
+                            Console.WriteLine("OddData: 获取Odd数据!");
+                            /// matchData 表示这一轮获取到全部数据
+                            /// _h8Client.LiveMatchs 表示根据该数据解析到的 Live数据列表
+                            long curTime = TimeUtil.CurrentTimeMillis();
+                            if (matchData != null && matchData.Count > 0
+                                && _h8Client.LiveMatchs != null && _h8Client.LiveMatchs.Count > 0)
+                            {
+                                // 两边都有数据，说明此时实际获取到了，重新设置timer执行查找新的数据
+                                _lastGetDataTime = curTime;
+                                UpdateDGVData(_h8Client.LiveMatchs);
+                                DoGetLiveMatchAfterGetData(true);
+                            }
+                            else if (curTime - _lastGetDataTime > DEFAULT_EMPTY_TIME_DIFF)
+                            {
+                                // 更新空数据
+                                UpdateDGVData(null);
+                            }
+                            
+                        },
+                        (status, code, msg) =>
+                        {
+                            LogUtil.Write("OddData : Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
+                            RefreshState(true, false);
+                        },
+                        (e) =>
+                        {
+                            RefreshState(true, false);
+                            LogUtil.Write("OddData : " + e.Message);
+                        });
+                },
+                null,
+                0,
+                CB_IsAutoRefresh.Checked ? 1000 : Timeout.Infinite);
+
+        }
+
+        public void DoInitAndLoginH8T()
         {
             ThreadUtil.RunOnThread(() =>
             {
-                // 从服务器直接获取 h8 cookie，就可以不用登录了，每天cookie只会变动一次。
-                client = new HFClient(null, null);
-                client.AddH8Cookie("0xyb0lvxrnoisayogzbze0aa", 
-                    "1E1AC1D784637066274C2C59159D97559D38B66D391587DDD48E427901FE1B3C5455DF02802A811B5F1EF6329D3F2112577DCDB6D37372BB06012F83196D43B0BAF545F7F477CACDB007A8DA18F16E94223E3541FAC1C4F5C3C56D392D6922F88C6E4F23A85A400F5B186930C6A20C595BD011D69905BCBBF190FEFBAB6CA0821F341C40");
-                client.GetOddData(
-                                      (matchData) =>
-                                      {
-                                          Console.WriteLine("OddData: 获取Odd数据!");
-                                          _timer = ThreadUtil.RunOnTimer((state) =>
-                                          {
-                                              Console.WriteLine("TimerCallback 执行中...");
-                                              if (client.LiveMatchs != null)
-                                              {
-                                                  foreach (KeyValuePair<string, HFSimpleMatch> entry in client.LiveMatchs)
-                                                  {
-                                                      HFSimpleMatch m = entry.Value;
-                                                      client.GetSpecLiveEvent(entry.Key,
-                                                          (eventData) =>
-                                                          {
-                                                              Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
-                                                                  m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
-                                                              HFLiveEventIdNote note = new HFLiveEventIdNote();
-                                                              if (eventData.CID.Equals(note.POSSIBLE_PENALTY))
-                                                              {
-                                                                  MessageBox.Show(String.Format("可能点球！", m.Home));
-                                                              }
-                                                              else if (eventData.CID.Equals(note.PEN1))
-                                                              {
-                                                                  MessageBox.Show(String.Format("{0}（主队）点球！", m.Home));
-                                                              }
-                                                              else if (eventData.CID.Equals(note.PEN2))
-                                                              {
-                                                                  MessageBox.Show(String.Format("{0}（客队）点球！", m.Away));
-                                                              }
-                                                              else if (eventData.CID.Equals(note.CPEN1))
-                                                              {
-                                                                  MessageBox.Show(String.Format("{0}（主队）点球取消！", m.Home));
-                                                              }
-                                                              else if (eventData.CID.Equals(note.CPEN2))
-                                                              {
-                                                                  MessageBox.Show(String.Format("{0}（客队）点球取消！", m.Away));
-                                                              }
-                                                          }, null, null);
-                                                  }
-                                              }
-                                              else
-                                              {
-                                                  Console.Write("当前直播列表为空");
-                                                  _timer.Change(Timeout.Infinite, 0);
-                                              }
-                                          },
-                                          null,
-                                          500,
-                                          1000);
-                                      },
-                                      (status, code, msg) =>
-                                      {
-                                          Console.WriteLine("OddData : Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
-                                      },
-                                      (e) =>
-                                      {
-                                          Console.WriteLine("OddData : " + e.Message);
-                                      });
+                // 从服务器直接获取 h8 cookie，就可以不用登录了，每天cookie只会变动一次
+
+                _h8Client = new HFClient(null, null);
+                _h8Client.IsH8Login = true;
+                _h8Client.AddH8Cookie("gtmj1d45tp5gmu55mzdyjw45",
+                    "65323DF70346C454FA1EAAADD38FE805C7E5C71EECAB7101DC33C95C6310ADD6B7301B91579171E58FB274039112725F87EA60483028C3DBC06DCB56CBBB2FFB6E5A8F800C0D72E23F47B88E5BC85C09B3954154E3DD474F801F51285E23E1A91ABDE8A30AA6FDFDC6AE21E3DDB8E4255555609B3AAB445679F1432EB30E9C414964DC0B");
+                DoGetLiveDataAfterInitAndLogin(true);
             });
         }
+        #endregion
 
-        public void TestHF()
+        #region 获取Live数据方式2，需要登录账号
+        public void DoInitAndLoginH8()
         {
             ThreadUtil.RunOnThread(() =>
             {
 
                 Console.WriteLine("开始执行");
-                client = new HFClient("kaokkyyzz", "kaokkyyzz");
-                client.Login(
+                if (_h8Client == null)
+                {
+                    _h8Client = new HFClient("kaokkyyzz", "kaokkyyzz");
+                }
+                _h8Client.Login(
                     (data) =>
                       {
                           Console.WriteLine("登录成功!");
-                          client.LoginForH8((d) =>
+                          _h8Client.LoginForH8((d) =>
                               {
                                   Console.WriteLine("H8登录成功!");
-                                  
+                                  DoGetLiveDataAfterInitAndLogin(true);
                               },
                               (status, code, msg) =>
                               {
+                                  RefreshState(true, true);
                                   Console.WriteLine("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
                               },
                               (e) =>
                               {
+                                  RefreshState(true, true);
                                   Console.WriteLine(e.Message);
                               });
                       },
                       (status, code, msg) =>
                       {
+                          RefreshState(true, true);
                           Console.WriteLine("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
                       },
                       (e) =>
                       {
+                          RefreshState(true, true);
                           Console.WriteLine(e.Message);
                       });
 
@@ -194,6 +378,9 @@ namespace Gambler
         }
         #endregion
 
+        #endregion
+
+        #region 事件
         private void TSMI_File_Exit_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -236,9 +423,80 @@ namespace Gambler
             }
         }
 
+        private void TSMI_Live_CheckAll_Click(object sender, EventArgs e)
+        {
+            if (DGV_Live.Rows.Count == 0 || _h8Client == null
+                || _h8Client.LiveMatchs == null)
+                return;
+            if (_checkedLiveList != null && _checkedLiveList.Count == DGV_Live.Rows.Count)
+            {
+                foreach (DataGridViewRow r in DGV_Live.Rows)
+                {
+                    r.Cells[5].Value = false;
+                }
+                _checkedLiveList.Clear();
+            }
+            else
+            {
+                foreach (DataGridViewRow r in DGV_Live.Rows)
+                {
+                    r.Cells[5].Value = true;
+                }
+                _checkedLiveList.AddRange(_h8Client.LiveMatchs.Keys);
+            }
+        }
+
+        private void BTN_Refresh_Click(object sender, EventArgs e)
+        {
+            RefreshState(false, false);
+            DoGetLiveDataAfterInitAndLogin(true);
+        }
+        
+        private void CB_IsAutoRefresh_CheckedChanged(object sender, EventArgs e)
+        {
+            BTN_Refresh_Click(sender, e);
+        }
+        
+        private void BTN_JumpBet_Click(object sender, EventArgs e)
+        {
+            FormInfo.newInstance().Show();
+        }
+        #endregion
+
         private void RefreshTime(int t)
         {
-            BTN_Refresh.Text = String.Format("刷新：{0}s", t);
+            ThreadUtil.WorkOnUI(this, new Action<int>((time) =>
+            {
+                BTN_Refresh.Text = String.Format("刷新：{0}s", t);
+            }),
+            t);
         }
+
+        private void RefreshState(bool e, bool err)
+        {
+            ThreadUtil.WorkOnUI(this, new Action<bool, bool>((enabled, er) =>
+            {
+
+                BTN_Refresh.Enabled = enabled;
+                if (!enabled)
+                    BTN_Refresh.Text = "刷新中ing";
+                else
+                {
+                    if (er)
+                    {
+                        BTN_Refresh.Text = "出错，请手动刷新";
+                    } else if (CB_IsAutoRefresh.Checked)
+                    {
+                        BTN_Refresh.Text = String.Format("刷新：{0}s", _autoRefreshCuountdown);
+                    }
+                    else
+                    {
+                        BTN_Refresh.Text = "点击刷新";
+                    }
+                }
+            }),
+            e, err);
+        }
+
     }
 }

@@ -29,13 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MS_Menu = new System.Windows.Forms.MenuStrip();
             this.TSMI_File = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Setting = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +62,9 @@
             this.SS_Bottom = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
+            this.CMS_Live = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.TSMI_Live_CheckAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.CB_IsAutoRefresh = new System.Windows.Forms.CheckBox();
             this.DGC_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -84,6 +88,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SS_Bottom.SuspendLayout();
+            this.CMS_Live.SuspendLayout();
             this.SuspendLayout();
             // 
             // MS_Menu
@@ -204,6 +209,7 @@
             this.BTN_JumpBet.TabIndex = 3;
             this.BTN_JumpBet.Text = "跳转对应下注界面";
             this.BTN_JumpBet.UseVisualStyleBackColor = true;
+            this.BTN_JumpBet.Click += new System.EventHandler(this.BTN_JumpBet_Click);
             // 
             // TC_User
             // 
@@ -260,6 +266,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.CB_IsAutoRefresh);
             this.groupBox1.Controls.Add(this.DGV_Live);
             this.groupBox1.Controls.Add(this.BTN_Refresh);
             this.groupBox1.Location = new System.Drawing.Point(3, 8);
@@ -275,14 +282,14 @@
             this.DGV_Live.AllowUserToDeleteRows = false;
             this.DGV_Live.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.DGV_Live.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_Live.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Live.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DGV_Live.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV_Live.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGC_ID,
@@ -291,16 +298,17 @@
             this.DGC_Host,
             this.DGC_Away,
             this.DGC_Attention});
+            this.DGV_Live.ContextMenuStrip = this.CMS_Live;
             this.DGV_Live.Location = new System.Drawing.Point(10, 49);
             this.DGV_Live.Name = "DGV_Live";
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_Live.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Live.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.DGV_Live.RowHeadersVisible = false;
             this.DGV_Live.RowTemplate.Height = 23;
             this.DGV_Live.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -316,6 +324,7 @@
             this.BTN_Refresh.TabIndex = 0;
             this.BTN_Refresh.Text = "刷新：5s";
             this.BTN_Refresh.UseVisualStyleBackColor = true;
+            this.BTN_Refresh.Click += new System.EventHandler(this.BTN_Refresh_Click);
             // 
             // splitContainer1
             // 
@@ -370,56 +379,81 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
+            // CMS_Live
+            // 
+            this.CMS_Live.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSMI_Live_CheckAll});
+            this.CMS_Live.Name = "CMS_";
+            this.CMS_Live.Size = new System.Drawing.Size(153, 48);
+            // 
+            // TSMI_Live_CheckAll
+            // 
+            this.TSMI_Live_CheckAll.Name = "TSMI_Live_CheckAll";
+            this.TSMI_Live_CheckAll.Size = new System.Drawing.Size(152, 22);
+            this.TSMI_Live_CheckAll.Text = "全选/全不选";
+            this.TSMI_Live_CheckAll.Click += new System.EventHandler(this.TSMI_Live_CheckAll_Click);
+            // 
+            // CB_IsAutoRefresh
+            // 
+            this.CB_IsAutoRefresh.AutoSize = true;
+            this.CB_IsAutoRefresh.Checked = true;
+            this.CB_IsAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_IsAutoRefresh.Location = new System.Drawing.Point(535, 24);
+            this.CB_IsAutoRefresh.Name = "CB_IsAutoRefresh";
+            this.CB_IsAutoRefresh.Size = new System.Drawing.Size(96, 16);
+            this.CB_IsAutoRefresh.TabIndex = 2;
+            this.CB_IsAutoRefresh.Text = "是否自动刷新";
+            this.CB_IsAutoRefresh.UseVisualStyleBackColor = true;
+            this.CB_IsAutoRefresh.CheckedChanged += new System.EventHandler(this.CB_IsAutoRefresh_CheckedChanged);
+            // 
             // DGC_ID
             // 
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.Format = "N0";
-            dataGridViewCellStyle9.NullValue = null;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_ID.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.Format = "N0";
+            dataGridViewCellStyle2.NullValue = null;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_ID.DefaultCellStyle = dataGridViewCellStyle2;
             this.DGC_ID.HeaderText = "ID";
             this.DGC_ID.Name = "DGC_ID";
-            this.DGC_ID.ReadOnly = true;
             // 
             // DGC_Time
             // 
-            this.DGC_Time.HeaderText = "时间";
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DGC_Time.HeaderText = "比分 / 时间";
             this.DGC_Time.Name = "DGC_Time";
-            this.DGC_Time.ReadOnly = true;
             // 
             // DGC_League
             // 
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle4;
             this.DGC_League.HeaderText = "联赛";
             this.DGC_League.Name = "DGC_League";
-            this.DGC_League.ReadOnly = true;
             // 
             // DGC_Host
             // 
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle5;
             this.DGC_Host.HeaderText = "主队";
             this.DGC_Host.Name = "DGC_Host";
-            this.DGC_Host.ReadOnly = true;
             // 
             // DGC_Away
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle6;
             this.DGC_Away.HeaderText = "客队";
             this.DGC_Away.Name = "DGC_Away";
-            this.DGC_Away.ReadOnly = true;
             // 
             // DGC_Attention
             // 
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle13.NullValue = false;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.NullValue = false;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle7;
             this.DGC_Attention.HeaderText = "是否关注";
             this.DGC_Attention.Name = "DGC_Attention";
             // 
@@ -448,6 +482,7 @@
             this.TP_XPJ.ResumeLayout(false);
             this.CMS_User.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -455,6 +490,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.SS_Bottom.ResumeLayout(false);
             this.SS_Bottom.PerformLayout();
+            this.CMS_Live.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -487,6 +523,9 @@
         private System.Windows.Forms.ToolStripMenuItem TSMI_UserAdd;
         private System.Windows.Forms.ToolStripMenuItem TSMI_UserRemove;
         private System.Windows.Forms.ToolStripMenuItem TSMI_User_Remove;
+        private System.Windows.Forms.ContextMenuStrip CMS_Live;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Live_CheckAll;
+        private System.Windows.Forms.CheckBox CB_IsAutoRefresh;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Time;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_League;

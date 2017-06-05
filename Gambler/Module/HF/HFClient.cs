@@ -23,6 +23,7 @@ namespace Gambler.Module.HF
 
         // 存放体育H8频道的请求Cookie
         private CookieCollection _cookiesForH8;
+        private bool _isH8Login;
 
         private Dictionary<string, HFSimpleMatch> _liveMatchs;
         private Dictionary<string, int> _liveNewsetEventIds;
@@ -39,6 +40,11 @@ namespace Gambler.Module.HF
             {
                 _liveMatchs = value;
             }
+        }
+
+        public bool IsH8Login
+        {
+            get; set;
         }
 
         public HFClient(string account, string password)
@@ -326,6 +332,7 @@ namespace Gambler.Module.HF
                     {
                         InitDefaultH8Cookie();
                         _cookiesForH8.Add(cookies);
+                        IsH8Login = true;
                         RespOnSuccess(onSuccess, data);
                         return;
                     }

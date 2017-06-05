@@ -61,5 +61,58 @@ namespace Gambler.Utils
             timer.Change(dueTime, period);
             return timer;
         }
+
+
+        public static void WorkOnUI<T>(System.Windows.Forms.Control control, Delegate method, params T[] args)
+        {
+            if (control.IsDisposed)
+                return;
+            if (control.InvokeRequired)
+            {
+                if (args != null && args.Length > 0)
+                {
+                    switch (args.Length)
+                    {
+                        case 1:
+                            control.Invoke(method, args[0]);
+                            break;
+                        case 2:
+                            control.Invoke(method, args[0], args[1]);
+                            break;
+                        default:
+                            control.Invoke(method, args);
+                            break;
+
+                    }
+                }
+                else
+                {
+                    control.Invoke(method);
+                }
+            }
+            else
+            {
+                if (args != null && args.Length > 0)
+                {
+                    switch (args.Length)
+                    {
+                        case 1:
+                            method.DynamicInvoke(args[0]);
+                            break;
+                        case 2:
+                            method.DynamicInvoke(args[0], args[1]);
+                            break;
+                        default:
+                            method.DynamicInvoke(args);
+                            break;
+
+                    }
+                }
+                else
+                {
+                    method.DynamicInvoke();
+                }
+            }
+        }
     }
 }
