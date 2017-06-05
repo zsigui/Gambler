@@ -56,21 +56,21 @@
             this.TSMI_UserAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_UserRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.DGV_Live = new System.Windows.Forms.DataGridView();
-            this.BTN_Refresh = new System.Windows.Forms.Button();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.SS_Bottom = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
-            this.CMS_Live = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.TSMI_Live_CheckAll = new System.Windows.Forms.ToolStripMenuItem();
             this.CB_IsAutoRefresh = new System.Windows.Forms.CheckBox();
+            this.DGV_Live = new System.Windows.Forms.DataGridView();
             this.DGC_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Host = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Away = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Attention = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.CMS_Live = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.TSMI_Live_CheckAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.BTN_Refresh = new System.Windows.Forms.Button();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.SS_Bottom = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
             this.MS_Menu.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -83,12 +83,12 @@
             this.CMS_User.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).BeginInit();
+            this.CMS_Live.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SS_Bottom.SuspendLayout();
-            this.CMS_Live.SuspendLayout();
             this.SuspendLayout();
             // 
             // MS_Menu
@@ -241,6 +241,7 @@
             this.CLB_XPJUser.Name = "CLB_XPJUser";
             this.CLB_XPJUser.Size = new System.Drawing.Size(271, 207);
             this.CLB_XPJUser.TabIndex = 0;
+            this.CLB_XPJUser.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CLB_XPJUser_ItemCheck);
             // 
             // CMS_User
             // 
@@ -275,6 +276,19 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "直播列表（可获取）";
+            // 
+            // CB_IsAutoRefresh
+            // 
+            this.CB_IsAutoRefresh.AutoSize = true;
+            this.CB_IsAutoRefresh.Checked = true;
+            this.CB_IsAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_IsAutoRefresh.Location = new System.Drawing.Point(535, 24);
+            this.CB_IsAutoRefresh.Name = "CB_IsAutoRefresh";
+            this.CB_IsAutoRefresh.Size = new System.Drawing.Size(96, 16);
+            this.CB_IsAutoRefresh.TabIndex = 2;
+            this.CB_IsAutoRefresh.Text = "是否自动刷新";
+            this.CB_IsAutoRefresh.UseVisualStyleBackColor = true;
+            this.CB_IsAutoRefresh.CheckedChanged += new System.EventHandler(this.CB_IsAutoRefresh_CheckedChanged);
             // 
             // DGV_Live
             // 
@@ -315,6 +329,71 @@
             this.DGV_Live.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Live.Size = new System.Drawing.Size(720, 245);
             this.DGV_Live.TabIndex = 1;
+            // 
+            // DGC_ID
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.Format = "N0";
+            dataGridViewCellStyle2.NullValue = null;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_ID.DefaultCellStyle = dataGridViewCellStyle2;
+            this.DGC_ID.HeaderText = "ID";
+            this.DGC_ID.Name = "DGC_ID";
+            // 
+            // DGC_Time
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DGC_Time.HeaderText = "比分 / 时间";
+            this.DGC_Time.Name = "DGC_Time";
+            // 
+            // DGC_League
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle4;
+            this.DGC_League.HeaderText = "联赛";
+            this.DGC_League.Name = "DGC_League";
+            // 
+            // DGC_Host
+            // 
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle5;
+            this.DGC_Host.HeaderText = "主队";
+            this.DGC_Host.Name = "DGC_Host";
+            // 
+            // DGC_Away
+            // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle6;
+            this.DGC_Away.HeaderText = "客队";
+            this.DGC_Away.Name = "DGC_Away";
+            // 
+            // DGC_Attention
+            // 
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.NullValue = false;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle7;
+            this.DGC_Attention.HeaderText = "是否关注";
+            this.DGC_Attention.Name = "DGC_Attention";
+            // 
+            // CMS_Live
+            // 
+            this.CMS_Live.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSMI_Live_CheckAll});
+            this.CMS_Live.Name = "CMS_";
+            this.CMS_Live.Size = new System.Drawing.Size(142, 26);
+            // 
+            // TSMI_Live_CheckAll
+            // 
+            this.TSMI_Live_CheckAll.Name = "TSMI_Live_CheckAll";
+            this.TSMI_Live_CheckAll.Size = new System.Drawing.Size(141, 22);
+            this.TSMI_Live_CheckAll.Text = "全选/全不选";
+            this.TSMI_Live_CheckAll.Click += new System.EventHandler(this.TSMI_Live_CheckAll_Click);
             // 
             // BTN_Refresh
             // 
@@ -379,84 +458,6 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
-            // CMS_Live
-            // 
-            this.CMS_Live.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSMI_Live_CheckAll});
-            this.CMS_Live.Name = "CMS_";
-            this.CMS_Live.Size = new System.Drawing.Size(153, 48);
-            // 
-            // TSMI_Live_CheckAll
-            // 
-            this.TSMI_Live_CheckAll.Name = "TSMI_Live_CheckAll";
-            this.TSMI_Live_CheckAll.Size = new System.Drawing.Size(152, 22);
-            this.TSMI_Live_CheckAll.Text = "全选/全不选";
-            this.TSMI_Live_CheckAll.Click += new System.EventHandler(this.TSMI_Live_CheckAll_Click);
-            // 
-            // CB_IsAutoRefresh
-            // 
-            this.CB_IsAutoRefresh.AutoSize = true;
-            this.CB_IsAutoRefresh.Checked = true;
-            this.CB_IsAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_IsAutoRefresh.Location = new System.Drawing.Point(535, 24);
-            this.CB_IsAutoRefresh.Name = "CB_IsAutoRefresh";
-            this.CB_IsAutoRefresh.Size = new System.Drawing.Size(96, 16);
-            this.CB_IsAutoRefresh.TabIndex = 2;
-            this.CB_IsAutoRefresh.Text = "是否自动刷新";
-            this.CB_IsAutoRefresh.UseVisualStyleBackColor = true;
-            this.CB_IsAutoRefresh.CheckedChanged += new System.EventHandler(this.CB_IsAutoRefresh_CheckedChanged);
-            // 
-            // DGC_ID
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.Format = "N0";
-            dataGridViewCellStyle2.NullValue = null;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_ID.DefaultCellStyle = dataGridViewCellStyle2;
-            this.DGC_ID.HeaderText = "ID";
-            this.DGC_ID.Name = "DGC_ID";
-            // 
-            // DGC_Time
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DGC_Time.HeaderText = "比分 / 时间";
-            this.DGC_Time.Name = "DGC_Time";
-            // 
-            // DGC_League
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle4;
-            this.DGC_League.HeaderText = "联赛";
-            this.DGC_League.Name = "DGC_League";
-            // 
-            // DGC_Host
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle5;
-            this.DGC_Host.HeaderText = "主队";
-            this.DGC_Host.Name = "DGC_Host";
-            // 
-            // DGC_Away
-            // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle6;
-            this.DGC_Away.HeaderText = "客队";
-            this.DGC_Away.Name = "DGC_Away";
-            // 
-            // DGC_Attention
-            // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.NullValue = false;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle7;
-            this.DGC_Attention.HeaderText = "是否关注";
-            this.DGC_Attention.Name = "DGC_Attention";
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -469,6 +470,8 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "赌徒";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormMain_KeyDown);
             this.MS_Menu.ResumeLayout(false);
             this.MS_Menu.PerformLayout();
@@ -484,13 +487,13 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).EndInit();
+            this.CMS_Live.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.SS_Bottom.ResumeLayout(false);
             this.SS_Bottom.PerformLayout();
-            this.CMS_Live.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -21,7 +21,9 @@ namespace Gambler.Config
             Initital();
         }
 
-        private static readonly string SETTING_PATH = System.Windows.Forms.Application.StartupPath + "//Config";
+        public static readonly string CONFIG_PATH = System.Windows.Forms.Application.StartupPath + "//Config";
+        public static readonly string SETTING_PATH = CONFIG_PATH + "//settings.txt";
+        public static readonly string XPJ_USER_PATH = CONFIG_PATH + "//user_xpj.txt";
         private readonly string AUTO_REFRESH_TIME = "autoRefreshTime";
         private readonly string IS_AUTO_SAVE = "isAutoSaveUser";
         private readonly string IS_AUTO_BET = "isAutoBet";
@@ -30,6 +32,8 @@ namespace Gambler.Config
         private readonly string BET_MONEY_LEAST = "leastBetMoney";
         private readonly string BET_MONEY_MOST = "mostBetMoney";
         private readonly string BET_METHOD = "betMethod";
+        private readonly string IS_SHOW_HALF_ODD_FIRST = "isShowHalfOddFirst";
+        private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
 
         private Dictionary<string, object> _settings;
 
@@ -64,6 +68,7 @@ namespace Gambler.Config
                 _settings.Add(BET_MONEY_LEAST, null);
                 _settings.Add(BET_MONEY_MOST, null);
                 _settings.Add(BET_METHOD, null);
+                _settings.Add(IS_SHOW_HALF_ODD_FIRST, null);
             }
         }
 
@@ -86,14 +91,14 @@ namespace Gambler.Config
 
         #region 属性
         /// <summary>
-        /// 直播赛事列表页面的自动刷新间隔时间（单位：秒），默认10
+        /// 直播赛事列表页面的自动刷新间隔时间（单位：秒），默认30
         /// </summary>
         public int AutoRefreshTime
         {
             get
             {
                 object o = _settings[AUTO_REFRESH_TIME];
-                return o == null ? 10 : (int)o;
+                return o == null ? 30 : (int)o;
             }
             set
             {
@@ -212,6 +217,38 @@ namespace Gambler.Config
             set
             {
                 _settings[BET_METHOD] = value;
+            }
+        }
+
+        /// <summary>
+        /// 显示赔率列表时是否显示为半场赔率
+        /// </summary>
+        public bool IsShowHalfOddFirst
+        {
+            get
+            {
+                object o = _settings[IS_SHOW_HALF_ODD_FIRST];
+                return o == null || (bool)o;
+            }
+            set
+            {
+                _settings[IS_SHOW_HALF_ODD_FIRST] = value;
+            }
+        }
+
+        /// <summary>
+        /// 是否自动接受最佳赔率
+        /// </summary>
+        public bool IsAutoAcceptBestOdd
+        {
+            get
+            {
+                object o = _settings[IS_AUTO_ACCEPT_BEST_ODD];
+                return o == null || (bool)o;
+            }
+            set
+            {
+                _settings[IS_AUTO_ACCEPT_BEST_ODD] = value;
             }
         }
         #endregion

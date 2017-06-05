@@ -67,51 +67,57 @@ namespace Gambler.Utils
         {
             if (control.IsDisposed)
                 return;
-            if (control.InvokeRequired)
-            {
-                if (args != null && args.Length > 0)
+            try {
+                if (control.InvokeRequired)
                 {
-                    switch (args.Length)
+                    if (args != null && args.Length > 0)
                     {
-                        case 1:
-                            control.Invoke(method, args[0]);
-                            break;
-                        case 2:
-                            control.Invoke(method, args[0], args[1]);
-                            break;
-                        default:
-                            control.Invoke(method, args);
-                            break;
+                        switch (args.Length)
+                        {
+                            case 1:
+                                control.Invoke(method, args[0]);
+                                break;
+                            case 2:
+                                control.Invoke(method, args[0], args[1]);
+                                break;
+                            default:
+                                control.Invoke(method, args);
+                                break;
 
+                        }
+                    }
+                    else
+                    {
+                        control.Invoke(method);
                     }
                 }
                 else
                 {
-                    control.Invoke(method);
+                    if (args != null && args.Length > 0)
+                    {
+                        switch (args.Length)
+                        {
+                            case 1:
+                                method.DynamicInvoke(args[0]);
+                                break;
+                            case 2:
+                                method.DynamicInvoke(args[0], args[1]);
+                                break;
+                            default:
+                                method.DynamicInvoke(args);
+                                break;
+
+                        }
+                    }
+                    else
+                    {
+                        method.DynamicInvoke();
+                    }
                 }
             }
-            else
+            catch (Exception e)
             {
-                if (args != null && args.Length > 0)
-                {
-                    switch (args.Length)
-                    {
-                        case 1:
-                            method.DynamicInvoke(args[0]);
-                            break;
-                        case 2:
-                            method.DynamicInvoke(args[0], args[1]);
-                            break;
-                        default:
-                            method.DynamicInvoke(args);
-                            break;
-
-                    }
-                }
-                else
-                {
-                    method.DynamicInvoke();
-                }
+                LogUtil.Write(e);
             }
         }
     }

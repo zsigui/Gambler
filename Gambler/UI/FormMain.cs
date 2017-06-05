@@ -50,9 +50,49 @@ namespace Gambler
             }
         }
 
-        public void SaveXPJAccount()
+        public void LoadXPJAccounts()
         {
+            ThreadUtil.RunOnThread(() =>
+            {
+                LogUtil.Write("执行LoadXPJAccounts");
+                string data = FileUtil.ReadContentFromFilePath(GlobalSetting.XPJ_USER_PATH);
+                LogUtil.Write("LoadXPJAccounts数据：data = " + data);
+                if (String.IsNullOrEmpty(data))
+                    return;
+                Dictionary<string, XPJAccount> accounts = JsonUtil.fromJson<Dictionary<string, XPJAccount>>(data);
+                LogUtil.Write("经过data转换后的dict对象: " + accounts);
+                if (accounts != null && accounts.Count > 0)
+                {
+                    // 对所有账号执行登录操作
+                    Dictionary<string, XPJAccount> tmpAccounts = new Dictionary<string, XPJAccount>();
+                    foreach (KeyValuePair<string, XPJAccount> entry in accounts)
+                    {
+                        entry.Value.newClient().Login((ret) =>
+                        {
+                            LogUtil.Write("登录成功，添加项: " + entry.Key);
+                            // 将返回成功的添加的字典中
+                            tmpAccounts.Add(entry.Key, entry.Value);
+                        }, null, null);
+                    }
+                    Invoke(new Action(() => {
+                        foreach (XPJAccount account in accounts.Values)
+                        {
+                            AddXPJUserToList(account);
+                        }
+                    }));
+                    
+                }
+                LogUtil.Write("从XpjUser文件中读取数据操作完毕");
+            });
+        }
 
+        public void SaveXPJAccounts()
+        {
+            string data = "";
+            if (HasXPJAccount())
+                data = JsonUtil.toJson(_xpjUserDict);
+            FileUtil.WriteContentToFilePath(GlobalSetting.XPJ_USER_PATH, data);
+            LogUtil.Write("将数据写入了XpjUser文件中操作完毕");
         }
 
         /// <summary>
@@ -66,7 +106,31 @@ namespace Gambler
                 CLB_XPJUser.Items.Remove(user.Account);
             }
             AddXPJAccount(user);
-            CLB_XPJUser.SetItemChecked(CLB_XPJUser.Items.Add(user.Account), true);
+            CLB_XPJUser.SetItemChecked(CLB_XPJUser.Items.Add(user.Account), user.IsChecked);
+        }
+
+        public bool HasXPJAccount()
+        {
+            return _xpjUserDict != null && _xpjUserDict.Count > 0;
+        }
+
+        /// <summary>
+        /// 获取当前存在的XPJ账号列表，需要先调用HasXPJAccount()进行判断
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<XPJAccount> ObtainAccounts()
+        {
+            return _xpjUserDict.Values;
+        }
+
+        /// <summary>
+        /// 获取指定账号名的账号，需要先调用HasXPJAccount()进行判断
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public XPJAccount ObtainAccountByName(string name)
+        {
+            return _xpjUserDict[name];
         }
         #endregion
 
@@ -171,7 +235,7 @@ namespace Gambler
                 else
                 {
                     Console.Write("当前直播列表为空，停止直播任务事件监听");
-                    _liveTimer.Change(Timeout.Infinite, 0);
+                    _liveTimer.Change(Timeout.Infinite, 1000);
                 }
             },
             null,
@@ -401,15 +465,22 @@ namespace Gambler
             {
                 if (CLB_XPJUser.SelectedIndices != null && CLB_XPJUser.SelectedIndices.Count > 0)
                 {
+                    List<string> toBeRemoved = new List<string>(CLB_XPJUser.SelectedItems.Count);
                     foreach (object item in CLB_XPJUser.SelectedItems)
                     {
                         if (item is string)
                         {
-                            RemoveXPJAccount((string)item);
+                            toBeRemoved.Add((string)item);
                         }
                     }
+
+                    foreach (string item in toBeRemoved)
+                    {
+                        RemoveXPJAccount(item);
+                        CLB_XPJUser.Items.Remove(item);
+                    }
                 }
-                CLB_XPJUser.SelectedItems.Clear();
+               
             }
         }
 
@@ -498,5 +569,20 @@ namespace Gambler
             e, err);
         }
 
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            LoadXPJAccounts();
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveXPJAccounts();
+        }
+
+        private void CLB_XPJUser_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (HasXPJAccount())
+                _xpjUserDict[CLB_XPJUser.Items[e.Index].ToString()].IsChecked = (e.NewValue == CheckState.Checked);
+        }
     }
 }

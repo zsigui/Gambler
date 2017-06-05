@@ -7,6 +7,8 @@ namespace Gambler.Module.XPJ.Model
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class XPJAccount
     {
+        private bool _isChecked = true;
+
         [JsonProperty]
         public string Account { set; get; }
 
@@ -24,6 +26,13 @@ namespace Gambler.Module.XPJ.Model
 
         [JsonProperty]
         public string ProxyPwd { set; get; }
+
+        [JsonProperty]
+        public bool IsChecked
+        {
+            set { _isChecked = value; }
+            get { return _isChecked; }
+        }
 
         public float Money { set; get; }
 

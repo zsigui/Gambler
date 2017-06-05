@@ -46,7 +46,9 @@ namespace Gambler.Utils
         {
             if (path == null || path == "")
                 return false;
-
+            string parentPath = Path.GetDirectoryName(path);
+            if (!Directory.Exists(parentPath))
+                Directory.CreateDirectory(parentPath);
             File.WriteAllText(path, content, Encoding.UTF8);
             return true;
         }

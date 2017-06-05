@@ -10,12 +10,12 @@ namespace Gambler.XPJ
     {
 
         /**
-	 * 获取香港深水盘口汇率
-	 * @param hR
-	 * @param cR
-	 * @return 0 -> H 1 -> C
-	 */
-        private float[] getHK_ior(float hR, float cR)
+	     * 获取香港深水盘口汇率
+	     * @param hR
+	     * @param cR
+	     * @return 0 -> H 1 -> C
+	     */
+        private static float[] getHK_ior(float hR, float cR)
         {
             float[] result = new float[2];
             if (hR <= 1000 && cR <= 1000)
@@ -68,7 +68,7 @@ namespace Gambler.XPJ
             return result;
         }
 
-        private float[] getIor(string oddType, float hR, float cR)
+        private static float[] getIor(string oddType, float hR, float cR)
         {
             float[] result = new float[2];
 
@@ -115,7 +115,7 @@ namespace Gambler.XPJ
          * @param cR 客队赔率
          * @return 下标0：hR 下标1：cR
          */
-        public string[] getIor(string oddType, string hR, string cR)
+        public static string[] getIor(string oddType, string hR, string cR)
         {
             string[] result = new string[2];
             if (!String.IsNullOrEmpty(hR)
@@ -132,5 +132,46 @@ namespace Gambler.XPJ
             }
             return result;
         }
+
+        private static float Dot(float input)
+        {
+            return ((float)((int)(input * 100))) / 100;
+        }
+
+        public static float[] GetIOR(string hR, string cR)
+        {
+            float[] result = new float[2];
+            if (!String.IsNullOrEmpty(hR)
+                    && !String.IsNullOrEmpty(cR))
+            {
+                float[] rs = getIor("H", float.Parse(hR), float.Parse(cR));
+                result[0] = Dot(rs[0]);
+                result[1] = Dot(rs[1]);
+            }
+            else
+            {
+                result[0] = 0f;
+                result[1] = 0f;
+            }
+            return result;
+        }
+
+        public static float[] GetIORForEO(string hR, string cR)
+        {
+            float[] result = new float[2];
+            if (!String.IsNullOrEmpty(hR)
+                && !String.IsNullOrEmpty(cR))
+            {
+                float[] rs = new float[] { float.Parse(hR), float.Parse(cR) };
+                if (rs[0] != 0 && rs[1] != 0)
+                {
+                    rs = getIor("H", rs[0] - 1, rs[1] - 1);
+                    result[0] = Dot(rs[0] + 1);
+                    result[1] = Dot(rs[1] + 1);
+                }
+            }
+            return result;
+        }
+
     }
 }

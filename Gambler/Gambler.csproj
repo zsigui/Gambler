@@ -80,6 +80,8 @@
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
     <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
+    <Compile Include="Module\XPJ\Model\XPJOddData.cs" />
+    <Compile Include="Module\XPJ\XPJDataParser.cs" />
     <Compile Include="UI\DialogConfirm.cs">
       <SubType>Form</SubType>
     </Compile>
