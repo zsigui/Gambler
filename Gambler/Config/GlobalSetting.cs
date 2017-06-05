@@ -69,6 +69,7 @@ namespace Gambler.Config
                 _settings.Add(BET_MONEY_MOST, null);
                 _settings.Add(BET_METHOD, null);
                 _settings.Add(IS_SHOW_HALF_ODD_FIRST, null);
+                _settings.Add(IS_AUTO_ACCEPT_BEST_ODD, null);
             }
         }
 

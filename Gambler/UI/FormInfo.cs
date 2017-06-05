@@ -110,10 +110,10 @@ namespace Gambler.UI
         private void UpdateUIData(Dictionary<string, List<XPJOddData>> odd)
         {
             _oddDataDict = odd;
-            _showDataList = GetShowDataBySource(odd);
             ThreadUtil.WorkOnUI<object>(this,
                 new Action(() =>{
                     DGV_Info.Rows.Clear();
+                    _showDataList = GetShowDataBySource(_oddDataDict);
                     if (_showDataList != null)
                     {
                         DataGridViewRow dr;
@@ -124,11 +124,11 @@ namespace Gambler.UI
                             dr.CreateCells(DGV_Info);
                             if (d.retimeset.StartsWith("1H"))
                             {
-                                dr.Cells[0].Value = String.Format("上半场{1} / {2}", d.retimeset.Substring(2), d.score);
+                                dr.Cells[0].Value = String.Format("上半场{0}' / {1}", d.retimeset.Substring(3), d.score);
                             }
                             else
                             {
-                                dr.Cells[0].Value = String.Format("下半场{1} / {2}", d.retimeset.Substring(2), d.score);
+                                dr.Cells[0].Value = String.Format("下半场{0}' / {1}", d.retimeset.Substring(3), d.score);
                             }
                             dr.Cells[1].Value = d.home;
                             dr.Cells[2].Value = d.guest;
@@ -136,29 +136,42 @@ namespace Gambler.UI
                             if (RB_Whole.Checked)
                             {
                                 // 全场
-                                dr.Cells[4].Value = String.Format("{1}\n【大{2}】\n【小{3}】", d.CON_OUH, d.ior_OUH, d.ior_OUC);
-                                if (d.CON_RH.StartsWith("-"))
+                                if (d.ior_OUH != 0 && d.ior_OUC != 0)
+                                    dr.Cells[4].Value = String.Format("{0}\n【大{1}】\n【小{2}】", d.CON_OUH, d.ior_OUH, d.ior_OUC);
+                                if (d.ior_RC != 0 && d.ior_RH != 0)
                                 {
-                                    tmpS = d.CON_RH.Substring(1);
-                                    dr.Cells[5].Value = String.Format("【客让{1}】\n【大{2}】\n【小{3}】", d.CON_RH, d.ior_RC, d.ior_RH);
+                                    if (d.CON_RH.StartsWith("-"))
+                                    {
+                                        tmpS = d.CON_RH.Substring(1);
+                                        dr.Cells[5].Value = String.Format("【客让{0}】\n【大{1}】\n【小{2}】", tmpS, d.ior_RC, d.ior_RH);
+                                    }
+                                    else
+                                    {
+                                        dr.Cells[5].Value = String.Format("【主让{0}】\n【大{1}】\n【小{2}】", d.CON_RH, d.ior_RH, d.ior_RC);
+                                    }
                                 }
-                                else
-                                    dr.Cells[5].Value = String.Format("【主让{1}】\n【大{2}】\n【小{3}】", d.CON_RH, d.ior_RH, d.ior_RC);
-                                dr.Cells[6].Value = String.Format("【主{1}】\n【客{2}】\n【和{3}】", d.ior_MH, d.ior_MC, d.ior_MN);
+                                if (d.ior_MC != 0 && d.ior_MN != 0 && d.ior_MH != 0)
+                                    dr.Cells[6].Value = String.Format("【主{0}】\n【客{1}】\n【和{2}】", d.ior_MH, d.ior_MC, d.ior_MN);
                             }
                             else
                             {
-                                dr.Cells[4].Value = String.Format("{1}\n【大{2}】\n【小{3}】", d.CON_HOUH, d.ior_HOUH, d.ior_HOUC);
-                                if (d.CON_RH.StartsWith("-"))
+                                if (d.ior_HOUH != 0 && d.ior_HOUC != 0)
+                                    dr.Cells[4].Value = String.Format("{0}\n【大{1}】\n【小{2}】", d.CON_HOUH, d.ior_HOUH, d.ior_HOUC);
+                                if (d.ior_HRC != 0 && d.ior_HRH != 0)
                                 {
-                                    tmpS = d.CON_RH.Substring(1);
-                                    dr.Cells[5].Value = String.Format("【客让{1}】\n【大{2}】\n【小{3}】", d.CON_HRH, d.ior_HRC, d.ior_HRH);
+                                    if (d.CON_HRH.StartsWith("-"))
+                                    {
+                                        tmpS = d.CON_HRH.Substring(1);
+                                        dr.Cells[5].Value = String.Format("【客让{0}】\n【大{1}】\n【小{2}】", tmpS, d.ior_HRC, d.ior_HRH);
+                                    }
+                                    else
+                                        dr.Cells[5].Value = String.Format("【主让{0}】\n【大{1}】\n【小{2}】", d.CON_HRH, d.ior_HRH, d.ior_HRC);
                                 }
-                                else
-                                    dr.Cells[5].Value = String.Format("【主让{1}】\n【大{2}】\n【小{3}】", d.CON_HRH, d.ior_HRH, d.ior_HRC);
-                                dr.Cells[6].Value = String.Format("【主{1}】\n【客{2}】\n【和{3}】", d.ior_HMH, d.ior_HMC, d.ior_HMN);
+                                if (d.ior_HMC != 0 && d.ior_HMN != 0 && d.ior_HMN != 0)
+                                    dr.Cells[6].Value = String.Format("【主{0}】\n【客{1}】\n【和{2}】", d.ior_HMH, d.ior_HMC, d.ior_HMN);
                             }
-                            dr.Cells[7].Value = String.Format("【单{1}】\n【双{2}】", d.ior_EOO, d.ior_EOE);
+                            if (d.ior_EOO != 0 && d.ior_EOE != 0)
+                                dr.Cells[7].Value = String.Format("【单{0}】\n【双{1}】", d.ior_EOO, d.ior_EOE);
                             DGV_Info.Rows.Add(dr);
                         }
                     }

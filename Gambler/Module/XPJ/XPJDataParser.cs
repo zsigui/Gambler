@@ -1,4 +1,5 @@
 ﻿using Gambler.Model.XPJ;
+using Gambler.Utils;
 using Gambler.XPJ;
 using System;
 using System.Collections.Generic;
@@ -55,24 +56,24 @@ namespace Gambler.Module.XPJ.Model
             
             return retData;
         }
-
+        
         public static XPJOddData TransformListToXPJOddData(List<string> values, List<string> keys)
         {
             if (values == null)
                 return null;
             XPJOddData data = new XPJOddData();
-            data.gid = Int32.Parse(values[keys.IndexOf("gid")]);
+            data.gid = ValueParse.ParseInt(values[keys.IndexOf("gid")]);
             data.home = values[keys.IndexOf("home")];
             data.guest = values[keys.IndexOf("guest")];
             data.league = values[keys.IndexOf("league")];
-            data.openTime = long.Parse(values[keys.IndexOf("openTime")]);
-            data.live = bool.Parse(values[keys.IndexOf("live")]);
+            data.openTime = ValueParse.ParseLong(values[keys.IndexOf("openTime")]);
+            data.live = ValueParse.ParseBoolean(values[keys.IndexOf("live")]);
             data.score = values[keys.IndexOf("scoreH")] + " : " + values[keys.IndexOf("scoreC")];
             data.retimeset = values[keys.IndexOf("retimeset")];
             // 全场
-            data.ior_MH = float.Parse(values[keys.IndexOf("ior_MH")]);
-            data.ior_MC = float.Parse(values[keys.IndexOf("ior_MC")]);
-            data.ior_MN = float.Parse(values[keys.IndexOf("ior_MN")]);
+            data.ior_MH = ValueParse.ParseFloat(values[keys.IndexOf("ior_MH")]);
+            data.ior_MC = ValueParse.ParseFloat(values[keys.IndexOf("ior_MC")]);
+            data.ior_MN = ValueParse.ParseFloat(values[keys.IndexOf("ior_MN")]);
             float[] ior = XPJRatioHelper.GetIOR(values[keys.IndexOf("ior_RH")], values[keys.IndexOf("ior_RC")]);
             data.ior_RH = ior[0];
             data.ior_RC = ior[1];
@@ -85,9 +86,9 @@ namespace Gambler.Module.XPJ.Model
             data.ior_EOO = ior[0];
             data.ior_EOE = ior[1];
             // 半场
-            data.ior_HMH = float.Parse(values[keys.IndexOf("ior_HMH")]);
-            data.ior_HMC = float.Parse(values[keys.IndexOf("ior_HMC")]);
-            data.ior_HMN = float.Parse(values[keys.IndexOf("ior_HMN")]);
+            data.ior_HMH = ValueParse.ParseFloat(values[keys.IndexOf("ior_HMH")]);
+            data.ior_HMC = ValueParse.ParseFloat(values[keys.IndexOf("ior_HMC")]);
+            data.ior_HMN = ValueParse.ParseFloat(values[keys.IndexOf("ior_HMN")]);
             ior = XPJRatioHelper.GetIOR(values[keys.IndexOf("ior_HRH")], values[keys.IndexOf("ior_HRC")]);
             data.ior_HRH = ior[0];
             data.ior_HRC = ior[1];

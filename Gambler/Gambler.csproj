@@ -160,6 +160,7 @@
     <Compile Include="Module\XPJ\XPJErrorMsg.cs" />
     <Compile Include="Module\XPJ\XPJRatioHelper.cs" />
     <Compile Include="Module\XPJ\XPJVerifyCode.cs" />
+    <Compile Include="Utils\ValueParse.cs" />
     <EmbeddedResource Include="UI\DialogConfirm.resx">
       <DependentUpon>DialogConfirm.cs</DependentUpon>
     </EmbeddedResource>
