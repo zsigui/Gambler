@@ -13,10 +13,17 @@ namespace Gambler.Utils
         public static Bitmap BytesToBitmap(byte[] bsImg)
         {
             Bitmap bmp = null;
-            using (var ms = new MemoryStream(bsImg))
+            try
             {
-                bmp = new Bitmap(ms);
-            }    
+                using (var ms = new MemoryStream(bsImg))
+                {
+                    bmp = new Bitmap(ms);
+                }
+            }
+            catch (Exception e)
+            {
+                LogUtil.Write(e);
+            }
             return bmp;
         }
 

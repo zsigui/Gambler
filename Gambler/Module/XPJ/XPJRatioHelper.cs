@@ -135,7 +135,7 @@ namespace Gambler.XPJ
 
         private static float Dot(float input)
         {
-            return ((float)((int)(input * 100))) / 100;
+            return (float)Math.Round(input, 2);
         }
 
         public static float[] GetIOR(string hR, string cR)

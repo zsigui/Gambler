@@ -34,7 +34,9 @@ namespace Gambler.Utils
         /// <param name="e">抛出异常信息</param>
         public static void Write(Exception e)
         {
+            
             Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
             LogThread.GetOrInit().Write(null, null, Log4NetLevel.Info, e);
         }
 

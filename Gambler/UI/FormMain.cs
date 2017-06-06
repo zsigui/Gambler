@@ -130,6 +130,8 @@ namespace Gambler
         /// <returns></returns>
         public XPJAccount ObtainAccountByName(string name)
         {
+            if (!_xpjUserDict.ContainsKey(name))
+                return null;
             return _xpjUserDict[name];
         }
         #endregion

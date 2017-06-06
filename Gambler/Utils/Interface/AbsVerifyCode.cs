@@ -274,7 +274,8 @@ namespace Gambler.Utils.Interface
         public string ParseCode(byte[] imgBytes)
         {
             Bitmap validBmp = ImageUtil.BytesToBitmap(imgBytes);
-            Console.WriteLine("ParseCode 成功将 byte[] 转换为 Bitmap");
+            if (validBmp == null)
+                return "";
             // 二值化处理
             validBmp = Binarization(validBmp);
             // 消除噪声点

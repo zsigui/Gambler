@@ -12,15 +12,19 @@ namespace Gambler.Module.XPJ.Model
     public class XPJDataParser
     {
 
-        public static Dictionary<string, List<XPJOddData>> TransformRespDataToXPJOddDataDict(RespData resp)
+        public static Dictionary<string, List<XPJOddData>> TransformRespDataToXPJOddDataDict(RespData resp, out List<XPJOddData> sourceData)
         {
             if (resp == null || resp.games == null || resp.games.Count == 0
                 || resp.headers == null || resp.headers.Count == 0)
+            {
+                sourceData = null;
                 return null;
+            }
             List<List<string>> games = resp.games;
             Dictionary<string, List<XPJOddData>> retData = new Dictionary<string, List<XPJOddData>>();
             List<XPJOddData> tmpValue;
             XPJOddData tmp;
+            sourceData = new List<XPJOddData>(games.Count);
             foreach (List<string> g in games)
             {
                 tmp = TransformListToXPJOddData(g, resp.headers);
@@ -31,6 +35,7 @@ namespace Gambler.Module.XPJ.Model
                         tmpValue = new List<XPJOddData>();
                         retData.Add(tmp.league, tmpValue);
                     }
+                    sourceData.Add(tmp);
                     tmpValue.Add(tmp);
                 }
             }

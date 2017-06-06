@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.LB_Match = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -44,6 +45,7 @@
             this.DGV_BetUser = new System.Windows.Forms.DataGridView();
             this.DGC_Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Money = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Result = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_BetUser)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,9 +84,9 @@
             this.LB_Odd.ForeColor = System.Drawing.Color.OrangeRed;
             this.LB_Odd.Location = new System.Drawing.Point(26, 171);
             this.LB_Odd.Name = "LB_Odd";
-            this.LB_Odd.Size = new System.Drawing.Size(107, 12);
+            this.LB_Odd.Size = new System.Drawing.Size(257, 12);
             this.LB_Odd.TabIndex = 3;
-            this.LB_Odd.Text = "【大小】-【1.73】";
+            this.LB_Odd.Text = "【全场】-【大小】-【大4/4.5】-【赔率1.25】";
             // 
             // label5
             // 
@@ -104,6 +106,7 @@
             this.BTN_Confirm.TabIndex = 6;
             this.BTN_Confirm.Text = "确认下注";
             this.BTN_Confirm.UseVisualStyleBackColor = true;
+            this.BTN_Confirm.Click += new System.EventHandler(this.BTN_Confirm_Click);
             // 
             // LB_League
             // 
@@ -150,22 +153,22 @@
             // DGV_BetUser
             // 
             this.DGV_BetUser.AllowUserToAddRows = false;
-            this.DGV_BetUser.AllowUserToDeleteRows = false;
             this.DGV_BetUser.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.DGV_BetUser.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.DGV_BetUser.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle19.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_BetUser.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_BetUser.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DGV_BetUser.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.DGV_BetUser.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGC_Name,
-            this.DGC_Money});
+            this.DGC_Money,
+            this.DGC_Result});
             this.DGV_BetUser.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.DGV_BetUser.EnableHeadersVisualStyles = false;
             this.DGV_BetUser.Location = new System.Drawing.Point(33, 239);
@@ -175,27 +178,40 @@
             this.DGV_BetUser.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.DGV_BetUser.RowTemplate.Height = 23;
             this.DGV_BetUser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.DGV_BetUser.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_BetUser.Size = new System.Drawing.Size(264, 64);
             this.DGV_BetUser.TabIndex = 11;
+            this.DGV_BetUser.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_BetUser_CellValueChanged);
+            this.DGV_BetUser.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DGV_BetUser_RowsRemoved);
             // 
             // DGC_Name
             // 
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Name.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Name.DefaultCellStyle = dataGridViewCellStyle2;
             this.DGC_Name.HeaderText = "用户名";
             this.DGC_Name.Name = "DGC_Name";
             this.DGC_Name.ReadOnly = true;
             // 
             // DGC_Money
             // 
-            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle21.Format = "N2";
-            dataGridViewCellStyle21.NullValue = "0";
-            dataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Money.DefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.Format = "N2";
+            dataGridViewCellStyle3.NullValue = "0";
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Money.DefaultCellStyle = dataGridViewCellStyle3;
             this.DGC_Money.HeaderText = "下注金额(元)";
             this.DGC_Money.Name = "DGC_Money";
+            // 
+            // DGC_Result
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Result.DefaultCellStyle = dataGridViewCellStyle4;
+            this.DGC_Result.HeaderText = "结果";
+            this.DGC_Result.Name = "DGC_Result";
+            this.DGC_Result.ReadOnly = true;
             // 
             // DialogConfirm
             // 
@@ -240,5 +256,6 @@
         private System.Windows.Forms.DataGridView DGV_BetUser;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Money;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Result;
     }
 }
