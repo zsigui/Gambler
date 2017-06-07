@@ -396,6 +396,7 @@
             this.CB_AcceptOpt.TabIndex = 11;
             this.CB_AcceptOpt.Text = "自动接受最佳赔率";
             this.CB_AcceptOpt.UseVisualStyleBackColor = true;
+            this.CB_AcceptOpt.CheckedChanged += new System.EventHandler(this.CB_AcceptOpt_CheckedChanged);
             // 
             // BTN_Refresh
             // 

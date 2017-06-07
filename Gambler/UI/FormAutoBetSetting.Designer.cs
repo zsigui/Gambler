@@ -40,6 +40,8 @@
             this.BTN_Confirm = new System.Windows.Forms.Button();
             this.BTN_Cancel = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.TB_Rate = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -126,7 +128,7 @@
             // label4
             // 
             this.label4.Font = new System.Drawing.Font("宋体", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(37, 153);
+            this.label4.Location = new System.Drawing.Point(37, 182);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(337, 33);
             this.label4.TabIndex = 8;
@@ -135,7 +137,7 @@
             // 
             // BTN_Confirm
             // 
-            this.BTN_Confirm.Location = new System.Drawing.Point(215, 202);
+            this.BTN_Confirm.Location = new System.Drawing.Point(215, 231);
             this.BTN_Confirm.Name = "BTN_Confirm";
             this.BTN_Confirm.Size = new System.Drawing.Size(79, 34);
             this.BTN_Confirm.TabIndex = 9;
@@ -146,7 +148,7 @@
             // BTN_Cancel
             // 
             this.BTN_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BTN_Cancel.Location = new System.Drawing.Point(115, 202);
+            this.BTN_Cancel.Location = new System.Drawing.Point(115, 231);
             this.BTN_Cancel.Name = "BTN_Cancel";
             this.BTN_Cancel.Size = new System.Drawing.Size(75, 34);
             this.BTN_Cancel.TabIndex = 10;
@@ -163,13 +165,31 @@
             this.label5.TabIndex = 11;
             this.label5.Text = "下注方式：";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(81, 150);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(65, 12);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "下注倍率：";
+            // 
+            // TB_Rate
+            // 
+            this.TB_Rate.Location = new System.Drawing.Point(153, 147);
+            this.TB_Rate.Name = "TB_Rate";
+            this.TB_Rate.Size = new System.Drawing.Size(121, 21);
+            this.TB_Rate.TabIndex = 13;
+            // 
             // FormAutoBetSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BTN_Cancel;
-            this.ClientSize = new System.Drawing.Size(402, 256);
+            this.ClientSize = new System.Drawing.Size(402, 277);
             this.ControlBox = false;
+            this.Controls.Add(this.TB_Rate);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.BTN_Cancel);
             this.Controls.Add(this.BTN_Confirm);
@@ -207,5 +227,7 @@
         private System.Windows.Forms.Button BTN_Confirm;
         private System.Windows.Forms.Button BTN_Cancel;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox TB_Rate;
     }
 }

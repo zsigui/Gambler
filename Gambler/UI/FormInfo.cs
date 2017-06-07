@@ -154,7 +154,7 @@ namespace Gambler.UI
                                 }
                             }
                             Console.WriteLine("查找到的 mostIndex = " + mostIndex);
-                            if (mostIndex != -1)
+                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
                             {
                                 RB_Whole.Checked = true;
                                 ShowBigOrSmallHost(_showDataList[mostIndex], true);
@@ -178,7 +178,7 @@ namespace Gambler.UI
                                     }
                                 }
                             }
-                            if (mostIndex != -1)
+                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
                             {
                                 RB_Whole.Checked = false;
                                 RB_Half.Checked = true;
@@ -643,6 +643,7 @@ namespace Gambler.UI
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
             UpdateGDVData(_showDataList);
+            GlobalSetting.GetInstance().IsShowHalfOddFirst = RB_Half.Checked;
         }
 
         private void CB_Leagues_SelectedIndexChanged(object sender, EventArgs e)
@@ -804,6 +805,11 @@ namespace Gambler.UI
             CB_Leagues.SelectedIndex = 0;
 
             BTN_Refresh_Click(null, null);
+        }
+
+        private void CB_AcceptOpt_CheckedChanged(object sender, EventArgs e)
+        {
+            GlobalSetting.GetInstance().IsAutoAcceptBestOdd = CB_AcceptOpt.Checked;
         }
     }
 }

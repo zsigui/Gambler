@@ -40,6 +40,7 @@ namespace Gambler.UI
             }
             TB_LeastMoney.Text = GlobalSetting.GetInstance().LeastBetMoney.ToString();
             TB_MostMoney.Text = GlobalSetting.GetInstance().MostBetMoney.ToString();
+            TB_Rate.Text = GlobalSetting.GetInstance().AutoBetRate.ToString();
         }
 
         private void BTN_Confirm_Click(object sender, EventArgs e)
@@ -56,6 +57,12 @@ namespace Gambler.UI
             gs.MostBetMoney = (String.IsNullOrEmpty(_mostContent) ? MOST_MONEY : Int32.Parse(_mostContent));
             gs.GameBetMethod = (RB_EveryTime.Checked ? BetMethod.EveryTime : BetMethod.Random);
             gs.GameBetType = (CB_Type.SelectedIndex == -1 ? BetType.BigOrSmall : (BetType)(CB_Type.SelectedIndex + 1));
+            float rate = gs.AutoBetRate;
+            if (!String.IsNullOrEmpty(TB_Rate.Text))
+            {
+                float.TryParse(TB_Rate.Text, out rate);
+            }
+            gs.AutoBetRate = rate;
         }
 
         private void BTN_Cancel_Click(object sender, EventArgs e)

@@ -144,6 +144,8 @@ namespace Gambler
 
         public FormMain()
         {
+
+            GlobalSetting.GetInstance().Load();
             InitializeComponent();
             RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
             OnStartInit();

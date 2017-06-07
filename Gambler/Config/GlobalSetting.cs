@@ -18,7 +18,6 @@ namespace Gambler.Config
 
         private GlobalSetting()
         {
-            Initital();
         }
 
         public static readonly string CONFIG_PATH = System.Windows.Forms.Application.StartupPath + "//Config";
@@ -31,19 +30,13 @@ namespace Gambler.Config
         private readonly string BET_TYPE = "betType";
         private readonly string BET_MONEY_LEAST = "leastBetMoney";
         private readonly string BET_MONEY_MOST = "mostBetMoney";
+        private readonly string AUTO_BET_RATE = "autoBetRate";
         private readonly string BET_METHOD = "betMethod";
         private readonly string IS_SHOW_HALF_ODD_FIRST = "isShowHalfOddFirst";
         private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
 
         private Dictionary<string, object> _settings;
-
-        /// <summary>
-        /// 默认初始化时调用
-        /// </summary>
-        private void Initital()
-        {
-            Load();
-        }
+        
 
         /// <summary>
         /// 从文件中加载设置属性
@@ -164,11 +157,27 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[BET_MONEY_MOST];
-                return o == null ? 50 : (int)o;
+                return o == null ? 50 : Convert.ToInt32(o);
             }
             set
             {
                 _settings[BET_MONEY_MOST] = value;
+            }
+        }
+
+        /// <summary>
+        /// 自动下注的最低倍率限制，即是低于此倍率无效
+        /// </summary>
+        public float AutoBetRate
+        {
+            get
+            {
+                object o = _settings[AUTO_BET_RATE];
+                return o == null ? 1.0f : (float)Convert.ToDouble(o);
+            }
+            set
+            {
+                _settings[AUTO_BET_RATE] = value;
             }
         }
 
@@ -180,7 +189,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[BET_MONEY_LEAST];
-                return o == null ? 50 : (int)o;
+                return o == null ? 50 : Convert.ToInt32(o);
             }
             set
             {
@@ -197,7 +206,7 @@ namespace Gambler.Config
             {
                 
                 object o = _settings[BET_TYPE];
-                return o == null ? BetType.BigOrSmall : (BetType)o;
+                return o == null ? BetType.BigOrSmall : (BetType)(Enum.ToObject(typeof(BetType), o));
             }
             set
             {
@@ -213,7 +222,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[BET_METHOD];
-                return o == null ? BetMethod.EveryTime : (BetMethod)o;
+                return o == null ? BetMethod.EveryTime : (BetMethod)(Enum.ToObject(typeof(BetMethod), o));
             }
             set
             {
