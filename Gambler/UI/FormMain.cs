@@ -70,6 +70,11 @@ namespace Gambler
                         entry.Value.newClient().Login((ret) =>
                         {
                             LogUtil.Write("登录成功，添加项: " + entry.Key);
+                            entry.Value.GetClient().GetUserInfo((d) =>
+                            {
+                                Console.WriteLine(entry.Value.Account + "金币余额: " + d.money);
+                                entry.Value.Money = d.money;
+                            }, null, null);
                             // 将返回成功的添加的字典中
                             tmpAccounts.Add(entry.Key, entry.Value);
                         }, null, null);
@@ -262,6 +267,7 @@ namespace Gambler
                         "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     RTB_Output.AppendText(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球事件"));
+                    HandleAutoBetEvent(m, true);
                 }
                 else if (_eventIdInfo.PEN2.Equals(cid))
                 {
@@ -270,6 +276,7 @@ namespace Gambler
                         "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     RTB_Output.AppendText(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球事件"));
+                    HandleAutoBetEvent(m, false);
                 }
                 else if (_eventIdInfo.PENALTY_MISS.Equals(cid)
                     || _eventIdInfo.CPEN1.Equals(cid) || _eventIdInfo.CPEN2.Equals(cid))
@@ -304,12 +311,30 @@ namespace Gambler
                     RTB_Output.AppendText(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分事件"));
                 }
-                else if(_eventIdInfo.SAFE.Equals(cid) || _eventIdInfo.SAFE1.Equals(cid) || _eventIdInfo.SAFE2.Equals(cid))
-                {
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                       m.Score, m.Time, m.League, m.Home, m.Away, "控球事件"));
-                }
+//                 else if(_eventIdInfo.SAFE.Equals(cid) || _eventIdInfo.SAFE1.Equals(cid) || _eventIdInfo.SAFE2.Equals(cid))
+//                 {
+//                     RTB_Output.AppendText(String.Format(REGEX_FORMAT,
+//                        m.Score, m.Time, m.League, m.Home, m.Away, "控球事件"));
+//                     HandleAutoBetEvent(m, false);
+//                 }
             }));
+        }
+
+        /// <summary>
+        /// 判断处理点球时的下注情况
+        /// </summary>
+        private void HandleAutoBetEvent(HFSimpleMatch m, bool isHome)
+        {
+            // 执行自动下注请求
+            // 新葡京
+            // 没有账号的时候不进行下注
+            if (HasXPJAccount())
+            {
+                FormInfo.NewInstance().Show();
+                FormInfo.NewInstance().AutoRequest(new string[] { m.League, m.Home, m.Away }, isHome);
+            }
+
+            // 其他
         }
 
         #region 获取Live数据方式1，需要回传获取中文数据的Cookie
@@ -532,7 +557,7 @@ namespace Gambler
         
         private void BTN_JumpBet_Click(object sender, EventArgs e)
         {
-            FormInfo.newInstance().Show();
+            FormInfo.NewInstance().Show();
         }
         #endregion
 
@@ -579,6 +604,7 @@ namespace Gambler
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveXPJAccounts();
+            GlobalSetting.GetInstance().Save();
         }
 
         private void CLB_XPJUser_ItemCheck(object sender, ItemCheckEventArgs e)

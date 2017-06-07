@@ -21,7 +21,9 @@ namespace Gambler.Module.XPJ.Model
         public bool live;
 
         // 由 ‘scoreH : scoreC’ 拼合
-        public string score;
+        public string scoreH;
+
+        public string scoreC;
 
         /// <summary>
         /// 已经进行的时间

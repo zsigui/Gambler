@@ -99,13 +99,12 @@ namespace Gambler.UI
                 _account.newClient().Login(
                     (data) =>
                     {
-                        MessageBox.Show("添加用户成功!");
                         _account.GetClient().GetUserInfo((d) =>
                         {
                             Console.WriteLine("当前金币余额: " + d.money);
                             _account.Money = d.money;
-                        },null, null);
-
+                        }, null, null);
+                        MessageBox.Show("添加用户成功!");
                         Invoke(new Action(()=> {
                             FormMain.GetInstance().AddXPJUserToList(_account);
                             Close();

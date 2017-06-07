@@ -18,6 +18,21 @@ namespace Gambler.UI
 {
     public partial class DialogConfirm : Form
     {
+        private static DialogConfirm sInstance;
+
+        public static DialogConfirm newInstance()
+        {
+            if (sInstance == null)
+            {
+                sInstance = new DialogConfirm();
+            }
+            else
+            {
+                sInstance.Focus();
+            }
+            return sInstance;
+        }
+
         private List<XPJAccount> _accounts;
         private List<float> _moneys;
         private ReqBetData _requestData;
@@ -29,9 +44,14 @@ namespace Gambler.UI
 
         public void Update(XPJOddData oddData, string oddInfo, string type, float odd, string project)
         {
+            Update(oddData, oddInfo, type, odd, project, false);
+        }
+
+        public void Update(XPJOddData oddData, string oddInfo, string type, float odd, string project, bool isAuto)
+        {
             LB_League.Text = oddData.league;
             LB_Match.Text = String.Format("{0}（主） v.s.{1}（客）", oddData.home, oddData.guest);
-            LB_Score.Text = oddData.score;
+            LB_Score.Text = String.Format("{0} : {1}", oddData.scoreH, oddData.scoreC);
             if (oddData.retimeset.StartsWith("1H"))
                 LB_Time.Text = String.Format("上半场 {0}'", oddData.retimeset.Substring(3));
             else if (oddData.retimeset.StartsWith("2H"))
@@ -44,24 +64,24 @@ namespace Gambler.UI
             DGV_BetUser.Rows.Clear();
             _accounts = new List<XPJAccount>();
             _moneys = new List<float>();
+            BTN_Confirm.Enabled = true;
             foreach (XPJAccount account in FormMain.GetInstance().ObtainAccounts())
             {
-                if (account.IsChecked)
-                {
-                    money = CalculateBetMoney((int)account.Money);
-                    _accounts.Add(account);
-                    _moneys.Add(money);
-                    dr = new DataGridViewRow();
-                    dr.CreateCells(DGV_BetUser);
-                    dr.Cells[0].Value = account.Account;
-                    dr.Cells[1].Value = String.Format("{0:N2}", money);
-                    DGV_BetUser.Rows.Add(dr);
-                }
+                money = account.IsChecked ? 0 : CalculateBetMoney((int)account.Money);
+                _accounts.Add(account);
+                _moneys.Add(money);
+                dr = new DataGridViewRow();
+                dr.CreateCells(DGV_BetUser);
+                dr.Cells[0].Value = account.Account;
+                dr.Cells[1].Value = String.Format("{0:N2}", money);
+                DGV_BetUser.Rows.Add(dr);
             }
-
-            if (_accounts.Count == 0)
-                BTN_Confirm.Enabled = false;
+           
             CreateRequestBetData(oddData, type, odd, project);
+            if (isAuto)
+            {
+                DoRequest(true);
+            }
         }
 
         private void CreateRequestBetData(XPJOddData oddData, string type, float odd, string project)
@@ -70,9 +90,8 @@ namespace Gambler.UI
             item.gid = oddData.gid;
             item.odds = odd.ToString();
             item.project = project;
-            string[] score = oddData.score.Split(':');
-            item.scoreH = score[0].Trim();
-            item.scoreC = score[1].Trim();
+            item.scoreH = oddData.scoreH;
+            item.scoreC = oddData.scoreC;
             item.type = type;
             ReqBetData data = new ReqBetData();
             data.acceptBestOdds = GlobalSetting.GetInstance().IsAutoAcceptBestOdd;
@@ -94,11 +113,17 @@ namespace Gambler.UI
 
         private void BTN_Confirm_Click(object sender, EventArgs e)
         {
+            DoRequest(false);
+        }
+
+        private void DoRequest(bool isAuto)
+        {
             if (_accounts == null)
             {
                 MessageBox.Show("获取不到用户数据，请重新进入");
                 return;
             }
+            SetBtnEnabled(false);
             ThreadUtil.RunOnThread(() =>
             {
                 XPJAccount tmpAccount;
@@ -107,7 +132,7 @@ namespace Gambler.UI
                     tmpAccount = _accounts[i];
                     if (_moneys[i] <= 0)
                     {
-                        UpdateDGVCellOnThread(i, "×");
+                        UpdateDGVCellOnThread(i, "-");
                         continue;
                     }
                     _requestData.money = String.Format("{0:N2}", _moneys[i]);
@@ -119,15 +144,22 @@ namespace Gambler.UI
                             (statusCode, err, errMsg) =>
                             {
                                 LogUtil.Write(String.Format("Http状态值：{0}，错误码：{1}，错误信息：{2}", statusCode, err, errMsg));
-                                UpdateDGVCellOnThread(i, "×");
+                                UpdateDGVCellOnThread(i, "×," + errMsg);
                             },
                             (err) =>
                             {
                                 LogUtil.Write(err);
-                                UpdateDGVCellOnThread(i, "×");
+                                UpdateDGVCellOnThread(i, "×," + "执行出错");
                             });
                 }
-                MessageBox.Show("投注操作完成!");
+                if (isAuto && !GlobalSetting.GetInstance().IsShowBetDialog)
+                {
+                    Invoke(new Action(()=> { Hide(); }));
+                }
+                else
+                {
+                    MessageBox.Show("投注操作完成!");
+                }
 
             });
         }
@@ -182,5 +214,11 @@ namespace Gambler.UI
                 }
             }
         }
+
+        private void DialogConfirm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            sInstance = null;
+        }
     }
 }
+

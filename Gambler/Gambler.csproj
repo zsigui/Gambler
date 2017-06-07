@@ -122,8 +122,10 @@
     <Compile Include="Utils\Interface\IRespCallback.cs" />
     <Compile Include="Utils\IOUtil.cs" />
     <Compile Include="Utils\JsonUtil.cs" />
+    <Compile Include="Utils\LevenshteinDistance.cs" />
     <Compile Include="Utils\Md5Util.cs" />
     <Compile Include="Utils\SearchHelper.cs" />
+    <Compile Include="Utils\SearchUtil.cs" />
     <Compile Include="Utils\StringUtil.cs" />
     <Compile Include="Utils\TimeUtil.cs" />
     <Compile Include="Module\XPJ\Model\DataGameCount.cs" />

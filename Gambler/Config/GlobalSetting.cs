@@ -229,7 +229,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[IS_SHOW_HALF_ODD_FIRST];
-                return o == null || (bool)o;
+                return o != null && (bool)o;
             }
             set
             {

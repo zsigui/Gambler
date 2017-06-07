@@ -56,7 +56,7 @@ namespace Gambler.XPJ
         private void InitStoredHeader()
         {
             _headers = new WebHeaderCollection();
-            _headers.Add("X-Requested-Width", "XMLHttpRequest");
+            _headers.Add("X-Requested-With", "XMLHttpRequest");
             _headers.Add("Accept-Encoding", "gzip, defalte");
             _headers.Add("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6");
             SetCookie();
@@ -74,7 +74,7 @@ namespace Gambler.XPJ
             }
             if (!String.IsNullOrEmpty(_jsessionId))
             {
-                _cookies.Add(new Cookie(KEY_JSESSION_ID, _session, "/", XPJConfig.URL_DOMAIN));
+                _cookies.Add(new Cookie(KEY_JSESSION_ID, _jsessionId, "/", XPJConfig.URL_DOMAIN));
             }
         }
         
@@ -174,12 +174,16 @@ namespace Gambler.XPJ
                            Login(retryCount - 1, onSuccess, onFail, onError);
                            return;
                        }
-                       if (cookies.Count != 0)
+                       if (data.success)
                        {
-                           _cookies.Add(cookies);
+                           if (cookies.Count != 0)
+                           {
+                               _cookies.Add(cookies);
+                           }
+                           RespOnSuccess(onSuccess, data);
+                           return;
                        }
-                       RespOnSuccess(onSuccess, data);
-                       return;
+                       RespOnFail(onFail, statusCode, data);
                    }
 
                    RespOnFail(onFail, statusCode, null);
