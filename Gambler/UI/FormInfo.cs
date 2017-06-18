@@ -269,9 +269,9 @@ namespace Gambler.UI
                         dr.Cells[0].Value = "半场休息";
                     }
                     dr.Cells[1].Value = String.Format("{0} : {1}", d.scoreH, d.scoreC);
-                    dr.Cells[2].Value = d.home;
-                    dr.Cells[3].Value = d.guest;
-                    dr.Cells[4].Value = d.league;
+                    dr.Cells[2].Value = d.league;
+                    dr.Cells[3].Value = d.home;
+                    dr.Cells[4].Value = d.guest;
                     if (RB_Whole.Checked)
                     {
                         // 全场

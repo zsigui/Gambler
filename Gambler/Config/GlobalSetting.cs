@@ -34,6 +34,7 @@ namespace Gambler.Config
         private readonly string BET_METHOD = "betMethod";
         private readonly string IS_SHOW_HALF_ODD_FIRST = "isShowHalfOddFirst";
         private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
+        private readonly string HF_ACCOUNT = "hfAccount";
 
         private Dictionary<string, object> _settings;
         
@@ -63,6 +64,7 @@ namespace Gambler.Config
                 _settings.Add(BET_METHOD, null);
                 _settings.Add(IS_SHOW_HALF_ODD_FIRST, null);
                 _settings.Add(IS_AUTO_ACCEPT_BEST_ODD, null);
+                _settings.Add(HF_ACCOUNT, null);
             }
         }
 
@@ -255,6 +257,19 @@ namespace Gambler.Config
             {
                 object o = _settings[IS_AUTO_ACCEPT_BEST_ODD];
                 return o == null || (bool)o;
+            }
+            set
+            {
+                _settings[IS_AUTO_ACCEPT_BEST_ODD] = value;
+            }
+        }
+
+        public string HFAccount
+        {
+            get
+            {
+                object o = _settings[IS_AUTO_ACCEPT_BEST_ODD];
+                return (o == null || o.Equals(""))? "kaokkyyzz:kaokkyyzz" : (string)o;
             }
             set
             {

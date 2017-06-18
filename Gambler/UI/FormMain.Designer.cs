@@ -30,13 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MS_Menu = new System.Windows.Forms.MenuStrip();
             this.TSMI_File = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Setting = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,17 +61,22 @@
             this.DGV_Live = new System.Windows.Forms.DataGridView();
             this.DGC_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Scroe = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Host = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Away = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Attention = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.CMS_Live = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TSMI_Live_CheckAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.TSMI_AddCookie = new System.Windows.Forms.ToolStripMenuItem();
             this.BTN_Refresh = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.SS_Bottom = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
+            this.CB_MoreEvent = new System.Windows.Forms.CheckBox();
+            this.CMS_Output = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.TSMI_Output_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.MS_Menu.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -89,6 +95,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SS_Bottom.SuspendLayout();
+            this.CMS_Output.SuspendLayout();
             this.SuspendLayout();
             // 
             // MS_Menu
@@ -164,6 +171,7 @@
             // 
             // RTB_Output
             // 
+            this.RTB_Output.ContextMenuStrip = this.CMS_Output;
             this.RTB_Output.Location = new System.Drawing.Point(10, 20);
             this.RTB_Output.Name = "RTB_Output";
             this.RTB_Output.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
@@ -267,6 +275,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.CB_MoreEvent);
             this.groupBox1.Controls.Add(this.CB_IsAutoRefresh);
             this.groupBox1.Controls.Add(this.DGV_Live);
             this.groupBox1.Controls.Add(this.BTN_Refresh);
@@ -308,6 +317,7 @@
             this.DGV_Live.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGC_ID,
             this.DGC_Time,
+            this.DGC_Scroe,
             this.DGC_League,
             this.DGC_Host,
             this.DGC_Away,
@@ -315,14 +325,14 @@
             this.DGV_Live.ContextMenuStrip = this.CMS_Live;
             this.DGV_Live.Location = new System.Drawing.Point(10, 49);
             this.DGV_Live.Name = "DGV_Live";
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_Live.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Live.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.DGV_Live.RowHeadersVisible = false;
             this.DGV_Live.RowTemplate.Height = 23;
             this.DGV_Live.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -345,55 +355,72 @@
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DGC_Time.HeaderText = "比分 / 时间";
+            this.DGC_Time.HeaderText = "时间";
             this.DGC_Time.Name = "DGC_Time";
             // 
-            // DGC_League
+            // DGC_Scroe
             // 
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle4;
+            this.DGC_Scroe.DefaultCellStyle = dataGridViewCellStyle4;
+            this.DGC_Scroe.HeaderText = "比分";
+            this.DGC_Scroe.Name = "DGC_Scroe";
+            this.DGC_Scroe.ReadOnly = true;
+            // 
+            // DGC_League
+            // 
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle5;
             this.DGC_League.HeaderText = "联赛";
             this.DGC_League.Name = "DGC_League";
             // 
             // DGC_Host
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle6;
             this.DGC_Host.HeaderText = "主队";
             this.DGC_Host.Name = "DGC_Host";
             // 
             // DGC_Away
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle7;
             this.DGC_Away.HeaderText = "客队";
             this.DGC_Away.Name = "DGC_Away";
             // 
             // DGC_Attention
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.NullValue = false;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.NullValue = false;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Attention.DefaultCellStyle = dataGridViewCellStyle8;
             this.DGC_Attention.HeaderText = "是否关注";
             this.DGC_Attention.Name = "DGC_Attention";
             // 
             // CMS_Live
             // 
             this.CMS_Live.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSMI_Live_CheckAll});
+            this.TSMI_Live_CheckAll,
+            this.TSMI_AddCookie});
             this.CMS_Live.Name = "CMS_";
-            this.CMS_Live.Size = new System.Drawing.Size(142, 26);
+            this.CMS_Live.Size = new System.Drawing.Size(195, 70);
             // 
             // TSMI_Live_CheckAll
             // 
             this.TSMI_Live_CheckAll.Name = "TSMI_Live_CheckAll";
-            this.TSMI_Live_CheckAll.Size = new System.Drawing.Size(141, 22);
+            this.TSMI_Live_CheckAll.Size = new System.Drawing.Size(194, 22);
             this.TSMI_Live_CheckAll.Text = "全选/全不选";
             this.TSMI_Live_CheckAll.Click += new System.EventHandler(this.TSMI_Live_CheckAll_Click);
+            // 
+            // TSMI_AddCookie
+            // 
+            this.TSMI_AddCookie.Name = "TSMI_AddCookie";
+            this.TSMI_AddCookie.Size = new System.Drawing.Size(194, 22);
+            this.TSMI_AddCookie.Text = "设置鸿发账号/Cookie";
+            this.TSMI_AddCookie.Click += new System.EventHandler(this.TSMI_AddCookie_Click);
             // 
             // BTN_Refresh
             // 
@@ -458,6 +485,30 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
+            // CB_MoreEvent
+            // 
+            this.CB_MoreEvent.AutoSize = true;
+            this.CB_MoreEvent.Location = new System.Drawing.Point(433, 24);
+            this.CB_MoreEvent.Name = "CB_MoreEvent";
+            this.CB_MoreEvent.Size = new System.Drawing.Size(96, 16);
+            this.CB_MoreEvent.TabIndex = 3;
+            this.CB_MoreEvent.Text = "输出普通事件";
+            this.CB_MoreEvent.UseVisualStyleBackColor = true;
+            // 
+            // CMS_Output
+            // 
+            this.CMS_Output.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSMI_Output_Clear});
+            this.CMS_Output.Name = "CMS_Output";
+            this.CMS_Output.Size = new System.Drawing.Size(101, 26);
+            // 
+            // TSMI_Output_Clear
+            // 
+            this.TSMI_Output_Clear.Name = "TSMI_Output_Clear";
+            this.TSMI_Output_Clear.Size = new System.Drawing.Size(100, 22);
+            this.TSMI_Output_Clear.Text = "清空";
+            this.TSMI_Output_Clear.Click += new System.EventHandler(this.TSMI_Output_Clear_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -494,6 +545,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.SS_Bottom.ResumeLayout(false);
             this.SS_Bottom.PerformLayout();
+            this.CMS_Output.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -529,12 +581,17 @@
         private System.Windows.Forms.ContextMenuStrip CMS_Live;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Live_CheckAll;
         private System.Windows.Forms.CheckBox CB_IsAutoRefresh;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_AddCookie;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Time;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Scroe;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_League;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Host;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Away;
         private System.Windows.Forms.DataGridViewCheckBoxColumn DGC_Attention;
+        private System.Windows.Forms.CheckBox CB_MoreEvent;
+        private System.Windows.Forms.ContextMenuStrip CMS_Output;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Output_Clear;
     }
 }
 

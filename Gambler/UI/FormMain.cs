@@ -8,6 +8,7 @@ using Gambler.XPJ;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -191,11 +192,21 @@ namespace Gambler
                             dr = new DataGridViewRow();
                             dr.CreateCells(DGV_Live);
                             dr.Cells[0].Value = m.MID;
-                            dr.Cells[1].Value = String.Format("{0} / {1}", m.Score, m.Time);
-                            dr.Cells[2].Value = m.League;
-                            dr.Cells[3].Value = m.Home;
-                            dr.Cells[4].Value = m.Away;
-                            dr.Cells[5].Value = true;
+                            string time = "半场休息";
+                            if (m.Time.StartsWith("1H"))
+                            {
+                                time = String.Format("上半场 {0}", m.Time.Substring(2).Trim());
+                            }
+                            else if (m.Time.StartsWith("2H"))
+                            {
+                                time = String.Format("下半场 {0}", m.Time.Substring(2).Trim());
+                            }
+                            dr.Cells[1].Value = time;
+                            dr.Cells[2].Value = m.Score;
+                            dr.Cells[3].Value = m.League;
+                            dr.Cells[4].Value = m.Home;
+                            dr.Cells[5].Value = m.Away;
+                            dr.Cells[6].Value = true;
                             DGV_Live.Rows.Add(dr);
                         }
                     }
@@ -252,73 +263,95 @@ namespace Gambler
             1000);
         }
 
-        private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】\n\n";
+        private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】";
         private void DealWithTargetMatch(HFSimpleMatch m, string cid)
         {
             ThreadUtil.WorkOnUI<object>(this, new Action(()=> {
                 if (_eventIdInfo.POSSIBLE_PENALTY.Equals(cid))
                 {
                     // 可能点球
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "可能发生点球事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "可能发生点球事件"), Color.Gainsboro);
                 }
                 else if (_eventIdInfo.PEN1.Equals(cid))
                 {
                     // 主队点球
-                    MessageBox.Show(String.Format("【{0}】{1}(主队)-进行点球", m.League, m.Home),
-                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球事件"));
+                    if (!GlobalSetting.GetInstance().IsAutoBet)
+                    {
+                        MessageBox.Show(String.Format("【{0}】{1}(主队)-进行点球", m.League, m.Home),
+                            "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球"), Color.Red);
                     HandleAutoBetEvent(m, true);
                 }
                 else if (_eventIdInfo.PEN2.Equals(cid))
                 {
                     // 客队点球
-                    MessageBox.Show(String.Format("【{0}】{1}(客队)-进行点球", m.League, m.Away),
+                    if (!GlobalSetting.GetInstance().IsAutoBet)
+                    {
+                        MessageBox.Show(String.Format("【{0}】{1}(客队)-进行点球", m.League, m.Away),
                         "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球事件"));
+                    }
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球"), Color.Red);
                     HandleAutoBetEvent(m, false);
                 }
                 else if (_eventIdInfo.PENALTY_MISS.Equals(cid)
                     || _eventIdInfo.CPEN1.Equals(cid) || _eventIdInfo.CPEN2.Equals(cid))
                 {
                     // 点球取消
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "点球取消事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "点球取消"), Color.Gray);
                 }
                 else if (_eventIdInfo.MPEN1.Equals(cid))
                 {
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球失误事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球失误"), Color.OliveDrab);
                 }
                 else if (_eventIdInfo.MPEN2.Equals(cid))
                 {
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球失误事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球失误"), Color.OliveDrab);
                 }
                 else if (_eventIdInfo.GOAL_PEN1.Equals(cid))
                 {
                     // 主队点球得分
                     MessageBox.Show(String.Format("【{0}】{1}(主队)-点球得分", m.League, m.Home),
                         "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分"), Color.DarkGreen);
                 }
                 else if (_eventIdInfo.GOAL_PEN2.Equals(cid))
                 {
                     // 客队点球得分
                     MessageBox.Show(String.Format("【{0}】{1}(客队)-点球得分", m.League, m.Away),
                         "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分事件"));
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分"), Color.DarkGreen);
                 }
-//                 else if(_eventIdInfo.SAFE.Equals(cid) || _eventIdInfo.SAFE1.Equals(cid) || _eventIdInfo.SAFE2.Equals(cid))
-//                 {
-//                     RTB_Output.AppendText(String.Format(REGEX_FORMAT,
-//                        m.Score, m.Time, m.League, m.Home, m.Away, "控球事件"));
-//                     HandleAutoBetEvent(m, false);
-//                 }
+                else if (CB_MoreEvent.Checked) {
+                    if (_eventIdInfo.SAFE1.Equals(cid))
+                    {
+                        Output(String.Format(REGEX_FORMAT,
+                           m.Score, m.Time, m.League, m.Home, m.Away, "主队控球"), Color.LightSteelBlue);
+                    }
+                    else if (_eventIdInfo.SAFE2.Equals(cid))
+                    {
+                        Output(String.Format(REGEX_FORMAT,
+                           m.Score, m.Time, m.League, m.Home, m.Away, "客队控球"), Color.LightSteelBlue);
+                    }
+                    else if (_eventIdInfo.GOAL1.Equals(cid))
+                    {
+                        Output(String.Format(REGEX_FORMAT,
+                           m.Score, m.Time, m.League, m.Home, m.Away, "主队进球得分"), Color.OrangeRed);
+                    }
+                    else if (_eventIdInfo.GOAL2.Equals(cid))
+                    {
+                        Output(String.Format(REGEX_FORMAT,
+                           m.Score, m.Time, m.League, m.Home, m.Away, "客队进球得分"), Color.OrangeRed);
+                    }
+                }
             }));
         }
 
@@ -410,16 +443,18 @@ namespace Gambler
 
         }
 
-        public void DoInitAndLoginH8T()
+        public void DoInitAndLoginH8T(string sessionid, string auth)
         {
             ThreadUtil.RunOnThread(() =>
             {
                 // 从服务器直接获取 h8 cookie，就可以不用登录了，每天cookie只会变动一次
 
-                _h8Client = new HFClient(null, null);
+                if (_h8Client == null)
+                {
+                    _h8Client = new HFClient(null, null);
+                }
                 _h8Client.IsH8Login = true;
-                _h8Client.AddH8Cookie("gtmj1d45tp5gmu55mzdyjw45",
-                    "65323DF70346C454FA1EAAADD38FE805C7E5C71EECAB7101DC33C95C6310ADD6B7301B91579171E58FB274039112725F87EA60483028C3DBC06DCB56CBBB2FFB6E5A8F800C0D72E23F47B88E5BC85C09B3954154E3DD474F801F51285E23E1A91ABDE8A30AA6FDFDC6AE21E3DDB8E4255555609B3AAB445679F1432EB30E9C414964DC0B");
+                _h8Client.AddH8Cookie(sessionid, auth);
                 DoGetLiveDataAfterInitAndLogin(true);
             });
         }
@@ -434,7 +469,8 @@ namespace Gambler
                 Console.WriteLine("开始执行");
                 if (_h8Client == null)
                 {
-                    _h8Client = new HFClient("kaokkyyzz", "kaokkyyzz");
+                    string[] key = GlobalSetting.GetInstance().HFAccount.Split(':');
+                    _h8Client = new HFClient(key[0], key[1]);
                 }
                 _h8Client.Login(
                     (data) =>
@@ -532,7 +568,7 @@ namespace Gambler
             {
                 foreach (DataGridViewRow r in DGV_Live.Rows)
                 {
-                    r.Cells[5].Value = false;
+                    r.Cells[6].Value = false;
                 }
                 _checkedLiveList.Clear();
             }
@@ -540,7 +576,7 @@ namespace Gambler
             {
                 foreach (DataGridViewRow r in DGV_Live.Rows)
                 {
-                    r.Cells[5].Value = true;
+                    r.Cells[6].Value = true;
                 }
                 _checkedLiveList.AddRange(_h8Client.LiveMatchs.Keys);
             }
@@ -613,6 +649,41 @@ namespace Gambler
         {
             if (HasXPJAccount())
                 _xpjUserDict[CLB_XPJUser.Items[e.Index].ToString()].IsChecked = (e.NewValue == CheckState.Checked);
+        }
+
+        private void TSMI_AddCookie_Click(object sender, EventArgs e)
+        {
+            DialogAddH8Cookie dialog = new DialogAddH8Cookie();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                if (dialog.IsAccount)
+                {
+                    _h8Client = null;
+                    DoInitAndLoginH8();
+                }
+                else
+                {
+                    DoInitAndLoginH8T(dialog.UserOrSession, dialog.PwdOrAuth);
+                }
+            }
+        }
+
+        public void Output(string content, Color fontColor)
+        {
+            ThreadUtil.WorkOnUI<object>(this, new Action(() =>
+            {
+                int p1 = RTB_Output.Text.Length;
+                content = String.Format("[{0}] {1}\n", DateTime.Now.ToLongTimeString().ToString(), content);
+                RTB_Output.AppendText(content);
+                RTB_Output.Select(p1, content.Length);
+                RTB_Output.SelectionColor = fontColor;
+                RTB_Output.Refresh();
+            }));
+        }
+
+        private void TSMI_Output_Clear_Click(object sender, EventArgs e)
+        {
+            RTB_Output.Clear();
         }
     }
 }
