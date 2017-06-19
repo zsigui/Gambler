@@ -407,7 +407,7 @@ namespace Gambler.XPJ
                        return;
                    }
 
-                   RespOnFail(onFail, statusCode, null);
+                   RespOnFail(onFail, statusCode, data);
                },
                (e) =>
                {

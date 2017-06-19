@@ -106,7 +106,7 @@ namespace Gambler.Utils
             }
 
             // 添加Cookie信息，与Header分开处理
-            proxy = new WebProxy("127.0.0.1", 8888);
+            // proxy = new WebProxy("127.0.0.1", 8888);
             if (proxy != null)
             {
                 request.Proxy = proxy;

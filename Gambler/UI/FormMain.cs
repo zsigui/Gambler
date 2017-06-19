@@ -334,12 +334,11 @@ namespace Gambler
                     {
                         case HFLiveEventIdNote.SAFE1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队控球"), Color.YellowGreen);
-                            HandleAutoBetEvent(m, false);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队控球"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.SAFE2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队控球"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队控球"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.GOAL1:
                             {
@@ -357,29 +356,29 @@ namespace Gambler
                             }
                         case HFLiveEventIdNote.AT1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起进攻"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起进攻"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.AT2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起进攻"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起进攻"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.DANGER1:
                         case HFLiveEventIdNote.DAT1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起威胁性进攻"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起威胁性进攻"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.DANGER2:
                         case HFLiveEventIdNote.DAT2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起威胁性进攻"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起威胁性进攻"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.DFK1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队威胁性任意球机会"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队威胁性任意球机会"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.DFK2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队威胁性任意球机会"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队威胁性任意球机会"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.RC1:
                             Output(String.Format(REGEX_FORMAT,
@@ -391,35 +390,35 @@ namespace Gambler
                             break;
                         case HFLiveEventIdNote.YRC1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队受到黄牌警告"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队受到黄牌警告"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.YRC2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队受到黄牌警告"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队受到黄牌警告"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CYC_RC1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队取消红/黄牌惩罚"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队取消红/黄牌惩罚"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CYC_RC2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队取消红/黄牌惩罚"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队取消红/黄牌惩罚"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CR1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队获得角球机会"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队获得角球机会"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CR2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队获得角球机会"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队获得角球机会"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CCR1:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "主队角球机会取消"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队角球机会取消"), Color.DarkGreen);
                             break;
                         case HFLiveEventIdNote.CCR2:
                             Output(String.Format(REGEX_FORMAT,
-                                m.Score, m.Time, m.League, m.Home, m.Away, "客队角球机会取消"), Color.YellowGreen);
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队角球机会取消"), Color.DarkGreen);
                             break;
                         default:
                             break;
