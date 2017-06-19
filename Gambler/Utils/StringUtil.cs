@@ -16,8 +16,9 @@ namespace Gambler.Utils
         /// <returns>简体中文字符串，如果转换失败，返回输入字符串</returns>
         public static string TraditionalToSimple(string traditional)
         {
-            string result = Strings.StrConv(traditional, VbStrConv.SimplifiedChinese);
-            return String.IsNullOrEmpty(result) ? traditional : result;
+            //             string result = Strings.StrConv(traditional, VbStrConv.SimplifiedChinese);
+            //             return String.IsNullOrEmpty(result) ? traditional : result;
+            return traditional;
         }
 
         /// <summary>

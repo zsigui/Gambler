@@ -15,65 +15,74 @@ namespace Gambler.Module
 
         public static List<HFSimpleMatch> ParseOddDataXml(string htmlContent)
         {
-            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
-            htmlDoc.LoadHtml(htmlContent);
-            HtmlAgilityPack.HtmlNode node = htmlDoc.DocumentNode
-                .SelectSingleNode("//tr[@class='GridHeaderRun']").ParentNode;
-            HtmlAgilityPack.HtmlNodeCollection nodes = node.ChildNodes;
-
-            List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
-            string newsetLeague = "";
-            int count = nodes.Count;
-            string clsValue;
-            HtmlAttribute atrrs;
-            HFSimpleMatch tmpMatch;
-            for (int i = 0; i < count; i++)
+            try
             {
-                node = nodes[i];
-                atrrs = node.Attributes["class"];
-                if (atrrs != null)
+                HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+                htmlDoc.LoadHtml(htmlContent);
+                HtmlAgilityPack.HtmlNode node = htmlDoc.DocumentNode
+                    .SelectSingleNode("//tr[@class='GridHeaderRun']").ParentNode;
+                HtmlAgilityPack.HtmlNodeCollection nodes = node.ChildNodes;
+
+                List<HFSimpleMatch> matchs = new List<HFSimpleMatch>();
+                string newsetLeague = "";
+                int count = nodes.Count;
+                string clsValue;
+                HtmlAttribute atrrs;
+                HFSimpleMatch tmpMatch;
+                for (int i = 0; i < count; i++)
                 {
-                    clsValue = atrrs.Value;
-                    if (!String.IsNullOrEmpty(clsValue))
+                    node = nodes[i];
+                    atrrs = node.Attributes["class"];
+                    if (atrrs != null)
                     {
-                        switch (clsValue)
+                        clsValue = atrrs.Value;
+                        if (!String.IsNullOrEmpty(clsValue))
                         {
-                            case "GridRunItem":
-                                // 该节点可能是联赛名节点，进行判别 < tr class="GridRunItem" />
-                                if (node.ChildNodes.Count > 1)
-                                {
-                                    //有两个子节点，判断为赛事节点（多个<td /> 节点）
+                            switch (clsValue)
+                            {
+                                case "GridRunItem":
+                                    // 该节点可能是联赛名节点，进行判别 < tr class="GridRunItem" />
+                                    if (node.ChildNodes.Count > 1)
+                                    {
+                                        //有两个子节点，判断为赛事节点（多个<td /> 节点）
+                                        tmpMatch = ExtractMatchFromNode(node, newsetLeague);
+                                        if (tmpMatch != null)
+                                            matchs.Add(tmpMatch);
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            newsetLeague = StringUtil.TraditionalToSimple(ReplcaeBlank(node.FirstChild.InnerText, ""));
+                                        }
+                                        catch (Exception e) { }
+                                    }
+                                    break;
+                                case "GridAltRunItem":
+                                    // 该节点为赛事节点<tr class="GridAltRunItem" />
                                     tmpMatch = ExtractMatchFromNode(node, newsetLeague);
                                     if (tmpMatch != null)
                                         matchs.Add(tmpMatch);
-                                }
-                                else
-                                {
-                                    try
-                                    {
-                                        newsetLeague = StringUtil.TraditionalToSimple(ReplcaeBlank(node.FirstChild.InnerText, ""));
-                                    }
-                                    catch (Exception e) { }
-                                }
-                                break;
-                            case "GridAltRunItem":
-                                // 该节点为赛事节点<tr class="GridAltRunItem" />
-                                tmpMatch = ExtractMatchFromNode(node, newsetLeague);
-                                if (tmpMatch != null)
-                                    matchs.Add(tmpMatch);
-                                break;
+                                    break;
+                            }
                         }
                     }
                 }
-            }
 
-            for (int i = 0; i < matchs.Count; i++)
-            {
-                tmpMatch = matchs[i];
-                Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
-                    tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
+                for (int i = 0; i < matchs.Count; i++)
+                {
+                    tmpMatch = matchs[i];
+                    Console.WriteLine(String.Format("赛事ID:{0}，{1}:{2} 比分 {3}，所属联赛: {4}",
+                        tmpMatch.MID, tmpMatch.Home, tmpMatch.Away, tmpMatch.Score, tmpMatch.League));
+                }
+                return matchs;
             }
-            return matchs;
+            catch (NullReferenceException e)
+            {
+                LogUtil.Write(e);
+                LogUtil.Write("HFHtmlParser.ParseOddDataXml = " + htmlContent);
+                return null;
+            }
         }
 
         private static HFSimpleMatch ExtractMatchFromNode(HtmlNode node, string league)

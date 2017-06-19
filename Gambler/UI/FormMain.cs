@@ -73,7 +73,7 @@ namespace Gambler
                             LogUtil.Write("登录成功，添加项: " + entry.Key);
                             entry.Value.GetClient().GetUserInfo((d) =>
                             {
-                                Console.WriteLine(entry.Value.Account + "金币余额: " + d.money);
+                                LogUtil.Write(entry.Value.Account + "金币余额: " + d.money);
                                 entry.Value.Money = d.money;
                             }, null, null);
                             // 将返回成功的添加的字典中
@@ -148,15 +148,13 @@ namespace Gambler
 
             GlobalSetting.GetInstance().Load();
             InitializeComponent();
-            RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
             OnStartInit();
         }
 
         #region 初始化
         private void OnStartInit()
         {
-            RefreshState(false, false);
-            DoInitAndLoginH8();
+            BTN_Refresh_Click(null, null);
         }
 
         private static readonly long DEFAULT_EMPTY_TIME_DIFF = 60000;
@@ -167,9 +165,9 @@ namespace Gambler
         private System.Threading.Timer _liveTimer;
         private System.Threading.Timer _h8DataTimer;
         private HFClient _h8Client;
-        private HFLiveEventIdNote _eventIdInfo = new HFLiveEventIdNote();
         // 选择关注的直播赛事列表
-        private List<string> _checkedLiveList = new List<string>(); 
+        private List<string> _checkedLiveList = new List<string>();
+        private bool _isInErr = false;
 
         private void UpdateDGVData(Dictionary<string, HFSimpleMatch> matchs)
         {
@@ -226,13 +224,13 @@ namespace Gambler
             {
                 if (resetTimer)
                 {
-                    _liveTimer.Change(0, 1000);
+                    _liveTimer.Change(1000, 1000);
                 }
                 return;
             }
             _liveTimer = ThreadUtil.RunOnTimer((state) =>
             {
-                Console.WriteLine("TimerCallback 执行中...");
+                LogUtil.Write("TimerCallback 执行中...");
                 if (_h8Client.LiveMatchs != null)
                 {
                     Dictionary<string, HFSimpleMatch> lives = new Dictionary<string, HFSimpleMatch>(_h8Client.LiveMatchs);
@@ -242,19 +240,26 @@ namespace Gambler
                         _h8Client.GetSpecLiveEvent(entry.Key,
                             (eventData) =>
                             {
-                                Console.WriteLine(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
-                                    m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
+//                                 LogUtil.Write(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
+//                                     m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
+//                                 if (CB_MoreEvent.Checked)
+//                                 {
+//                                     Output(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}",
+//                                     m.League, m.Home, m.Away, eventData.Info), Color.Blue);
+//                                 }
                                 if (_checkedLiveList.Contains(eventData.MID.ToString()))
                                 {
                                     DealWithTargetMatch(m, eventData.CID);
                                 }
 
-                            }, null, null);
+                            },
+                            null,
+                            null);
                     }
                 }
                 else
                 {
-                    Console.Write("当前直播列表为空，停止直播任务事件监听");
+                    LogUtil.Write("当前直播列表为空，停止直播任务事件监听");
                     _liveTimer.Change(Timeout.Infinite, 1000);
                 }
             },
@@ -266,90 +271,158 @@ namespace Gambler
         private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】";
         private void DealWithTargetMatch(HFSimpleMatch m, string cid)
         {
-            ThreadUtil.WorkOnUI<object>(this, new Action(()=> {
-                if (_eventIdInfo.POSSIBLE_PENALTY.Equals(cid))
+            ThreadUtil.WorkOnUI<object>(this, new Action(() =>
+            {
+                if (HFLiveEventIdNote.POSSIBLE_PENALTY.Equals(cid))
                 {
                     // 可能点球
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "可能发生点球事件"), Color.Gainsboro);
                 }
-                else if (_eventIdInfo.PEN1.Equals(cid))
+                else if (HFLiveEventIdNote.PEN1.Equals(cid))
                 {
                     // 主队点球
-                    if (!GlobalSetting.GetInstance().IsAutoBet)
-                    {
-                        MessageBox.Show(String.Format("【{0}】{1}(主队)-进行点球", m.League, m.Home),
-                            "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    ForceMessageBox(String.Format("【{0}】{1}(主队)-进行点球", m.League, m.Home));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球"), Color.Red);
                     HandleAutoBetEvent(m, true);
                 }
-                else if (_eventIdInfo.PEN2.Equals(cid))
+                else if (HFLiveEventIdNote.PEN2.Equals(cid))
                 {
                     // 客队点球
-                    if (!GlobalSetting.GetInstance().IsAutoBet)
-                    {
-                        MessageBox.Show(String.Format("【{0}】{1}(客队)-进行点球", m.League, m.Away),
-                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    ForceMessageBox(String.Format("【{0}】{1}(客队)-进行点球", m.League, m.Away));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球"), Color.Red);
                     HandleAutoBetEvent(m, false);
                 }
-                else if (_eventIdInfo.PENALTY_MISS.Equals(cid)
-                    || _eventIdInfo.CPEN1.Equals(cid) || _eventIdInfo.CPEN2.Equals(cid))
+                else if (HFLiveEventIdNote.PENALTY_MISS.Equals(cid)
+                    || HFLiveEventIdNote.CPEN1.Equals(cid) || HFLiveEventIdNote.CPEN2.Equals(cid))
                 {
                     // 点球取消
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "点球取消"), Color.Gray);
                 }
-                else if (_eventIdInfo.MPEN1.Equals(cid))
+                else if (HFLiveEventIdNote.MPEN1.Equals(cid))
                 {
+                    ForceMessageBox(String.Format("【{0}】{1}(主队)-点球失误", m.League, m.Home));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球失误"), Color.OliveDrab);
                 }
-                else if (_eventIdInfo.MPEN2.Equals(cid))
+                else if (HFLiveEventIdNote.MPEN2.Equals(cid))
                 {
+                    ForceMessageBox(String.Format("【{0}】{1}(客队)-点球失误", m.League, m.Home));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球失误"), Color.OliveDrab);
                 }
-                else if (_eventIdInfo.GOAL_PEN1.Equals(cid))
+                else if (HFLiveEventIdNote.GOAL_PEN1.Equals(cid))
                 {
                     // 主队点球得分
-                    MessageBox.Show(String.Format("【{0}】{1}(主队)-点球得分", m.League, m.Home),
-                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ForceMessageBox(String.Format("【{0}】{1}(主队)-点球得分", m.League, m.Home));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分"), Color.DarkGreen);
                 }
-                else if (_eventIdInfo.GOAL_PEN2.Equals(cid))
+                else if (HFLiveEventIdNote.GOAL_PEN2.Equals(cid))
                 {
                     // 客队点球得分
-                    MessageBox.Show(String.Format("【{0}】{1}(客队)-点球得分", m.League, m.Away),
-                        "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ForceMessageBox(String.Format("【{0}】{1}(客队)-点球得分", m.League, m.Away));
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分"), Color.DarkGreen);
                 }
-                else if (CB_MoreEvent.Checked) {
-                    if (_eventIdInfo.SAFE1.Equals(cid))
+                else if (CB_MoreEvent.Checked)
+                {
+                    switch (cid)
                     {
-                        Output(String.Format(REGEX_FORMAT,
-                           m.Score, m.Time, m.League, m.Home, m.Away, "主队控球"), Color.LightSteelBlue);
-                    }
-                    else if (_eventIdInfo.SAFE2.Equals(cid))
-                    {
-                        Output(String.Format(REGEX_FORMAT,
-                           m.Score, m.Time, m.League, m.Home, m.Away, "客队控球"), Color.LightSteelBlue);
-                    }
-                    else if (_eventIdInfo.GOAL1.Equals(cid))
-                    {
-                        Output(String.Format(REGEX_FORMAT,
-                           m.Score, m.Time, m.League, m.Home, m.Away, "主队进球得分"), Color.OrangeRed);
-                    }
-                    else if (_eventIdInfo.GOAL2.Equals(cid))
-                    {
-                        Output(String.Format(REGEX_FORMAT,
-                           m.Score, m.Time, m.League, m.Home, m.Away, "客队进球得分"), Color.OrangeRed);
+                        case HFLiveEventIdNote.SAFE1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队控球"), Color.YellowGreen);
+                            HandleAutoBetEvent(m, false);
+                            break;
+                        case HFLiveEventIdNote.SAFE2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队控球"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.GOAL1:
+                            {
+                                ForceMessageBox(String.Format("【{0}】{1}(主队)-进球得分", m.League, m.Home));
+                                Output(String.Format(REGEX_FORMAT,
+                                    m.Score, m.Time, m.League, m.Home, m.Away, "主队进球得分"), Color.OrangeRed);
+                                break;
+                            }
+                        case HFLiveEventIdNote.GOAL2:
+                            {
+                                ForceMessageBox(String.Format("【{0}】{1}(客队)-进球得分", m.League, m.Away));
+                                Output(String.Format(REGEX_FORMAT,
+                                    m.Score, m.Time, m.League, m.Home, m.Away, "客队进球得分"), Color.OrangeRed);
+                                break;
+                            }
+                        case HFLiveEventIdNote.AT1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起进攻"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.AT2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起进攻"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.DANGER1:
+                        case HFLiveEventIdNote.DAT1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队发起威胁性进攻"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.DANGER2:
+                        case HFLiveEventIdNote.DAT2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队发起威胁性进攻"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.DFK1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队威胁性任意球机会"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.DFK2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队威胁性任意球机会"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.RC1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队受到红牌惩罚"), Color.OrangeRed);
+                            break;
+                        case HFLiveEventIdNote.RC2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队受到红牌惩罚"), Color.OrangeRed);
+                            break;
+                        case HFLiveEventIdNote.YRC1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队受到黄牌警告"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.YRC2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队受到黄牌警告"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CYC_RC1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队取消红/黄牌惩罚"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CYC_RC2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队取消红/黄牌惩罚"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CR1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队获得角球机会"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CR2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队获得角球机会"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CCR1:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "主队角球机会取消"), Color.YellowGreen);
+                            break;
+                        case HFLiveEventIdNote.CCR2:
+                            Output(String.Format(REGEX_FORMAT,
+                                m.Score, m.Time, m.League, m.Home, m.Away, "客队角球机会取消"), Color.YellowGreen);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }));
@@ -360,13 +433,24 @@ namespace Gambler
         /// </summary>
         private void HandleAutoBetEvent(HFSimpleMatch m, bool isHome)
         {
+            // 将比赛名复制到
+
             // 执行自动下注请求
             // 新葡京
             // 没有账号的时候不进行下注
+
+            string league, home, away;
+            GlobalSetting setting = GlobalSetting.GetInstance();
+            league = setting.GetMapValue(m.League);
+            home = setting.GetMapValue(m.Home);
+            away = setting.GetMapValue(m.Away);
+            CommonUtil.Copy(league);
+
             if (HasXPJAccount())
             {
                 FormInfo.NewInstance().Show();
-                FormInfo.NewInstance().AutoRequest(new string[] { m.League, m.Home, m.Away }, isHome);
+
+                FormInfo.NewInstance().AutoRequest(new string[] { league, home, away }, isHome);
             }
 
             // 其他
@@ -376,38 +460,41 @@ namespace Gambler
 
         private void DoGetLiveDataAfterInitAndLogin(bool resetTimer)
         {
+            RefreshH8TimerState(1);
             if (_h8Client == null || !_h8Client.IsH8Login)
             {
                 DoInitAndLoginH8();
                 return;
             }
+            if (resetTimer)
+            {
+                _autoRefreshCuountdown = 0;
+            }
             if (_h8DataTimer != null)
             {
-                if (resetTimer)
-                {
-                    // 重置定时器自动刷新时间s
-                    _autoRefreshCuountdown = 1;
-                    _h8DataTimer.Change(0, CB_IsAutoRefresh.Checked ? 1000 : Timeout.Infinite);
-                }
+                _h8DataTimer.Change(resetTimer? 0: 1000, 1000);
                 return;
             }
 
             _h8DataTimer = ThreadUtil.RunOnTimer(
                 (tobj) =>
                 {
-                    RefreshTime(--_autoRefreshCuountdown);
+                    
                     if (_autoRefreshCuountdown > 0)
                     {
+                        _autoRefreshCuountdown--;
+                        RefreshBtn(0);
                         return;
                     }
+                    _h8DataTimer.Change(Timeout.Infinite, 1000);
                     _autoRefreshCuountdown = GlobalSetting.GetInstance().AutoRefreshTime;
-                    RefreshState(false, false);
-
+                    
                     _h8Client.GetOddData(
                         (matchData) =>
                         {
-                            RefreshState(true, false);
-                            Console.WriteLine("OddData: 获取Odd数据!");
+                            _isInErr = false;
+                            RefreshH8TimerState(0);
+                            LogUtil.Write("OddData: 获取Odd数据!");
                             /// matchData 表示这一轮获取到全部数据
                             /// _h8Client.LiveMatchs 表示根据该数据解析到的 Live数据列表
                             long curTime = TimeUtil.CurrentTimeMillis();
@@ -429,17 +516,17 @@ namespace Gambler
                         (status, code, msg) =>
                         {
                             LogUtil.Write("OddData : Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
-                            RefreshState(true, false);
+                            RefreshH8TimerState(2);
                         },
                         (e) =>
                         {
-                            RefreshState(true, false);
-                            LogUtil.Write("OddData : " + e.Message);
+                            RefreshH8TimerState(2);
+                            LogUtil.Write(e);
                         });
                 },
                 null,
                 0,
-                CB_IsAutoRefresh.Checked ? 1000 : Timeout.Infinite);
+                1000);
 
         }
 
@@ -466,7 +553,7 @@ namespace Gambler
             ThreadUtil.RunOnThread(() =>
             {
 
-                Console.WriteLine("开始执行");
+                LogUtil.Write("开始执行");
                 if (_h8Client == null)
                 {
                     string[] key = GlobalSetting.GetInstance().HFAccount.Split(':');
@@ -475,32 +562,32 @@ namespace Gambler
                 _h8Client.Login(
                     (data) =>
                       {
-                          Console.WriteLine("登录成功!");
+                          LogUtil.Write("登录成功!");
                           _h8Client.LoginForH8((d) =>
                               {
-                                  Console.WriteLine("H8登录成功!");
+                                  LogUtil.Write("H8登录成功!");
                                   DoGetLiveDataAfterInitAndLogin(true);
                               },
                               (status, code, msg) =>
                               {
-                                  RefreshState(true, true);
-                                  Console.WriteLine("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
+                                  RefreshH8TimerState(2);
+                                  LogUtil.Write("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
                               },
                               (e) =>
                               {
-                                  RefreshState(true, true);
-                                  Console.WriteLine(e.Message);
+                                  RefreshH8TimerState(2);
+                                  LogUtil.Write(e.Message);
                               });
                       },
                       (status, code, msg) =>
                       {
-                          RefreshState(true, true);
-                          Console.WriteLine("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
+                          RefreshH8TimerState(2);
+                          LogUtil.Write("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
                       },
                       (e) =>
                       {
-                          RefreshState(true, true);
-                          Console.WriteLine(e.Message);
+                          RefreshH8TimerState(2);
+                          LogUtil.Write(e.Message);
                       });
 
             });
@@ -554,8 +641,7 @@ namespace Gambler
             FormSetting setting = new FormSetting();
             if (setting.ShowDialog() == DialogResult.OK)
             {
-                // 重置刷新
-                RefreshTime(GlobalSetting.GetInstance().AutoRefreshTime);
+                BTN_Refresh_Click(sender, e);
             }
         }
 
@@ -584,7 +670,7 @@ namespace Gambler
 
         private void BTN_Refresh_Click(object sender, EventArgs e)
         {
-            RefreshState(false, false);
+            _autoRefreshCuountdown = GlobalSetting.GetInstance().AutoRefreshTime;
             DoGetLiveDataAfterInitAndLogin(true);
         }
         
@@ -598,41 +684,7 @@ namespace Gambler
             FormInfo.NewInstance().Show();
         }
         #endregion
-
-        private void RefreshTime(int t)
-        {
-            ThreadUtil.WorkOnUI(this, new Action<int>((time) =>
-            {
-                BTN_Refresh.Text = String.Format("刷新：{0}s", t);
-            }),
-            t);
-        }
-
-        private void RefreshState(bool e, bool err)
-        {
-            ThreadUtil.WorkOnUI(this, new Action<bool, bool>((enabled, er) =>
-            {
-
-                BTN_Refresh.Enabled = enabled;
-                if (!enabled)
-                    BTN_Refresh.Text = "刷新中ing";
-                else
-                {
-                    if (er)
-                    {
-                        BTN_Refresh.Text = "出错，请手动刷新";
-                    } else if (CB_IsAutoRefresh.Checked)
-                    {
-                        BTN_Refresh.Text = String.Format("刷新：{0}s", _autoRefreshCuountdown);
-                    }
-                    else
-                    {
-                        BTN_Refresh.Text = "点击刷新";
-                    }
-                }
-            }),
-            e, err);
-        }
+        
 
         private void FormMain_Load(object sender, EventArgs e)
         {
@@ -673,17 +725,107 @@ namespace Gambler
             ThreadUtil.WorkOnUI<object>(this, new Action(() =>
             {
                 int p1 = RTB_Output.Text.Length;
-                content = String.Format("[{0}] {1}\n", DateTime.Now.ToLongTimeString().ToString(), content);
+                content = String.Format("[{0}] {1}\n", DateTime.Now.ToString("HH:mm:ss"), content);
                 RTB_Output.AppendText(content);
                 RTB_Output.Select(p1, content.Length);
                 RTB_Output.SelectionColor = fontColor;
                 RTB_Output.Refresh();
+                RTB_Output.ScrollToCaret();
             }));
         }
 
         private void TSMI_Output_Clear_Click(object sender, EventArgs e)
         {
             RTB_Output.Clear();
+        }
+
+        private void ForceMessageBox(string msg)
+        {
+            this.TopMost = true;
+            MessageBox.Show(msg, "点球提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            this.TopMost = false;
+        }
+
+        private void RefreshBtn(int state)
+        {
+            ThreadUtil.WorkOnUI(this, new Action<int>((s) =>
+            {
+
+                switch (s)
+                {
+                    case 0:
+                        BTN_Refresh.Enabled = true;
+                        BTN_Refresh.Text = String.Format("刷新：{0}s", _autoRefreshCuountdown);
+                        break;
+                    case 1:
+                        BTN_Refresh.Enabled = false;
+                        BTN_Refresh.Text = "刷新中...";
+                        break;
+                    case 2:
+                        BTN_Refresh.Enabled = true;
+                        BTN_Refresh.Text = "出错，手动立即刷新";
+                        break;
+                }
+            }),
+            state);
+        }
+
+        private void RefreshH8TimerState(int state)
+        {
+            switch(state)
+            {
+                case 0:
+                    if (_h8DataTimer != null)
+                        _h8DataTimer.Change(1000, 1000);
+                    if (!_isInErr)
+                        RefreshBtn(0);
+                    break;
+                case 1:
+                    if (_h8DataTimer != null)
+                        _h8DataTimer.Change(Timeout.Infinite, 1000);
+                    RefreshBtn(1);
+                    break;
+                case 2:
+                    RefreshBtn(2);
+                    _isInErr = true;
+                    break;
+            }
+        }
+
+        private void RefreshLiveTimerState(int state)
+        {
+            switch (state)
+            {
+                case 0:
+                    if (_liveTimer != null)
+                    {
+                        _liveTimer.Change(Timeout.Infinite, 1000);
+                    }
+                    break;
+                case 1:
+                    if (_liveTimer != null)
+                        _liveTimer.Change(1000, 1000);
+                    break;
+            }
+        }
+
+        private void TSMI_File_Map_Click(object sender, EventArgs e)
+        {
+            FormMapItem.NewInstance().Show();
+        }
+
+        private void DGV_Live_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1 && e.ColumnIndex != -1)
+            {
+                DataGridViewCell cell = DGV_Live.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                CommonUtil.Copy(cell.Value.ToString());
+            }
+        }
+
+        private void RTB_Output_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            CommonUtil.SelectText(RTB_Output);
         }
     }
 }

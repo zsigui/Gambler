@@ -15,7 +15,6 @@ namespace Gambler.UI
     public partial class FormSetting : Form
     {
         private string _content = "";
-        private bool _isInit = true;
 
         public FormSetting()
         {
@@ -25,7 +24,6 @@ namespace Gambler.UI
             CB_AutoSaveUser.Checked = gs.IsAutoSaveUser;
             CB_AutoBet.Checked = gs.IsAutoBet;
             CB_ShowBetDialog.Checked = gs.IsShowBetDialog;
-            _isInit = true;
         }
 
         private void TB_AutoRefreshTime_TextChanged(object sender, EventArgs e)
@@ -62,11 +60,6 @@ namespace Gambler.UI
 
         private void CB_AutoBet_CheckedChanged(object sender, EventArgs e)
         {
-            if (_isInit)
-            {
-                _isInit = false;
-                return;
-            }
             if (CB_AutoBet.Checked)
             {
                 FormAutoBetSetting dialog = new FormAutoBetSetting();

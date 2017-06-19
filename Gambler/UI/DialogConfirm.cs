@@ -51,13 +51,24 @@ namespace Gambler.UI
         {
             LB_League.Text = oddData.league;
             LB_Match.Text = String.Format("{0}（主） v.s.{1}（客）", oddData.home, oddData.guest);
-            LB_Score.Text = String.Format("{0} : {1}", oddData.scoreH, oddData.scoreC);
-            if (oddData.retimeset.StartsWith("1H"))
-                LB_Time.Text = String.Format("上半场 {0}'", oddData.retimeset.Substring(3));
-            else if (oddData.retimeset.StartsWith("2H"))
-                LB_Time.Text = String.Format("上半场 {0}'", oddData.retimeset.Substring(3));
+            if (!String.IsNullOrEmpty(oddData.scoreC) && !String.IsNullOrEmpty(oddData.scoreH))
+                LB_Score.Text = String.Format("{0} : {1}", oddData.scoreH, oddData.scoreC);
             else
-                LB_Time.Text = "半场休息";
+                LB_Score.Text = "0 : 0";
+
+            if (String.IsNullOrEmpty(oddData.retimeset))
+            {
+                LB_Time.Text = TimeUtil.FormatTime(oddData.openTime, "MM/dd HH:mm");
+            }
+            else
+            {
+                if (oddData.retimeset.StartsWith("1H"))
+                    LB_Time.Text = String.Format("上半场 {0}'", oddData.retimeset.Substring(3));
+                else if (oddData.retimeset.StartsWith("2H"))
+                    LB_Time.Text = String.Format("上半场 {0}'", oddData.retimeset.Substring(3));
+                else
+                    LB_Time.Text = "半场休息";
+            }
             LB_Odd.Text = oddInfo;
             DataGridViewRow dr;
             int money;

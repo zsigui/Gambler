@@ -28,19 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.DGV_Info = new System.Windows.Forms.DataGridView();
+            this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Score = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Host = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Away = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_OddOrEven = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_BigOrSmall = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_Capot = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGC_ConcedePoints = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.BTN_BigOrSmall_Away = new System.Windows.Forms.Button();
@@ -53,6 +62,7 @@
             this.BTN_Capot_Host = new System.Windows.Forms.Button();
             this.BTN_Odd = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.CB_GameType = new System.Windows.Forms.ComboBox();
             this.CB_AcceptOpt = new System.Windows.Forms.CheckBox();
             this.BTN_Refresh = new System.Windows.Forms.Button();
             this.RB_Half = new System.Windows.Forms.RadioButton();
@@ -60,15 +70,6 @@
             this.CB_OrderBy = new System.Windows.Forms.ComboBox();
             this.CB_Leagues = new System.Windows.Forms.ComboBox();
             this.TB_Search = new System.Windows.Forms.TextBox();
-            this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_Score = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_League = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_Host = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_Away = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_BigOrSmall = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_ConcedePoints = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_Capot = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGC_OddOrEven = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Info)).BeginInit();
@@ -106,14 +107,14 @@
             this.DGV_Info.AllowUserToDeleteRows = false;
             this.DGV_Info.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.DGV_Info.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle21.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle21.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle21.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle21.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle21.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGV_Info.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGV_Info.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.DGV_Info.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV_Info.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGC_Time,
@@ -121,10 +122,10 @@
             this.DGC_League,
             this.DGC_Host,
             this.DGC_Away,
+            this.DGC_OddOrEven,
             this.DGC_BigOrSmall,
-            this.DGC_ConcedePoints,
             this.DGC_Capot,
-            this.DGC_OddOrEven});
+            this.DGC_ConcedePoints});
             this.DGV_Info.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DGV_Info.Location = new System.Drawing.Point(0, 15);
             this.DGV_Info.MultiSelect = false;
@@ -136,8 +137,94 @@
             this.DGV_Info.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Info.Size = new System.Drawing.Size(1119, 301);
             this.DGV_Info.TabIndex = 0;
+            this.DGV_Info.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_Info_CellMouseDoubleClick);
             this.DGV_Info.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_Info_CellPainting);
             this.DGV_Info.SelectionChanged += new System.EventHandler(this.DGV_Info_SelectionChanged);
+            // 
+            // DGC_Time
+            // 
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle12;
+            this.DGC_Time.HeaderText = "时间";
+            this.DGC_Time.Name = "DGC_Time";
+            this.DGC_Time.ReadOnly = true;
+            // 
+            // DGC_Score
+            // 
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Score.DefaultCellStyle = dataGridViewCellStyle13;
+            this.DGC_Score.HeaderText = "比分";
+            this.DGC_Score.Name = "DGC_Score";
+            this.DGC_Score.ReadOnly = true;
+            // 
+            // DGC_League
+            // 
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle14;
+            this.DGC_League.HeaderText = "联赛";
+            this.DGC_League.Name = "DGC_League";
+            this.DGC_League.ReadOnly = true;
+            // 
+            // DGC_Host
+            // 
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle15;
+            this.DGC_Host.HeaderText = "主队（+）";
+            this.DGC_Host.Name = "DGC_Host";
+            this.DGC_Host.ReadOnly = true;
+            // 
+            // DGC_Away
+            // 
+            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle16;
+            this.DGC_Away.HeaderText = "客队（-）";
+            this.DGC_Away.Name = "DGC_Away";
+            this.DGC_Away.ReadOnly = true;
+            // 
+            // DGC_OddOrEven
+            // 
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle17.ForeColor = System.Drawing.Color.Green;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_OddOrEven.DefaultCellStyle = dataGridViewCellStyle17;
+            this.DGC_OddOrEven.HeaderText = "单双";
+            this.DGC_OddOrEven.Name = "DGC_OddOrEven";
+            this.DGC_OddOrEven.ReadOnly = true;
+            // 
+            // DGC_BigOrSmall
+            // 
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle18.ForeColor = System.Drawing.Color.DarkCyan;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_BigOrSmall.DefaultCellStyle = dataGridViewCellStyle18;
+            this.DGC_BigOrSmall.HeaderText = "大小";
+            this.DGC_BigOrSmall.Name = "DGC_BigOrSmall";
+            this.DGC_BigOrSmall.ReadOnly = true;
+            // 
+            // DGC_Capot
+            // 
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle19.ForeColor = System.Drawing.Color.MidnightBlue;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_Capot.DefaultCellStyle = dataGridViewCellStyle19;
+            this.DGC_Capot.HeaderText = "独赢";
+            this.DGC_Capot.Name = "DGC_Capot";
+            this.DGC_Capot.ReadOnly = true;
+            // 
+            // DGC_ConcedePoints
+            // 
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle20.ForeColor = System.Drawing.Color.BlueViolet;
+            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DGC_ConcedePoints.DefaultCellStyle = dataGridViewCellStyle20;
+            this.DGC_ConcedePoints.HeaderText = "让球";
+            this.DGC_ConcedePoints.Name = "DGC_ConcedePoints";
+            this.DGC_ConcedePoints.ReadOnly = true;
             // 
             // groupBox1
             // 
@@ -182,6 +269,7 @@
             // BTN_BigOrSmall_Away
             // 
             this.BTN_BigOrSmall_Away.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_BigOrSmall_Away.ForeColor = System.Drawing.Color.DarkCyan;
             this.BTN_BigOrSmall_Away.Location = new System.Drawing.Point(880, 10);
             this.BTN_BigOrSmall_Away.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_BigOrSmall_Away.Name = "BTN_BigOrSmall_Away";
@@ -194,6 +282,7 @@
             // BTN_BigOrSmall_Host
             // 
             this.BTN_BigOrSmall_Host.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_BigOrSmall_Host.ForeColor = System.Drawing.Color.DarkCyan;
             this.BTN_BigOrSmall_Host.Location = new System.Drawing.Point(665, 10);
             this.BTN_BigOrSmall_Host.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_BigOrSmall_Host.Name = "BTN_BigOrSmall_Host";
@@ -206,6 +295,7 @@
             // BTN_Even
             // 
             this.BTN_Even.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_Even.ForeColor = System.Drawing.Color.Green;
             this.BTN_Even.Location = new System.Drawing.Point(450, 10);
             this.BTN_Even.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_Even.Name = "BTN_Even";
@@ -218,6 +308,7 @@
             // BTN_ConcedePoints_Host
             // 
             this.BTN_ConcedePoints_Host.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_ConcedePoints_Host.ForeColor = System.Drawing.Color.BlueViolet;
             this.BTN_ConcedePoints_Host.Location = new System.Drawing.Point(665, 79);
             this.BTN_ConcedePoints_Host.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_ConcedePoints_Host.Name = "BTN_ConcedePoints_Host";
@@ -230,6 +321,7 @@
             // BTN_Capot_None
             // 
             this.BTN_Capot_None.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_Capot_None.ForeColor = System.Drawing.Color.MidnightBlue;
             this.BTN_Capot_None.Location = new System.Drawing.Point(235, 79);
             this.BTN_Capot_None.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_Capot_None.Name = "BTN_Capot_None";
@@ -242,6 +334,7 @@
             // BTN_ConcedePoints_Away
             // 
             this.BTN_ConcedePoints_Away.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_ConcedePoints_Away.ForeColor = System.Drawing.Color.BlueViolet;
             this.BTN_ConcedePoints_Away.Location = new System.Drawing.Point(880, 79);
             this.BTN_ConcedePoints_Away.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_ConcedePoints_Away.Name = "BTN_ConcedePoints_Away";
@@ -254,6 +347,7 @@
             // BTN_Capot_Away
             // 
             this.BTN_Capot_Away.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_Capot_Away.ForeColor = System.Drawing.Color.MidnightBlue;
             this.BTN_Capot_Away.Location = new System.Drawing.Point(450, 79);
             this.BTN_Capot_Away.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_Capot_Away.Name = "BTN_Capot_Away";
@@ -266,6 +360,7 @@
             // BTN_Capot_Host
             // 
             this.BTN_Capot_Host.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_Capot_Host.ForeColor = System.Drawing.Color.MidnightBlue;
             this.BTN_Capot_Host.Location = new System.Drawing.Point(20, 79);
             this.BTN_Capot_Host.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_Capot_Host.Name = "BTN_Capot_Host";
@@ -278,6 +373,7 @@
             // BTN_Odd
             // 
             this.BTN_Odd.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BTN_Odd.ForeColor = System.Drawing.Color.Green;
             this.BTN_Odd.Location = new System.Drawing.Point(20, 10);
             this.BTN_Odd.Margin = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.BTN_Odd.Name = "BTN_Odd";
@@ -291,6 +387,7 @@
             // 
             this.panel2.AutoSize = true;
             this.panel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel2.Controls.Add(this.CB_GameType);
             this.panel2.Controls.Add(this.CB_AcceptOpt);
             this.panel2.Controls.Add(this.BTN_Refresh);
             this.panel2.Controls.Add(this.RB_Half);
@@ -304,12 +401,26 @@
             this.panel2.Size = new System.Drawing.Size(1119, 27);
             this.panel2.TabIndex = 0;
             // 
+            // CB_GameType
+            // 
+            this.CB_GameType.FormattingEnabled = true;
+            this.CB_GameType.Items.AddRange(new object[] {
+            "滚球",
+            "今日赛事",
+            "早盘"});
+            this.CB_GameType.Location = new System.Drawing.Point(573, 3);
+            this.CB_GameType.Name = "CB_GameType";
+            this.CB_GameType.Size = new System.Drawing.Size(121, 20);
+            this.CB_GameType.TabIndex = 12;
+            this.CB_GameType.Text = "博彩类别";
+            this.CB_GameType.SelectedIndexChanged += new System.EventHandler(this.CB_GameType_SelectedIndexChanged);
+            // 
             // CB_AcceptOpt
             // 
             this.CB_AcceptOpt.AutoSize = true;
             this.CB_AcceptOpt.Checked = true;
             this.CB_AcceptOpt.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_AcceptOpt.Location = new System.Drawing.Point(823, 5);
+            this.CB_AcceptOpt.Location = new System.Drawing.Point(995, 5);
             this.CB_AcceptOpt.Name = "CB_AcceptOpt";
             this.CB_AcceptOpt.Size = new System.Drawing.Size(120, 16);
             this.CB_AcceptOpt.TabIndex = 11;
@@ -319,7 +430,7 @@
             // 
             // BTN_Refresh
             // 
-            this.BTN_Refresh.Location = new System.Drawing.Point(697, 1);
+            this.BTN_Refresh.Location = new System.Drawing.Point(869, 1);
             this.BTN_Refresh.Name = "BTN_Refresh";
             this.BTN_Refresh.Size = new System.Drawing.Size(75, 23);
             this.BTN_Refresh.TabIndex = 10;
@@ -330,7 +441,7 @@
             // RB_Half
             // 
             this.RB_Half.AutoSize = true;
-            this.RB_Half.Location = new System.Drawing.Point(628, 4);
+            this.RB_Half.Location = new System.Drawing.Point(800, 4);
             this.RB_Half.Name = "RB_Half";
             this.RB_Half.Size = new System.Drawing.Size(47, 16);
             this.RB_Half.TabIndex = 9;
@@ -342,7 +453,7 @@
             // RB_Whole
             // 
             this.RB_Whole.AutoSize = true;
-            this.RB_Whole.Location = new System.Drawing.Point(575, 4);
+            this.RB_Whole.Location = new System.Drawing.Point(747, 4);
             this.RB_Whole.Name = "RB_Whole";
             this.RB_Whole.Size = new System.Drawing.Size(47, 16);
             this.RB_Whole.TabIndex = 8;
@@ -384,87 +495,7 @@
             this.TB_Search.TabIndex = 5;
             this.TB_Search.TextChanged += new System.EventHandler(this.TB_Search_TextChanged);
             this.TB_Search.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TB_Search_KeyDown);
-            // 
-            // DGC_Time
-            // 
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Time.DefaultCellStyle = dataGridViewCellStyle22;
-            this.DGC_Time.HeaderText = "时间";
-            this.DGC_Time.Name = "DGC_Time";
-            this.DGC_Time.ReadOnly = true;
-            // 
-            // DGC_Score
-            // 
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle23.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Score.DefaultCellStyle = dataGridViewCellStyle23;
-            this.DGC_Score.HeaderText = "比分";
-            this.DGC_Score.Name = "DGC_Score";
-            this.DGC_Score.ReadOnly = true;
-            // 
-            // DGC_League
-            // 
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_League.DefaultCellStyle = dataGridViewCellStyle24;
-            this.DGC_League.HeaderText = "联赛";
-            this.DGC_League.Name = "DGC_League";
-            this.DGC_League.ReadOnly = true;
-            // 
-            // DGC_Host
-            // 
-            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Host.DefaultCellStyle = dataGridViewCellStyle25;
-            this.DGC_Host.HeaderText = "主队（+）";
-            this.DGC_Host.Name = "DGC_Host";
-            this.DGC_Host.ReadOnly = true;
-            // 
-            // DGC_Away
-            // 
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Away.DefaultCellStyle = dataGridViewCellStyle26;
-            this.DGC_Away.HeaderText = "客队（-）";
-            this.DGC_Away.Name = "DGC_Away";
-            this.DGC_Away.ReadOnly = true;
-            // 
-            // DGC_BigOrSmall
-            // 
-            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle27.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_BigOrSmall.DefaultCellStyle = dataGridViewCellStyle27;
-            this.DGC_BigOrSmall.HeaderText = "大小";
-            this.DGC_BigOrSmall.Name = "DGC_BigOrSmall";
-            this.DGC_BigOrSmall.ReadOnly = true;
-            // 
-            // DGC_ConcedePoints
-            // 
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_ConcedePoints.DefaultCellStyle = dataGridViewCellStyle28;
-            this.DGC_ConcedePoints.HeaderText = "让球";
-            this.DGC_ConcedePoints.Name = "DGC_ConcedePoints";
-            this.DGC_ConcedePoints.ReadOnly = true;
-            // 
-            // DGC_Capot
-            // 
-            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle29.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_Capot.DefaultCellStyle = dataGridViewCellStyle29;
-            this.DGC_Capot.HeaderText = "独赢";
-            this.DGC_Capot.Name = "DGC_Capot";
-            this.DGC_Capot.ReadOnly = true;
-            // 
-            // DGC_OddOrEven
-            // 
-            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle30.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DGC_OddOrEven.DefaultCellStyle = dataGridViewCellStyle30;
-            this.DGC_OddOrEven.HeaderText = "单双";
-            this.DGC_OddOrEven.Name = "DGC_OddOrEven";
-            this.DGC_OddOrEven.ReadOnly = true;
+            this.TB_Search.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TB_Search_MouseDoubleClick);
             // 
             // FormInfo
             // 
@@ -516,14 +547,15 @@
         private System.Windows.Forms.Button BTN_ConcedePoints_Host;
         private System.Windows.Forms.CheckBox CB_AcceptOpt;
         private System.Windows.Forms.ComboBox CB_OrderBy;
+        private System.Windows.Forms.ComboBox CB_GameType;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Time;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Score;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_League;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Host;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Away;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_BigOrSmall;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ConcedePoints;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Capot;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_OddOrEven;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_BigOrSmall;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Capot;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ConcedePoints;
     }
 }

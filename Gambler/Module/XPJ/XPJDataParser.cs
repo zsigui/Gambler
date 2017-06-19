@@ -73,9 +73,15 @@ namespace Gambler.Module.XPJ.Model
             data.league = values[keys.IndexOf("league")];
             data.openTime = ValueParse.ParseLong(values[keys.IndexOf("openTime")]);
             data.live = ValueParse.ParseBoolean(values[keys.IndexOf("live")]);
-            data.scoreH = values[keys.IndexOf("scoreH")];
-            data.scoreC = values[keys.IndexOf("scoreC")];
-            data.retimeset = values[keys.IndexOf("retimeset")];
+            if (keys.IndexOf("scoreH") != -1 && keys.IndexOf("scoreC") != -1)
+            {
+                data.scoreH = values[keys.IndexOf("scoreH")];
+                data.scoreC = values[keys.IndexOf("scoreC")];
+            }
+            if (keys.IndexOf("retimeset") != -1)
+            {
+                data.retimeset = values[keys.IndexOf("retimeset")];
+            }
             // 全场
             data.ior_MH = ValueParse.ParseFloat(values[keys.IndexOf("ior_MH")]);
             data.ior_MC = ValueParse.ParseFloat(values[keys.IndexOf("ior_MC")]);

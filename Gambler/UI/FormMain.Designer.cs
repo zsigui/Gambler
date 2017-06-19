@@ -41,12 +41,15 @@
             this.MS_Menu = new System.Windows.Forms.MenuStrip();
             this.TSMI_File = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Setting = new System.Windows.Forms.ToolStripMenuItem();
+            this.TSMI_File_Map = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_User = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_User_Add = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_User_Remove = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.RTB_Output = new System.Windows.Forms.RichTextBox();
+            this.CMS_Output = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.TSMI_Output_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.BTN_JumpBet = new System.Windows.Forms.Button();
@@ -57,7 +60,7 @@
             this.TSMI_UserAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_UserRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.CB_IsAutoRefresh = new System.Windows.Forms.CheckBox();
+            this.CB_MoreEvent = new System.Windows.Forms.CheckBox();
             this.DGV_Live = new System.Windows.Forms.DataGridView();
             this.DGC_ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGC_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -74,11 +77,9 @@
             this.SS_Bottom = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
-            this.CB_MoreEvent = new System.Windows.Forms.CheckBox();
-            this.CMS_Output = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.TSMI_Output_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.MS_Menu.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.CMS_Output.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -95,7 +96,6 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SS_Bottom.SuspendLayout();
-            this.CMS_Output.SuspendLayout();
             this.SuspendLayout();
             // 
             // MS_Menu
@@ -113,6 +113,7 @@
             // 
             this.TSMI_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TSMI_File_Setting,
+            this.TSMI_File_Map,
             this.TSMI_File_Exit});
             this.TSMI_File.Name = "TSMI_File";
             this.TSMI_File.Size = new System.Drawing.Size(58, 21);
@@ -121,16 +122,25 @@
             // TSMI_File_Setting
             // 
             this.TSMI_File_Setting.Name = "TSMI_File_Setting";
-            this.TSMI_File_Setting.Size = new System.Drawing.Size(161, 22);
+            this.TSMI_File_Setting.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.TSMI_File_Setting.Size = new System.Drawing.Size(193, 22);
             this.TSMI_File_Setting.Text = "设置(S)";
             this.TSMI_File_Setting.Click += new System.EventHandler(this.TSMI_File_Setting_Click);
+            // 
+            // TSMI_File_Map
+            // 
+            this.TSMI_File_Map.Name = "TSMI_File_Map";
+            this.TSMI_File_Map.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.TSMI_File_Map.Size = new System.Drawing.Size(193, 22);
+            this.TSMI_File_Map.Text = "名称映射(&M)";
+            this.TSMI_File_Map.Click += new System.EventHandler(this.TSMI_File_Map_Click);
             // 
             // TSMI_File_Exit
             // 
             this.TSMI_File_Exit.Name = "TSMI_File_Exit";
             this.TSMI_File_Exit.ShortcutKeyDisplayString = "";
             this.TSMI_File_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.TSMI_File_Exit.Size = new System.Drawing.Size(161, 22);
+            this.TSMI_File_Exit.Size = new System.Drawing.Size(193, 22);
             this.TSMI_File_Exit.Text = "退出(&X)";
             this.TSMI_File_Exit.Click += new System.EventHandler(this.TSMI_File_Exit_Click);
             // 
@@ -174,10 +184,26 @@
             this.RTB_Output.ContextMenuStrip = this.CMS_Output;
             this.RTB_Output.Location = new System.Drawing.Point(10, 20);
             this.RTB_Output.Name = "RTB_Output";
+            this.RTB_Output.ReadOnly = true;
             this.RTB_Output.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
             this.RTB_Output.Size = new System.Drawing.Size(1038, 150);
             this.RTB_Output.TabIndex = 0;
             this.RTB_Output.Text = "";
+            this.RTB_Output.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.RTB_Output_MouseDoubleClick);
+            // 
+            // CMS_Output
+            // 
+            this.CMS_Output.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSMI_Output_Clear});
+            this.CMS_Output.Name = "CMS_Output";
+            this.CMS_Output.Size = new System.Drawing.Size(101, 26);
+            // 
+            // TSMI_Output_Clear
+            // 
+            this.TSMI_Output_Clear.Name = "TSMI_Output_Clear";
+            this.TSMI_Output_Clear.Size = new System.Drawing.Size(100, 22);
+            this.TSMI_Output_Clear.Text = "清空";
+            this.TSMI_Output_Clear.Click += new System.EventHandler(this.TSMI_Output_Clear_Click);
             // 
             // splitContainer2
             // 
@@ -276,7 +302,6 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.CB_MoreEvent);
-            this.groupBox1.Controls.Add(this.CB_IsAutoRefresh);
             this.groupBox1.Controls.Add(this.DGV_Live);
             this.groupBox1.Controls.Add(this.BTN_Refresh);
             this.groupBox1.Location = new System.Drawing.Point(3, 8);
@@ -286,18 +311,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "直播列表（可获取）";
             // 
-            // CB_IsAutoRefresh
+            // CB_MoreEvent
             // 
-            this.CB_IsAutoRefresh.AutoSize = true;
-            this.CB_IsAutoRefresh.Checked = true;
-            this.CB_IsAutoRefresh.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_IsAutoRefresh.Location = new System.Drawing.Point(535, 24);
-            this.CB_IsAutoRefresh.Name = "CB_IsAutoRefresh";
-            this.CB_IsAutoRefresh.Size = new System.Drawing.Size(96, 16);
-            this.CB_IsAutoRefresh.TabIndex = 2;
-            this.CB_IsAutoRefresh.Text = "是否自动刷新";
-            this.CB_IsAutoRefresh.UseVisualStyleBackColor = true;
-            this.CB_IsAutoRefresh.CheckedChanged += new System.EventHandler(this.CB_IsAutoRefresh_CheckedChanged);
+            this.CB_MoreEvent.AutoSize = true;
+            this.CB_MoreEvent.Checked = true;
+            this.CB_MoreEvent.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_MoreEvent.Location = new System.Drawing.Point(476, 24);
+            this.CB_MoreEvent.Name = "CB_MoreEvent";
+            this.CB_MoreEvent.Size = new System.Drawing.Size(96, 16);
+            this.CB_MoreEvent.TabIndex = 3;
+            this.CB_MoreEvent.Text = "输出普通事件";
+            this.CB_MoreEvent.UseVisualStyleBackColor = true;
             // 
             // DGV_Live
             // 
@@ -339,6 +363,7 @@
             this.DGV_Live.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Live.Size = new System.Drawing.Size(720, 245);
             this.DGV_Live.TabIndex = 1;
+            this.DGV_Live.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_Live_CellMouseDoubleClick);
             // 
             // DGC_ID
             // 
@@ -406,7 +431,7 @@
             this.TSMI_Live_CheckAll,
             this.TSMI_AddCookie});
             this.CMS_Live.Name = "CMS_";
-            this.CMS_Live.Size = new System.Drawing.Size(195, 70);
+            this.CMS_Live.Size = new System.Drawing.Size(195, 48);
             // 
             // TSMI_Live_CheckAll
             // 
@@ -424,11 +449,11 @@
             // 
             // BTN_Refresh
             // 
-            this.BTN_Refresh.Location = new System.Drawing.Point(637, 20);
+            this.BTN_Refresh.Location = new System.Drawing.Point(594, 20);
             this.BTN_Refresh.Name = "BTN_Refresh";
-            this.BTN_Refresh.Size = new System.Drawing.Size(93, 23);
+            this.BTN_Refresh.Size = new System.Drawing.Size(136, 23);
             this.BTN_Refresh.TabIndex = 0;
-            this.BTN_Refresh.Text = "刷新：5s";
+            this.BTN_Refresh.Text = "刷新";
             this.BTN_Refresh.UseVisualStyleBackColor = true;
             this.BTN_Refresh.Click += new System.EventHandler(this.BTN_Refresh_Click);
             // 
@@ -485,30 +510,6 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
-            // CB_MoreEvent
-            // 
-            this.CB_MoreEvent.AutoSize = true;
-            this.CB_MoreEvent.Location = new System.Drawing.Point(433, 24);
-            this.CB_MoreEvent.Name = "CB_MoreEvent";
-            this.CB_MoreEvent.Size = new System.Drawing.Size(96, 16);
-            this.CB_MoreEvent.TabIndex = 3;
-            this.CB_MoreEvent.Text = "输出普通事件";
-            this.CB_MoreEvent.UseVisualStyleBackColor = true;
-            // 
-            // CMS_Output
-            // 
-            this.CMS_Output.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSMI_Output_Clear});
-            this.CMS_Output.Name = "CMS_Output";
-            this.CMS_Output.Size = new System.Drawing.Size(101, 26);
-            // 
-            // TSMI_Output_Clear
-            // 
-            this.TSMI_Output_Clear.Name = "TSMI_Output_Clear";
-            this.TSMI_Output_Clear.Size = new System.Drawing.Size(100, 22);
-            this.TSMI_Output_Clear.Text = "清空";
-            this.TSMI_Output_Clear.Click += new System.EventHandler(this.TSMI_Output_Clear_Click);
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -527,6 +528,7 @@
             this.MS_Menu.ResumeLayout(false);
             this.MS_Menu.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.CMS_Output.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
@@ -545,7 +547,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.SS_Bottom.ResumeLayout(false);
             this.SS_Bottom.PerformLayout();
-            this.CMS_Output.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -580,7 +581,6 @@
         private System.Windows.Forms.ToolStripMenuItem TSMI_User_Remove;
         private System.Windows.Forms.ContextMenuStrip CMS_Live;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Live_CheckAll;
-        private System.Windows.Forms.CheckBox CB_IsAutoRefresh;
         private System.Windows.Forms.ToolStripMenuItem TSMI_AddCookie;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGC_Time;
@@ -592,6 +592,7 @@
         private System.Windows.Forms.CheckBox CB_MoreEvent;
         private System.Windows.Forms.ContextMenuStrip CMS_Output;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Output_Clear;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_File_Map;
     }
 }
 

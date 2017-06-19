@@ -184,6 +184,7 @@ namespace Gambler.XPJ
                            return;
                        }
                        RespOnFail(onFail, statusCode, data);
+                       return;
                    }
 
                    RespOnFail(onFail, statusCode, null);
@@ -272,6 +273,7 @@ namespace Gambler.XPJ
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.games != null)
                    {
                        RespOnSuccess(onSuccess, data);
+                       
                        return;
                    }
 
@@ -279,6 +281,84 @@ namespace Gambler.XPJ
                },
                (e) =>
                {
+                   RespOnError(onError, e);
+               });
+        }
+
+        private int GetPageCount(string gameType, DataGameCount gameCount)
+        {
+            int page = 1;
+            int count = 0;
+            if (gameType.StartsWith("RB_FT"))
+            {
+                count = gameCount.RB_FT;
+            }
+            else if (gameType.StartsWith("RB_BK"))
+            {
+                count = gameCount.RB_BK;
+            }
+            return page;
+        }
+
+        public void GetAllOddData(string gameType, int sortType,
+            OnSuccessHandler<RespData> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            GetAllOddDataByPage(gameType, sortType, 1, null, onSuccess, onFail, onError);
+        }
+
+        private void GetAllOddDataByPage(string gameType, int sortType, int page, RespData fromLast,
+            OnSuccessHandler<RespData> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            Dictionary<string, string> bodyDict = ConstructKeyValDict(
+               "gameType", gameType,
+               "pageNo", page.ToString(),
+               "sortType", sortType.ToString());
+            HttpUtil.Post(XPJConfig.URL_ODD_DATA, _headers, _cookies, _proxy, bodyDict,
+                (data) =>
+                {
+                    return JsonUtil.fromJson<RespData>(IOUtil.ReadString(data));
+                },
+               (statusCode, data, cookies) =>
+               {
+
+                   if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.games != null)
+                   {
+                       // 设置首页数据或者添加新页数据
+                       if (fromLast == null)
+                       {
+                           fromLast = data;
+                       }
+                       else
+                       {
+                           fromLast.games.AddRange(data.games);
+                       }
+
+                       if (data.pageCount > page)
+                       {
+                           // 有多页，获取下一页的数据
+                           GetAllOddDataByPage(gameType, sortType, data.pageCount, fromLast,
+                               onSuccess, onFail, onError);
+                       }
+                       else
+                       {
+                           RespOnSuccess(onSuccess, fromLast);
+                       }
+                       return;
+                   }
+
+                   if (fromLast != null) {
+                       RespOnSuccess(onSuccess, fromLast);
+                       return;
+                   }
+                   RespOnFail(onFail, statusCode, null);
+               },
+               (e) =>
+               {
+                   if (fromLast != null)
+                   {
+                       RespOnSuccess(onSuccess, fromLast);
+                       return;
+                   }
                    RespOnError(onError, e);
                });
         }

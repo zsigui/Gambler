@@ -65,7 +65,7 @@ namespace Gambler.Utils
                             b |= 0x2;
                         }
                     }
-                    else if (k.StartsWith("a"))
+                    else if (k.StartsWith("a:"))
                     {
                         b |= 0x40;
                         tmp = k.Substring(2);

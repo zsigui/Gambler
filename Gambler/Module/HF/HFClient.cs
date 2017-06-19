@@ -368,9 +368,9 @@ namespace Gambler.Module.HF
                 },
                 (statusCode, data, cookies) =>
                 {
-                    if (HttpUtil.IsCodeSucc(statusCode) && !String.IsNullOrEmpty(data))
+                    if (HttpUtil.IsCodeSucc(statusCode))
                     {
-                        List<HFSimpleMatch> matchList = HFHtmlParser.ParseOddDataXml(data);
+                        List<HFSimpleMatch> matchList = String.IsNullOrEmpty(data)? null : HFHtmlParser.ParseOddDataXml(data);
                         ResetLiveMatch(matchList);
                         RespOnSuccess(onSuccess, matchList);
                         return;
@@ -385,6 +385,9 @@ namespace Gambler.Module.HF
 
         private void ResetLiveMatch(List<HFSimpleMatch> matchList)
         {
+            if (matchList == null)
+                return;
+
             if (LiveMatchs == null)
                 LiveMatchs = new Dictionary<string, HFSimpleMatch>();
 

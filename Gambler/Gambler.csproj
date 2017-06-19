@@ -112,6 +112,12 @@
     <Compile Include="UI\FormInfo.Designer.cs">
       <DependentUpon>FormInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\FormMapItem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormMapItem.Designer.cs">
+      <DependentUpon>FormMapItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\FormSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,6 +130,7 @@
     <Compile Include="UI\Widget\WidgetLeagues.Designer.cs">
       <DependentUpon>WidgetLeagues.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\CommonUtil.cs" />
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
     <Compile Include="Utils\Interface\IRespCallback.cs" />
     <Compile Include="Utils\IOUtil.cs" />
@@ -196,6 +203,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\FormMapItem.resx">
+      <DependentUpon>FormMapItem.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\FormSetting.resx">
       <DependentUpon>FormSetting.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,6 +1,7 @@
 ﻿using Gambler.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Gambler.Config
 {
@@ -23,6 +24,8 @@ namespace Gambler.Config
         public static readonly string CONFIG_PATH = System.Windows.Forms.Application.StartupPath + "//Config";
         public static readonly string SETTING_PATH = CONFIG_PATH + "//settings.txt";
         public static readonly string XPJ_USER_PATH = CONFIG_PATH + "//user_xpj.txt";
+        public static readonly string MAP_PATH = CONFIG_PATH + "//map.txt";
+
         private readonly string AUTO_REFRESH_TIME = "autoRefreshTime";
         private readonly string IS_AUTO_SAVE = "isAutoSaveUser";
         private readonly string IS_AUTO_BET = "isAutoBet";
@@ -36,8 +39,10 @@ namespace Gambler.Config
         private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
         private readonly string HF_ACCOUNT = "hfAccount";
 
+        private readonly string MAP_ITEM_KEY = "mapItemKey";
+
         private Dictionary<string, object> _settings;
-        
+
 
         /// <summary>
         /// 从文件中加载设置属性
@@ -65,7 +70,10 @@ namespace Gambler.Config
                 _settings.Add(IS_SHOW_HALF_ODD_FIRST, null);
                 _settings.Add(IS_AUTO_ACCEPT_BEST_ODD, null);
                 _settings.Add(HF_ACCOUNT, null);
+                _settings.Add(AUTO_BET_RATE, null);
+                _settings.Add(MAP_ITEM_KEY, null);
             }
+            LoadMap();
         }
 
         /// <summary>
@@ -77,6 +85,7 @@ namespace Gambler.Config
             {
                 string content = JsonUtil.toJson(_settings);
                 FileUtil.WriteContentToFilePath(SETTING_PATH, content);
+                SaveMap();
             }
             catch
             (Exception e)
@@ -94,7 +103,7 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[AUTO_REFRESH_TIME];
-                return o == null ? 30 : (int)o;
+                return o == null ? 30 : Convert.ToInt32(o);
             }
             set
             {
@@ -108,7 +117,8 @@ namespace Gambler.Config
         /// <returns></returns>
         public bool IsAutoSaveUser
         {
-            get {
+            get
+            {
                 object o = _settings[IS_AUTO_SAVE];
                 return o == null || (bool)o;
             }
@@ -206,7 +216,7 @@ namespace Gambler.Config
         {
             get
             {
-                
+
                 object o = _settings[BET_TYPE];
                 return o == null ? BetType.BigOrSmall : (BetType)(Enum.ToObject(typeof(BetType), o));
             }
@@ -269,15 +279,137 @@ namespace Gambler.Config
             get
             {
                 object o = _settings[IS_AUTO_ACCEPT_BEST_ODD];
-                return (o == null || o.Equals(""))? "kaokkyyzz:kaokkyyzz" : (string)o;
+                return (o == null || o.Equals("")) ? "kaokkyyzz:kaokkyyzz" : (string)o;
             }
             set
             {
                 _settings[IS_AUTO_ACCEPT_BEST_ODD] = value;
             }
         }
+
+        public string MapItemKey
+        {
+            get
+            {
+                object o = _settings[MAP_ITEM_KEY];
+                return o == null ? (_mapDict != null && _mapDict.Count > 0 ? _mapDict.First().Key : "") : (string)o;
+            }
+            set
+            {
+                _settings[MAP_ITEM_KEY] = value;
+            }
+        }
         #endregion
 
+
+        #region 名称映射
+
+        /// <summary>
+        /// 进行名称映射
+        /// </summary>
+        private Dictionary<string, Dictionary<string, string>> _mapDict;
+
+        private void LoadMap()
+        {
+            string content = FileUtil.ReadContentFromFilePath(MAP_PATH);
+            if (String.IsNullOrEmpty(content))
+                return;
+            _mapDict = JsonUtil.fromJson<Dictionary<string, Dictionary<string, string>>>(content);
+            if (_mapDict == null)
+            {
+                _mapDict = new Dictionary<string, Dictionary<string, string>>();
+            }
+        }
+
+        private void SaveMap()
+        {
+
+            string content = JsonUtil.toJson(_mapDict);
+            LogUtil.Write("SaveMap: " + content);
+            FileUtil.WriteContentToFilePath(MAP_PATH, content);
+        }
+
+        public Dictionary<string, Dictionary<string, string>> MapItemDict
+        {
+            get { return _mapDict; }
+        }
+
+        public void DelItemKey(string key)
+        {
+            if (_mapDict.ContainsKey(key))
+            {
+                _mapDict.Remove(key);
+            }
+        }
+
+        public void AddItemKey(string key)
+        {
+            if (!_mapDict.ContainsKey(key))
+            {
+                _mapDict.Add(key, null);
+            }
+        }
+
+        public void AddNewMapItem(string itemKey, Dictionary<string, string> item)
+        {
+            AddItemKey(itemKey);
+            _mapDict[itemKey] = item;
+        }
+
+        public void AddNewMapItem(string itemKey, string key, string val)
+        {
+            AddItemKey(itemKey);
+            Dictionary<string, string> tmp = _mapDict[itemKey];
+            if (tmp == null)
+            {
+                tmp = new Dictionary<string, string>();
+                _mapDict[itemKey] = tmp;
+            }
+            if (tmp.ContainsKey(key))
+            {
+                tmp[key] = val;
+            }
+            else
+            {
+                tmp.Add(key, val);
+            }
+
+        }
+
+        public Dictionary<string, string> GetMapItem(string itemKey)
+        {
+            if (String.IsNullOrEmpty(itemKey))
+                return null;
+            Dictionary<string, string> tmpKeyVal;
+            if (_mapDict.TryGetValue(itemKey, out tmpKeyVal))
+            {
+                return tmpKeyVal;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 尝试获取映射表中的映射值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>当获取不到映射值，返回传入的key值</returns>
+        public string GetMapValue(string key)
+        {
+            string itemKey = MapItemKey;
+            if (String.IsNullOrEmpty(itemKey))
+                return key;
+            Dictionary<string, string> tmpKeyVal;
+            if (_mapDict.TryGetValue(itemKey, out tmpKeyVal))
+            {
+                string val;
+                if (tmpKeyVal.TryGetValue(key, out val))
+                {
+                    return val;
+                }
+            }
+            return key;
+        }
+        #endregion
     }
 
     #region BetMethod

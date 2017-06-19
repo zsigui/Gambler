@@ -52,6 +52,7 @@ namespace Gambler.UI
         private int _sortType = 1;
         private string _selectLeagueVal = null;
         private string _searchText = "";
+        private string _gameType = XPJClient.GameType.FT_RB_MN;
 
         private bool _isInAutoRequest = false;
         private string[] _autoSearcwhKey;
@@ -84,6 +85,7 @@ namespace Gambler.UI
             {
                 CB_OrderBy.SelectedIndex = _sortType - 1;
                 CB_Leagues.SelectedIndex = 0;
+                CB_GameType.SelectedIndex = 0;
                 SetBetBtnEnabled(false);
                 RefreshOrInitTimer(true);
             }
@@ -137,6 +139,7 @@ namespace Gambler.UI
                     float mostOdd = 0;
                     XPJOddData data;
                     int mostIndex = -1;
+                    int whoWin = 0; // 0 平 1 主赢 2 客赢
                     switch (betType)
                     {
                         case BetType.BigOrSmall:
@@ -157,15 +160,46 @@ namespace Gambler.UI
                             if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
                             {
                                 RB_Whole.Checked = true;
-                                ShowBigOrSmallHost(_showDataList[mostIndex], true);
+                                ShowBigOrSmallBig(_showDataList[mostIndex], true);
                             }
                             break;
                         case BetType.Capot:
+                            for (int i = 0; i < _showDataList.Count; i++)
+                            {
+                                data = _showDataList[i];
+                                switch ((whoWin = JudgeCapot(data.scoreC, data.scoreH)))
+                                {
+                                    case 0:
+                                        if (mostOdd < data.ior_HOUH)
+                                        {
+                                            mostOdd = data.ior_HOUH;
+                                            mostIndex = i;
+                                        }
+                                        break;
+                                }
+                            }
+                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
+                            {
+                                RB_Whole.Checked = true;
+                                RB_Half.Checked = false;
+                                switch (whoWin)
+                                {
+                                    case 0:
+                                        ShowCapotNone(_showDataList[mostIndex]);
+                                        break;
+                                    case 1:
+                                        ShowCapotHost(_showDataList[mostIndex]);
+                                        break;
+                                    case 2:
+                                        ShowCapotAway(_showDataList[mostIndex]);
+                                        break;
+                                }
+                            }
                             break;
                         case BetType.ConcedePoints:
+                            
                             break;
                         case BetType.HalfBigOrSmall:
-
                             for (int i = 0; i < _showDataList.Count; i++)
                             {
                                 data = _showDataList[i];
@@ -182,14 +216,78 @@ namespace Gambler.UI
                             {
                                 RB_Whole.Checked = false;
                                 RB_Half.Checked = true;
-                                ShowBigOrSmallHost(_showDataList[mostIndex], true);
+                                ShowBigOrSmallBig(_showDataList[mostIndex], true);
                             }
                             break;
                         case BetType.HalfCapot:
+                            for (int i = 0; i < _showDataList.Count; i++)
+                            {
+                                data = _showDataList[i];
+                                switch ((whoWin = JudgeCapot(data.scoreC, data.scoreH)))
+                                {
+                                    case 0:
+                                        if (mostOdd < data.ior_HOUH)
+                                        {
+                                            mostOdd = data.ior_HOUH;
+                                            mostIndex = i;
+                                        }
+                                        break;
+                                }
+                            }
+                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
+                            {
+                                RB_Whole.Checked = false;
+                                RB_Half.Checked = true;
+                                switch (whoWin)
+                                {
+                                    case 0:
+                                        ShowCapotNone(_showDataList[mostIndex]);
+                                        break;
+                                    case 1:
+                                        ShowCapotHost(_showDataList[mostIndex]);
+                                        break;
+                                    case 2:
+                                        ShowCapotAway(_showDataList[mostIndex]);
+                                        break;
+                                }
+                            }
                             break;
                         case BetType.HalfConcedePoints:
+                            // 暂不支持
                             break;
                         case BetType.OddOrEven:
+                            bool isOdd = false;
+                            for (int i = 0; i < _showDataList.Count; i++)
+                            {
+                                data = _showDataList[i];
+                                if (JudgeIsOdd(data.scoreC, data.scoreH))
+                                {
+                                    if (mostOdd < data.ior_EOO)
+                                    {
+                                        mostOdd = data.ior_EOO;
+                                        mostIndex = i;
+                                    }
+                                    isOdd = true;
+                                }
+                                else
+                                {
+                                    if (mostOdd < data.ior_EOE)
+                                    {
+                                        mostOdd = data.ior_EOE;
+                                        mostIndex = i;
+                                    }
+                                    isOdd = false;
+                                }
+                            }
+                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
+                            {
+                                RB_Whole.Checked = true;
+                                RB_Half.Checked = false;
+                                if (isOdd)
+                                    ShowOdd(_showDataList[mostIndex]);
+                                else
+                                    ShowEven(_showDataList[mostIndex]);
+                            }
                             break;
                     }
                 }
@@ -205,12 +303,17 @@ namespace Gambler.UI
             _oddDataDict = odd;
             ThreadUtil.WorkOnUI<object>(this,
                 new Action(() =>{
-                    UpdateLeague(_oddDataDict.Keys);
-                    _showDataList = GetShowDataDefault();
-                    UpdateGDVData(_showDataList);
+                    try
+                    {
+                        UpdateLeague(_oddDataDict.Keys);
+                        _showDataList = GetShowDataDefault();
+                        UpdateGDVData(_showDataList);
 
-                    JudgeAutoBetRequest();
-                    return;
+                        JudgeAutoBetRequest();
+                    } catch (Exception e)
+                    {
+                        LogUtil.Write(e);
+                    }
                 }));
         }
 
@@ -245,6 +348,46 @@ namespace Gambler.UI
             }
         }
 
+        /// <summary>
+        /// 判断新分值总和是否为单值
+        /// </summary>
+        private bool JudgeIsOdd(string scoreC, string scoreH)
+        {
+            int total = 1;
+            total += (String.IsNullOrEmpty(scoreC) ? 0 : Int32.Parse(scoreC));
+            total += (String.IsNullOrEmpty(scoreH) ? 0 : Int32.Parse(scoreH));
+            return (total % 2) == 1;
+        }
+
+        /// <summary>
+        /// 根据现有分值判断独赢, 0平局，1主赢，2客赢
+        /// </summary>
+        private int JudgeCapot(string scoreC, string scoreH)
+        {
+            int result = -1;
+            int sc = (String.IsNullOrEmpty(scoreC) ? 0 : Int32.Parse(scoreC));
+            int sh = (String.IsNullOrEmpty(scoreH) ? 0 : Int32.Parse(scoreH));
+            if (_isHomePen)
+            {
+                if (sh + 1 > sc)
+                    result = 1;
+                else if (sh + 1 < sc)
+                    result = 2;
+                else
+                    result = 0;
+            }
+            else
+            {
+                if (sc + 1 > sh)
+                    result = 2;
+                else if (sc + 1 < sh)
+                    result = 1;
+                else
+                    result = 0;
+            }
+            return result;
+        }
+
         private void UpdateGDVData(List<XPJOddData> _showDataList)
         {
             DGV_Info.Rows.Clear();
@@ -256,61 +399,77 @@ namespace Gambler.UI
                 {
                     dr = new DataGridViewRow();
                     dr.CreateCells(DGV_Info);
-                    if (d.retimeset.StartsWith("1H"))
+                    if (String.IsNullOrEmpty(d.retimeset))
                     {
-                        dr.Cells[0].Value = String.Format("上半场 {0}'", d.retimeset.Substring(3));
-                    }
-                    else if (d.retimeset.StartsWith("2H"))
-                    {
-                        dr.Cells[0].Value = String.Format("下半场 {0}'", d.retimeset.Substring(3));
+                        dr.Cells[0].Value = TimeUtil.FormatTime(d.openTime, "MM/dd HH:mm");
                     }
                     else
                     {
-                        dr.Cells[0].Value = "半场休息";
+                        if (d.retimeset.StartsWith("1H"))
+                        {
+                            dr.Cells[0].Value = String.Format("上半场 {0}'", d.retimeset.Substring(3));
+                        }
+                        else if (d.retimeset.StartsWith("2H"))
+                        {
+                            dr.Cells[0].Value = String.Format("下半场 {0}'", d.retimeset.Substring(3));
+                        }
+                        else
+                        {
+                            dr.Cells[0].Value = "半场休息";
+                        }
                     }
-                    dr.Cells[1].Value = String.Format("{0} : {1}", d.scoreH, d.scoreC);
+                    if (!String.IsNullOrEmpty(d.scoreC) && !String.IsNullOrEmpty(d.scoreH))
+                        dr.Cells[1].Value = String.Format("{0} : {1}", d.scoreH, d.scoreC);
+                    else
+                        dr.Cells[1].Value = "0 : 0";
+
                     dr.Cells[2].Value = d.league;
                     dr.Cells[3].Value = d.home;
                     dr.Cells[4].Value = d.guest;
                     if (RB_Whole.Checked)
                     {
                         // 全场
+                        if (d.ior_EOO != 0 && d.ior_EOE != 0)
+                            dr.Cells[5].Value = String.Format("【单{0:N2}】\n【双{1:N2}】", d.ior_EOO, d.ior_EOE);
+
                         if (d.ior_OUH != 0 && d.ior_OUC != 0)
-                            dr.Cells[5].Value = String.Format("【{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_OUH, d.ior_OUH, d.ior_OUC);
+                            dr.Cells[6].Value = String.Format("【{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_OUH, d.ior_OUH, d.ior_OUC);
+                      
+                        if (d.ior_MC != 0 && d.ior_MN != 0 && d.ior_MH != 0)
+                            dr.Cells[7].Value = String.Format("【主{0}】\n【客{1:N2}】\n【和{2:N2}】", d.ior_MH, d.ior_MC, d.ior_MN);
+
                         if (d.ior_RC != 0 && d.ior_RH != 0)
                         {
                             if (d.CON_RH.StartsWith("-"))
                             {
                                 tmpS = d.CON_RH.Substring(1);
-                                dr.Cells[6].Value = String.Format("【客让{0}】\n【大{1:N2}】\n【小{2:N2}】", tmpS, d.ior_RC, d.ior_RH);
+                                dr.Cells[8].Value = String.Format("【客让{0}】\n【大{1:N2}】\n【小{2:N2}】", tmpS, d.ior_RC, d.ior_RH);
                             }
                             else
                             {
-                                dr.Cells[6].Value = String.Format("【主让{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_RH, d.ior_RH, d.ior_RC);
+                                dr.Cells[8].Value = String.Format("【主让{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_RH, d.ior_RH, d.ior_RC);
                             }
                         }
-                        if (d.ior_MC != 0 && d.ior_MN != 0 && d.ior_MH != 0)
-                            dr.Cells[7].Value = String.Format("【主{0}】\n【客{1:N2}】\n【和{2:N2}】", d.ior_MH, d.ior_MC, d.ior_MN);
 
-                        if (d.ior_EOO != 0 && d.ior_EOE != 0)
-                            dr.Cells[8].Value = String.Format("【单{0:N2}】\n【双{1:N2}】", d.ior_EOO, d.ior_EOE);
                     }
                     else
                     {
                         if (d.ior_HOUH != 0 && d.ior_HOUC != 0)
-                            dr.Cells[5].Value = String.Format("【{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_HOUH, d.ior_HOUH, d.ior_HOUC);
+                            dr.Cells[6].Value = String.Format("【{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_HOUH, d.ior_HOUH, d.ior_HOUC);
+                        
+                        if (d.ior_HMC != 0 && d.ior_HMN != 0 && d.ior_HMN != 0)
+                            dr.Cells[7].Value = String.Format("【主{0:N2}】\n【客{1:N2}】\n【和{2:N2}】", d.ior_HMH, d.ior_HMC, d.ior_HMN);
+
                         if (d.ior_HRC != 0 && d.ior_HRH != 0)
                         {
                             if (d.CON_HRH.StartsWith("-"))
                             {
                                 tmpS = d.CON_HRH.Substring(1);
-                                dr.Cells[6].Value = String.Format("【客让{0}】\n【大{1:N2}】\n【小{2:N2}】", tmpS, d.ior_HRC, d.ior_HRH);
+                                dr.Cells[8].Value = String.Format("【客让{0}】\n【大{1:N2}】\n【小{2:N2}】", tmpS, d.ior_HRC, d.ior_HRH);
                             }
                             else
-                                dr.Cells[6].Value = String.Format("【主让{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_HRH, d.ior_HRH, d.ior_HRC);
+                                dr.Cells[8].Value = String.Format("【主让{0}】\n【大{1:N2}】\n【小{2:N2}】", d.CON_HRH, d.ior_HRH, d.ior_HRC);
                         }
-                        if (d.ior_HMC != 0 && d.ior_HMN != 0 && d.ior_HMN != 0)
-                            dr.Cells[7].Value = String.Format("【主{0:N2}】\n【客{1:N2}】\n【和{2:N2}】", d.ior_HMH, d.ior_HMC, d.ior_HMN);
                     }
                     DGV_Info.Rows.Add(dr);
                 }
@@ -357,10 +516,8 @@ namespace Gambler.UI
             // 请求网络，此时先暂停定时器
             RefreshState(0);
             FormMain.GetInstance().ObtainAccounts().First().GetClient()
-                    .GetOddData(XPJClient.GameType.FT_RB_MN,
-                    1,
+                    .GetAllOddData(_gameType,
                     _sortType,
-                    null,
                     (ret) =>
                     {
                         Dictionary<string, List<XPJOddData>> dict = XPJDataParser.TransformRespDataToXPJOddDataDict(ret, out _allSourceData);
@@ -475,11 +632,11 @@ namespace Gambler.UI
             if (DGV_Info.SelectedRows == null || DGV_Info.SelectedRows.Count <= 0)
                 return;
             BTN_BigOrSmall_Host.Enabled = false;
-            ShowBigOrSmallHost(_showDataList[DGV_Info.SelectedRows[0].Index], false);
+            ShowBigOrSmallBig(_showDataList[DGV_Info.SelectedRows[0].Index], false);
             BTN_BigOrSmall_Host.Enabled = true;
         }
 
-        private void ShowBigOrSmallHost(XPJOddData oddData, bool isAuto)
+        private void ShowBigOrSmallBig(XPJOddData oddData, bool isAuto)
         {
             DialogConfirm dialog = DialogConfirm.newInstance();
             dialog.Show();
@@ -493,7 +650,7 @@ namespace Gambler.UI
             }
         }
 
-        private void ShowBigOrSmallAway(XPJOddData oddData)
+        private void ShowBigOrSmallSmall(XPJOddData oddData)
         {
             DialogConfirm dialog = DialogConfirm.newInstance();
             dialog.Show();
@@ -512,7 +669,7 @@ namespace Gambler.UI
             if (DGV_Info.SelectedRows == null || DGV_Info.SelectedRows.Count <= 0)
                 return;
             BTN_BigOrSmall_Away.Enabled = false;
-            ShowBigOrSmallAway(_showDataList[DGV_Info.SelectedRows[0].Index]);
+            ShowBigOrSmallSmall(_showDataList[DGV_Info.SelectedRows[0].Index]);
             BTN_BigOrSmall_Away.Enabled = true;
         }
 
@@ -796,6 +953,7 @@ namespace Gambler.UI
 
         public void AutoRequest(string[] searchKeys, bool isHome)
         {
+            this.TopMost = true;
             _isInAutoRequest = true;
             _isHomePen = isHome;
             _autoSearcwhKey = searchKeys;
@@ -805,11 +963,44 @@ namespace Gambler.UI
             CB_Leagues.SelectedIndex = 0;
 
             BTN_Refresh_Click(null, null);
+            this.TopMost = false;
         }
 
         private void CB_AcceptOpt_CheckedChanged(object sender, EventArgs e)
         {
             GlobalSetting.GetInstance().IsAutoAcceptBestOdd = CB_AcceptOpt.Checked;
+        }
+
+        private void CB_GameType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch(CB_GameType.SelectedIndex)
+            {
+                case 0:
+                    _gameType = XPJClient.GameType.FT_RB_MN;
+                    break;
+                case 1:
+                    _gameType = XPJClient.GameType.FT_TD_MN;
+                    break;
+                case 2:
+                    _gameType = XPJClient.GameType.FT_FT_MN;
+                    break;
+            }
+            BTN_Refresh_Click(sender, e);
+        }
+
+        private void DGV_Info_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex != -1 && e.ColumnIndex != -1)
+            {
+                DataGridViewCell cell = DGV_Info.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                CommonUtil.Copy(cell.Value.ToString());
+            }
+            
+        }
+
+        private void TB_Search_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            CommonUtil.SelectText(TB_Search);
         }
     }
 }
