@@ -79,6 +79,8 @@
     <Compile Include="Module\HF\Model\HFUser.cs" />
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
+    <Compile Include="Module\X469\X469Config.cs" />
+    <Compile Include="Module\X469\X469VerifyCode.cs" />
     <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
     <Compile Include="Module\XPJ\Model\XPJOddData.cs" />
     <Compile Include="Module\XPJ\XPJDataParser.cs" />
@@ -123,6 +125,18 @@
     </Compile>
     <Compile Include="UI\FormSetting.Designer.cs">
       <DependentUpon>FormSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FormToolMap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormToolMap.Designer.cs">
+      <DependentUpon>FormToolMap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FormToolMapData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormToolMapData.Designer.cs">
+      <DependentUpon>FormToolMapData.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Widget\WidgetLeagues.cs">
       <SubType>UserControl</SubType>
@@ -208,6 +222,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\FormSetting.resx">
       <DependentUpon>FormSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FormToolMap.resx">
+      <DependentUpon>FormToolMap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FormToolMapData.resx">
+      <DependentUpon>FormToolMapData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Widget\WidgetLeagues.resx">
       <DependentUpon>WidgetLeagues.cs</DependentUpon>

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Gambler.Module.X469;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Gambler.Utils.Interface
 {
@@ -298,80 +300,82 @@ namespace Gambler.Utils.Interface
             return result;
         }
 
-        public void TrainData(string trainPath, string outputPath)
-        {
-            if (!Directory.Exists(trainPath))
-            {
-                Console.WriteLine("找不到文件夹: " + trainPath);
-                return;
-            }
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
-
-            Bitmap tmpBmp;
-            List<Bitmap> subImgs;
-            int index = 0;
-            foreach (string fImg in FileUtil.ReadFromPath(trainPath, new string[] { ".jpg", ".jpeg", ".png" }))
-            {
-                tmpBmp = Binarization(ImageUtil.Read(fImg));
-                subImgs = SpiltImage(tmpBmp);
-                tmpBmp.Dispose();
-                for (int j = 0; j < subImgs.Count; j++)
-                {
-                    tmpBmp = subImgs[j];
-                    if (tmpBmp != null)
-                        ImageUtil.Write(tmpBmp, String.Format("{0}\\{1}-{2}.jpg", outputPath, Path.GetFileName(fImg).ToCharArray()[j], (index ++)));
-                }
-            }
-
-        }
-
-        //         protected Dictionary<string, string> ConstructKeyValDict(params string[] data)
-        //         {
-        //             Dictionary<string, string> dict = new Dictionary<string, string>();
-        //             int len = data.Length - 1;
-        //             for (int i = 0; i < len; i += 2)
-        //             {
-        //                 dict.Add(data[i], data[i + 1]);
-        //             }
-        //             return dict;
-        //         }
-        //         private void DownloadHFValid()
-        //         {
-        //             ThreadUtil.RunOnThread(() =>
-        //             {
-        //                 Console.WriteLine("开始下载!");
-        //                 for (int i = 0; i < 30; i++)
-        //                 {
-        //                     Dictionary<string, string> queryDict = ConstructKeyValDict("s", "" + new Random().NextDouble());
-        // 
-        //                     HttpUtil.Get<byte[]>(HFConfig.URL_VERICODE, null, null, queryDict,
-        //                        (data) =>
-        //                        {
-        //                            return IOUtil.Read(data);
-        //                        },
-        //                        (statusCode, data, cookies) =>
-        //                        {
-        //                        if (HttpUtil.IsCodeSucc(statusCode) && data != null)
-        //                        {
-        //                            string dir = Application.StartupPath + "\\Resources\\Download";
-        //                            if (!Directory.Exists(dir))
-        //                                Directory.CreateDirectory(dir);
-        // 
-        //                            using (FileStream fs = File.OpenWrite(dir + "\\" + i + ".jpg"))
-        //                            {
-        //                                fs.Write(data, 0, data.Length);
-        //                                fs.Flush();
-        //                            }
-        //                            Console.WriteLine(i + "的验证码：" + vedo.ParseCode(data));
-        //                                Console.WriteLine(i + " Finished!");
-        //                            }
-        // 
-        //                        }, null);
-        //                 }
-        //             });
-        //         }
+//         public void TrainData(string trainPath, string outputPath)
+//         {
+//             if (!Directory.Exists(trainPath))
+//             {
+//                 Console.WriteLine("找不到文件夹: " + trainPath);
+//                 return;
+//             }
+//             if (!Directory.Exists(outputPath))
+//             {
+//                 Directory.CreateDirectory(outputPath);
+//             }
+// 
+//             Bitmap tmpBmp;
+//             List<Bitmap> subImgs;
+//             int index = 0;
+//             foreach (string fImg in FileUtil.ReadFromPath(trainPath, new string[] { ".jpg", ".jpeg", ".png" }))
+//             {
+//                 tmpBmp = Binarization(ImageUtil.Read(fImg));
+//                 subImgs = SpiltImage(tmpBmp);
+//                 tmpBmp.Dispose();
+//                 for (int j = 0; j < subImgs.Count; j++)
+//                 {
+//                     tmpBmp = subImgs[j];
+//                     if (tmpBmp != null)
+//                         ImageUtil.Write(tmpBmp, String.Format("{0}\\{1}-{2}.jpg", outputPath, Path.GetFileName(fImg).ToCharArray()[j], (index ++)));
+//                 }
+//             }
+// 
+//         }
+// 
+//         protected Dictionary<string, string> ConstructKeyValDict(params string[] data)
+//         {
+//             Dictionary<string, string> dict = new Dictionary<string, string>();
+//             int len = data.Length - 1;
+//             for (int i = 0; i < len; i += 2)
+//             {
+//                 dict.Add(data[i], data[i + 1]);
+//             }
+//             return dict;
+//         }
+//         public void DownloadValid()
+//         {
+//             // 步骤：Download -> 手动设置 -> Train -> Valid
+//             ThreadUtil.RunOnThread(() =>
+//             {
+//                 Console.WriteLine("开始下载!");
+//                 for (int i = 0; i < 30; i++)
+//                 {
+//                     Dictionary<string, string> queryDict = ConstructKeyValDict("_r", "" + new Random().NextDouble());
+// 
+//                     HttpUtil.Get<byte[]>(X469Config.URL_VERICODE, null, null, queryDict,
+//                        (data) =>
+//                        {
+//                            return IOUtil.Read(data);
+//                        },
+//                        (statusCode, data, cookies) =>
+//                        {
+//                            if (HttpUtil.IsCodeSucc(statusCode) && data != null)
+//                            {
+//                                string dir = Application.StartupPath + "\\Resources\\Download";
+//                                if (!Directory.Exists(dir))
+//                                    Directory.CreateDirectory(dir);
+// 
+//                                //using (FileStream fs = File.OpenWrite(dir + "\\" + ParseCode(data) + ".jpg"))
+//                                using (FileStream fs = File.OpenWrite(dir + "\\" + i + ".jpg"))
+//                                {
+//                                    fs.Write(data, 0, data.Length);
+//                                    fs.Flush();
+//                                }
+//                                //Console.WriteLine(i + "的验证码：" + ParseCode(data));
+//                                Console.WriteLine(i + " Finished!");
+//                            }
+// 
+//                        }, null);
+//                 }
+//             });
+//         }
     }
 }

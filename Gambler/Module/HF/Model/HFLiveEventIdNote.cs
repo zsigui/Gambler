@@ -18,11 +18,11 @@ namespace Gambler.Module.HF.Model
         AT1:'1024',CR1:'1025',DAT1:'1026',DFK1:'1027',FK1:'1028',GOAL1:'1029',CGOAL1:'1030',PEN1:'1031', RC1:'1032',SH1:'1033',
         YC1:'1034',SHG1:'1039',SHB1:'1040',SHW1:'1041',F1:'1042',O1:'1043',KO1:'1044',YRC1:'1045',
         CYC_RC1:'1046', CRC1:'1047',CYC1:'1048',CPEN1:'1049',CCR1:'1050',SAFE1:'1051', DANGER1:'1052',GK1:'1053',TI1:'1054',SUB1:'1055',
-        DSH1:'1056',SAVE1:'1057',BLOCKED1:'1058',RPEN1:'1059',MPEN1:'1060',
+        DSH1:'1056',SAVE1:'1057',BLOCKED1:'1058',RPEN1:'1059',MPEN1:'1060',PPEN1:'1062'
         AT2:'2048',CR2:'2049',DAT2:'2050',DFK2:'2051',FK2:'2052',GOAL2:'2053',CGOAL2:'2054',PEN2:'2055', RC2:'2056',SH2:'2057',
         YC2:'2058',SHG2:'2063',SHB2:'2064',SHW2:'2065',F2:'2066',O2:'2067',KO2:'2068',YRC2:'2069',
         CYC_RC2:'2070', CRC2:'2071',CYC2:'2072',CPEN2:'2073',CCR2:'2074',SAFE2:'2075', DANGER2:'2076',GK2:'2077',TI2:'2078',SUB2:'2079',
-        DSH2: '2080', SAVE2: '2081', BLOCKED2: '2082', RPEN2: '2083', MPEN2: '2084',
+        DSH2: '2080', SAVE2: '2081', BLOCKED2: '2082', RPEN2: '2083', MPEN2: '2084',PPEN2:'2086'
         //GENERAL
         OFFSET: '9901', PITCH: '9902', PLAYERS: '9903', SETTING: '9904', STANDBY: '9909', WEATHER: '9947', WIND: '9948', STAT: '9950',
         STAT_US: '9951', STAT_OK: '9952', TEAM_BET: '9955', ATTN: '9991', CALL_LS: '9992', CALL_OK: '9993', CARD: '9994', COMM_LS: '9995', COMM_OK: '9996',
@@ -71,11 +71,11 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string STOP_OT2 = "7";
         /// <summary>
-        /// 8
+        /// 开始点球
         /// </summary>
         public const string START_PEN = "8";
         /// <summary>
-        /// 9
+        /// 停止点球
         /// </summary>
         public const string STOP_PEN = "9";
         /// <summary>
@@ -292,7 +292,7 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string F1 = "1042";
         /// <summary>
-        /// 1043
+        /// 越位Offside（主队）
         /// </summary>
         public const string O1 = "1043";
         /// <summary>
@@ -363,6 +363,10 @@ namespace Gambler.Module.HF.Model
         /// 点球失误（主队）
         /// </summary>
         public const string MPEN1 = "1060";
+        /// <summary>
+        /// 可能点球（主队）
+        /// </summary>
+        public const string PPEN1 = "1062";
         /// <summary>
         /// 2048
         /// </summary>
@@ -495,6 +499,10 @@ namespace Gambler.Module.HF.Model
         /// 点球失误（客队）
         /// </summary>
         public const string MPEN2 = "2084";
+        /// <summary>
+        /// 可能点球（客队）
+        /// </summary>
+        public const string PPEN2 = "2086";
         /// <summary>
         /// 9901
         /// </summary>

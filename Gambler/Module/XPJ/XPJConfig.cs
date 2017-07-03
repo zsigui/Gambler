@@ -12,7 +12,7 @@ namespace Gambler.XPJ
         /*
 	     * 数据请求的过程
 	     */
-        private static readonly string URL_HOST_NAME = "http://www.1559501.com";
+        private static readonly string URL_HOST_NAME = "https://www.1559501.com";
         /**
          * 获取登录所需要的验证码 <br />
          * GET : timestamp (单位:ms)

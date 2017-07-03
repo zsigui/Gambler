@@ -46,6 +46,8 @@
             this.TSMI_User = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_User_Add = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_User_Remove = new System.Windows.Forms.ToolStripMenuItem();
+            this.TSMI_Tool = new System.Windows.Forms.ToolStripMenuItem();
+            this.TSMI_Tool_Map = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.RTB_Output = new System.Windows.Forms.RichTextBox();
             this.CMS_Output = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -102,7 +104,8 @@
             // 
             this.MS_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TSMI_File,
-            this.TSMI_User});
+            this.TSMI_User,
+            this.TSMI_Tool});
             this.MS_Menu.Location = new System.Drawing.Point(0, 0);
             this.MS_Menu.Name = "MS_Menu";
             this.MS_Menu.Size = new System.Drawing.Size(1083, 25);
@@ -157,17 +160,35 @@
             // 
             this.TSMI_User_Add.Name = "TSMI_User_Add";
             this.TSMI_User_Add.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.TSMI_User_Add.Size = new System.Drawing.Size(187, 22);
+            this.TSMI_User_Add.Size = new System.Drawing.Size(211, 22);
             this.TSMI_User_Add.Text = "增加账户(&A)";
             this.TSMI_User_Add.Click += new System.EventHandler(this.TSMI_User_Add_Click);
             // 
             // TSMI_User_Remove
             // 
             this.TSMI_User_Remove.Name = "TSMI_User_Remove";
-            this.TSMI_User_Remove.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.TSMI_User_Remove.Size = new System.Drawing.Size(187, 22);
+            this.TSMI_User_Remove.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.D)));
+            this.TSMI_User_Remove.Size = new System.Drawing.Size(211, 22);
             this.TSMI_User_Remove.Text = "删除选中(&D)";
             this.TSMI_User_Remove.Click += new System.EventHandler(this.TSMI_User_Remove_Click);
+            // 
+            // TSMI_Tool
+            // 
+            this.TSMI_Tool.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TSMI_Tool_Map});
+            this.TSMI_Tool.Name = "TSMI_Tool";
+            this.TSMI_Tool.Size = new System.Drawing.Size(71, 21);
+            this.TSMI_Tool.Text = "小工具(&T)";
+            // 
+            // TSMI_Tool_Map
+            // 
+            this.TSMI_Tool_Map.Name = "TSMI_Tool_Map";
+            this.TSMI_Tool_Map.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.C)));
+            this.TSMI_Tool_Map.Size = new System.Drawing.Size(257, 22);
+            this.TSMI_Tool_Map.Text = "名称映射查询工具(&C)";
+            this.TSMI_Tool_Map.Click += new System.EventHandler(this.TSMI_Tool_Map_Click);
             // 
             // groupBox2
             // 
@@ -593,6 +614,9 @@
         private System.Windows.Forms.ContextMenuStrip CMS_Output;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Output_Clear;
         private System.Windows.Forms.ToolStripMenuItem TSMI_File_Map;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Tool;
+        private System.Windows.Forms.ToolStripMenuItem TSMI_Tool_Map;
     }
 }
 

@@ -197,7 +197,19 @@ namespace Gambler.UI
                             }
                             break;
                         case BetType.ConcedePoints:
-                            
+                            int state;
+                            for (int i = 0; i < _showDataList.Count; i++)
+                            {
+                                data = _showDataList[i];
+                                if ((state = JudgeConcedePoints(data.scoreC, data.scoreH, data.CON_RH)) != 0)
+                                {
+                                    if (mostOdd < data.ior_HOUH)
+                                    {
+                                        mostOdd = data.ior_HOUH;
+                                        mostIndex = i;
+                                    }
+                                }
+                            }
                             break;
                         case BetType.HalfBigOrSmall:
                             for (int i = 0; i < _showDataList.Count; i++)
@@ -345,6 +357,59 @@ namespace Gambler.UI
             {
                 LogUtil.Write(e);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 判断让球分值, 1,2 : 主让客，主-客 3,4 ：客让主，主-客
+        /// </summary>
+        private int JudgeConcedePoints(string scoreC, string scoreH, string project)
+        {
+            try
+            {
+                // 无有效的数值
+                if (String.IsNullOrEmpty(project))
+                    return 0;
+                float[] p = new float[2];
+                bool isHomeWin = true;
+                if (project[0] == '-')
+                {
+                    project = project.Substring(1);
+                    isHomeWin = false;
+                }
+                if (project.Contains("/"))
+                {
+                    string[] sp = project.Split('/');
+                    p[0] = float.Parse(sp[0].Trim());
+                    p[1] = float.Parse(sp[1].Trim());
+                }
+                else
+                {
+                    p[0] = p[1] = float.Parse(project);
+                }
+
+                int sc = (String.IsNullOrEmpty(scoreC) ? 0 : Int32.Parse(scoreC)) + (_isHomePen ? 0 : 1);
+                int sh = (String.IsNullOrEmpty(scoreH) ? 0 : Int32.Parse(scoreH)) + (_isHomePen ? 1 : 0);
+                if (isHomeWin)
+                {
+                    if (sh - sc >= p[1])
+                        return 1;
+                    else if (sh - sc < p[0])
+                        return 2;
+                }
+                else
+                {
+                    if (sc - sh >= p[1])
+                        return 4;
+                    else if (sc - sh < p[0])
+                        return 3;
+                }
+                return 0;
+            }
+            catch (Exception e)
+            {
+                LogUtil.Write(e);
+                return 0;
             }
         }
 

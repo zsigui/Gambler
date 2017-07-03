@@ -409,9 +409,12 @@ namespace Gambler.Module.HF
             if (_liveNewsetEventIds == null)
                 _liveNewsetEventIds = new Dictionary<string, int>();
 
-            if (LiveMatchs.ContainsKey(matchId))
+            if (_liveNewsetEventIds.ContainsKey(matchId))
             {
-                _liveNewsetEventIds.Remove(matchId);
+                _liveNewsetEventIds[matchId] = newsetEId;
+            }
+            else
+            {
                 _liveNewsetEventIds.Add(matchId, newsetEId);
             }
         }
