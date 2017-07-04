@@ -203,6 +203,7 @@
             // RTB_Output
             // 
             this.RTB_Output.ContextMenuStrip = this.CMS_Output;
+            this.RTB_Output.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.RTB_Output.Location = new System.Drawing.Point(10, 20);
             this.RTB_Output.Name = "RTB_Output";
             this.RTB_Output.ReadOnly = true;

@@ -554,138 +554,138 @@ namespace Gambler.Module.HF.Model
         /// <summary>
         /// 9992
         /// </summary>
-        public const string CALL_LS = "";
+        public const string CALL_LS = "9992";
         /// <summary>
         /// 9993
         /// </summary>
-        public const string CALL_OK = "";
+        public const string CALL_OK = "9993";
         /// <summary>
         /// 9994
         /// </summary>
-        public const string CARD = "";
+        public const string CARD = "9994";
         /// <summary>
         /// 9995
         /// </summary>
-        public const string COMM_LS = "";
+        public const string COMM_LS = "9995";
         /// <summary>
         /// 9996
         /// </summary>
-        public const string COMM_OK = "";
+        public const string COMM_OK = "9996";
         /// <summary>
         /// 9997
         /// </summary>
-        public const string COMMT = "";
+        public const string COMMT = "9997";
         /// <summary>
         /// 9998
         /// </summary>
-        public const string GS = "";
+        public const string GS = "9998";
         /// <summary>
         /// 9999
         /// </summary>
-        public const string NEU_GD = "";
+        public const string NEU_GD = "9999";
         /// <summary>
         /// 9905
         /// </summary>
-        public const string SC11 = "";
+        public const string SC11 = "9905";
         /// <summary>
         /// 9906
         /// </summary>
-        public const string SC12 = "";
+        public const string SC12 = "9906";
         /// <summary>
         /// 9907
         /// </summary>
-        public const string SC21 = "";
+        public const string SC21 = "9907";
         /// <summary>
         /// 9908
         /// </summary>
-        public const string SC22 = "";
+        public const string SC22 = "9908";
         /// <summary>
         /// 9941
         /// </summary>
-        public const string TIATK1 = "";
+        public const string TIATK1 = "9941";
         /// <summary>
         /// 9942
         /// </summary>
-        public const string TIATK2 = "";
+        public const string TIATK2 = "9942";
         /// <summary>
         /// 9943
         /// </summary>
-        public const string TIDGR1 = "";
+        public const string TIDGR1 = "9943";
         /// <summary>
         /// 9944
         /// </summary>
-        public const string TIDGR2 = "";
+        public const string TIDGR2 = "9944";
         /// <summary>
         /// 9945
         /// </summary>
-        public const string TISAF1 = "";
+        public const string TISAF1 = "9945";
         /// <summary>
         /// 9946
         /// </summary>
-        public const string TISAF2 = "";
+        public const string TISAF2 = "9946";
         /// <summary>
         /// 9961
         /// </summary>
-        public const string GOAL_OWN1 = "";
+        public const string GOAL_OWN1 = "9961";
         /// <summary>
         /// 9962
         /// </summary>
-        public const string GOAL_OWN2 = "";
+        public const string GOAL_OWN2 = "9962";
         /// <summary>
         /// 9963
         /// </summary>
-        public const string GOAL_PEN1 = "";
+        public const string GOAL_PEN1 = "9963";
         /// <summary>
         /// 9964
         /// </summary>
-        public const string GOAL_PEN2 = "";
+        public const string GOAL_PEN2 = "9964";
         /// <summary>
         /// 9965
         /// </summary>
-        public const string GOAL_PENM1 = "";
+        public const string GOAL_PENM1 = "9965";
         /// <summary>
         /// 9966
         /// </summary>
-        public const string GOAL_PENM2 = "";
+        public const string GOAL_PENM2 = "9966";
         /// <summary>
         /// 9967
         /// </summary>
-        public const string KICK_RES1 = "";
+        public const string KICK_RES1 = "9967";
         /// <summary>
         /// 9968
         /// </summary>
-        public const string KICK_RES2 = "";
+        public const string KICK_RES2 = "9968";
         /// <summary>
         /// 9971
         /// </summary>
-        public const string CROSS1 = "";
+        public const string CROSS1 = "9971";
         /// <summary>
         /// 9972
         /// </summary>
-        public const string CROSS2 = "";
+        public const string CROSS2 = "9972";
         /// <summary>
         /// 9981
         /// </summary>
-        public const string FK_ATK1 = "";
+        public const string FK_ATK1 = "9981";
         /// <summary>
         /// 9982
         /// </summary>
-        public const string FK_ATK2 = "";
+        public const string FK_ATK2 = "9982";
         /// <summary>
         /// 9983
         /// </summary>
-        public const string FK_DGR1 = "";
+        public const string FK_DGR1 = "9983";
         /// <summary>
         /// 9984
         /// </summary>
-        public const string FK_DGR2 = "";
+        public const string FK_DGR2 = "9984";
         /// <summary>
         /// 9985
         /// </summary>
-        public const string FK_SAF1 = "";
+        public const string FK_SAF1 = "9985";
         /// <summary>
         /// 9986
         /// </summary>
-        public const string FK_SAF2 = "";
+        public const string FK_SAF2 = "9986";
     }
 }

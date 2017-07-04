@@ -34,7 +34,9 @@ namespace Gambler.Module.X469
          * GET: action=islogin
          * 返回：result = 0 未登录 1 已登录
          */
-        public static readonly string URL_LOGIN = URL_HOST_NAME + "/do.aspx";
+        public static readonly string URL_LOGIN = URL_HOST_NAME + "/do.aspx?action=checklogin";
+
+        public static readonly string URL_USER = URL_HOST_NAME + "/do.aspx?action=islogin";
 
         /**
          * 获取滚球博彩数据 <br />
@@ -53,8 +55,10 @@ namespace Gambler.Module.X469
         /**
          * 进行博彩下注 <br />
          * 
-         * GET: uid
+         * GET: uid （携带 sid 的 Cookie 执行 GET 请求 https://www.469355.com/sport.aspx 并解析返回的HTML页面获取 <iframe /> 标签下的 src ，从 url query 参数中提取 uid）
          * POST: money（下注金额）, bet（H：主/小 C：客/大）, rate（盘口利率）, ltype（下注类型 9 全场让球 10 全场大小）, mid（盘口ID）, auto=1（是否接受自动下注）
+         * 
+         * 返回字符串： fail: "false|{msg}"  否则成功
          **/
         public static readonly string URL_BET = "https://a600g.lq2222.org/sport/order_ft.aspx";
     }

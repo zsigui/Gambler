@@ -79,7 +79,13 @@
     <Compile Include="Module\HF\Model\HFUser.cs" />
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
+    <Compile Include="Module\X469\Model\X469Login.cs" />
+    <Compile Include="Module\X469\Model\X469OddData.cs" />
+    <Compile Include="Module\X469\Model\X469OddItem.cs" />
+    <Compile Include="Module\X469\Model\X469User.cs" />
+    <Compile Include="Module\X469\X469Client.cs" />
     <Compile Include="Module\X469\X469Config.cs" />
+    <Compile Include="Module\X469\X469ErrorMsg.cs" />
     <Compile Include="Module\X469\X469VerifyCode.cs" />
     <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
     <Compile Include="Module\XPJ\Model\XPJOddData.cs" />
