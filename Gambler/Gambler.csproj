@@ -79,6 +79,7 @@
     <Compile Include="Module\HF\Model\HFUser.cs" />
     <Compile Include="Module\HF\Model\HFUserMoney.cs" />
     <Compile Include="Module\HF\HFHtmlParser.cs" />
+    <Compile Include="Module\X469\Model\X469ReqBetData.cs" />
     <Compile Include="Module\X469\Model\X469Login.cs" />
     <Compile Include="Module\X469\Model\X469OddData.cs" />
     <Compile Include="Module\X469\Model\X469OddItem.cs" />

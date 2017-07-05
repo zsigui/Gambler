@@ -50,7 +50,7 @@ namespace Gambler.Module.X469
          * mid：盘口ID
          * 
          **/
-        public static readonly string URL_ODD_RB = "https://a600g.lq2222.org/sport/football.aspx";
+        public static readonly string URL_ODD_DATA = "https://a600g.lq2222.org/sport/football.aspx";
 
         /**
          * 进行博彩下注 <br />

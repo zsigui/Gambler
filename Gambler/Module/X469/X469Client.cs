@@ -241,12 +241,15 @@ namespace Gambler.Module.X469
             GetAllOddDataByPage("re", 1, null, onSuccess, onFail, onError);
         }
 
-        private void GetAllOddDataByPage(string gameType, int page, X469OddData fromLast,
+        private void GetAllOddDataByPage(string action, int page, X469OddData fromLast,
             OnSuccessHandler<X469OddData> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> bodyDict = ConstructKeyValDict(
-               "gameType", gameType,
-               "pageNo", page.ToString());
+                "action", action,
+                "page", page.ToString(),
+                "data", "json",
+                "uid", _uid,
+                "_", String.Format("{0}", TimeUtil.CurrentTimeMillis() / 1000));
             HttpUtil.Post(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
@@ -270,7 +273,7 @@ namespace Gambler.Module.X469
                        if (Convert.ToInt32(data.totalpage) > page)
                        {
                             // 有多页，获取下一页的数据
-                            GetAllOddDataByPage(gameType, page + 1, fromLast,
+                            GetAllOddDataByPage(action, page + 1, fromLast,
                                onSuccess, onFail, onError);
                        }
                        else
@@ -298,10 +301,16 @@ namespace Gambler.Module.X469
                });
         }
 
-        public void DoBet(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        public void DoBet(X469ReqBetData req, OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> queryDict = ConstructKeyValDict("uid", _uid);
-            Dictionary<string, string> bodyDict = ConstructKeyValDict("data", "");
+            Dictionary<string, string> bodyDict = ConstructKeyValDict("money", String.Format("{0:N2}", req.money),
+                "bet", req.bet,
+                "rate", Convert.ToString(req.rate),
+                "ltype", req.ltype,
+                "mid", req.mid,
+                "auto", req.autoOpt ? "1": "0"
+                );
             HttpUtil.Post(X469Config.URL_BET, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {

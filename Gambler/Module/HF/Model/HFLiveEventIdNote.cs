@@ -368,6 +368,10 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string PPEN1 = "1062";
         /// <summary>
+        /// 确认得分（主队）
+        /// </summary>
+        public const string CFGOAL1 = "1065";
+        /// <summary>
         /// 2048
         /// </summary>
         public const string AT2 = "2048";
@@ -504,6 +508,10 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string PPEN2 = "2086";
         /// <summary>
+        /// 确认得分（客队）
+        /// </summary>
+        public const string CFGOAL2 = "2089";
+        /// <summary>
         /// 9901
         /// </summary>
         public const string OFFSET = "9901";
@@ -523,6 +531,14 @@ namespace Gambler.Module.HF.Model
         /// 9909
         /// </summary>
         public const string STANDBY = "9909";
+        /// <summary>
+        /// 客队可能点球情况
+        /// </summary>
+        public const string POSSIBLE_PEN2_S = "9927";
+        /// <summary>
+        /// 客队点球情况结束判断
+        /// </summary>
+        public const string POSSIBLE_PEN2_E = "9929";
         /// <summary>
         /// 9947
         /// </summary>
@@ -632,11 +648,11 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string GOAL_OWN2 = "9962";
         /// <summary>
-        /// 9963
+        /// 点球得分（主队）
         /// </summary>
         public const string GOAL_PEN1 = "9963";
         /// <summary>
-        /// 9964
+        /// 点球得分（客队）
         /// </summary>
         public const string GOAL_PEN2 = "9964";
         /// <summary>
@@ -687,5 +703,9 @@ namespace Gambler.Module.HF.Model
         /// 9986
         /// </summary>
         public const string FK_SAF2 = "9986";
+
+        public static string CONFIRM = "Confirmed";
+
+        public static string CANCEL = "Cancelled";
     }
 }

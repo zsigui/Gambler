@@ -202,6 +202,7 @@
             // 
             // RTB_Output
             // 
+            this.RTB_Output.AutoWordSelection = true;
             this.RTB_Output.ContextMenuStrip = this.CMS_Output;
             this.RTB_Output.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.RTB_Output.Location = new System.Drawing.Point(10, 20);
@@ -212,6 +213,8 @@
             this.RTB_Output.TabIndex = 0;
             this.RTB_Output.Text = "";
             this.RTB_Output.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.RTB_Output_MouseDoubleClick);
+            this.RTB_Output.MouseEnter += new System.EventHandler(this.RTB_Output_MouseEnter);
+            this.RTB_Output.MouseLeave += new System.EventHandler(this.RTB_Output_MouseLeave);
             // 
             // CMS_Output
             // 
