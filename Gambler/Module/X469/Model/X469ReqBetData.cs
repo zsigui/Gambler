@@ -13,7 +13,7 @@ namespace Gambler.Module.X469.Model
 
         public string bet;
 
-        public double rate;
+        public string rate;
 
         public string ltype;
 

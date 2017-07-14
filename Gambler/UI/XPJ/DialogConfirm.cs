@@ -33,8 +33,8 @@ namespace Gambler.UI
             return sInstance;
         }
 
-        private List<XPJAccount> _accounts;
-        private List<float> _moneys;
+        private List<IntegratedAccount> _accounts;
+        private List<double> _moneys;
         private ReqBetData _requestData;
 
         public DialogConfirm()
@@ -73,11 +73,13 @@ namespace Gambler.UI
             DataGridViewRow dr;
             int money;
             DGV_BetUser.Rows.Clear();
-            _accounts = new List<XPJAccount>();
-            _moneys = new List<float>();
+            _accounts = new List<IntegratedAccount>();
+            _moneys = new List<double>();
             BTN_Confirm.Enabled = true;
-            foreach (XPJAccount account in FormMain.GetInstance().ObtainAccounts())
+            foreach (IntegratedAccount account in FormMain.GetInstance().ObtainAccounts())
             {
+                if (account.Type != AcccountType.XPJ155)
+                    continue;
                 money = account.IsChecked ? 0 : CalculateBetMoney((int)account.Money);
                 _accounts.Add(account);
                 _moneys.Add(money);
@@ -137,7 +139,7 @@ namespace Gambler.UI
             SetBtnEnabled(false);
             ThreadUtil.RunOnThread(() =>
             {
-                XPJAccount tmpAccount;
+                IntegratedAccount tmpAccount;
                 for (int i = 0; i < _accounts.Count; i++)
                 {
                     tmpAccount = _accounts[i];
@@ -147,7 +149,7 @@ namespace Gambler.UI
                         continue;
                     }
                     _requestData.money = String.Format("{0:N2}", _moneys[i]);
-                    tmpAccount.GetClient().DoBet(_requestData,
+                    tmpAccount.GetClient<XPJClient>().DoBet(_requestData,
                             (ret) =>
                             {
                                 UpdateDGVCellOnThread(i, "√");
@@ -212,7 +214,7 @@ namespace Gambler.UI
                 if (newVal != null && !String.IsNullOrEmpty(newVal.ToString()))
                 {
                     float n = float.Parse(newVal.ToString());
-                    float acountMoney = _accounts[e.RowIndex].Money;
+                    double acountMoney = _accounts[e.RowIndex].Money;
                     if (acountMoney > 0 &&  n > acountMoney)
                     {
                         _moneys[e.RowIndex] = acountMoney;

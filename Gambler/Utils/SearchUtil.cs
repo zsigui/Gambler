@@ -1,4 +1,5 @@
-﻿using Gambler.Module.XPJ.Model;
+﻿using Gambler.Module.X469.Model;
+using Gambler.Module.XPJ.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,119 @@ namespace Gambler.Utils
 {
     public class SearchUtil
     {
+
+        /* ---------------------  X469 START -------------------------------- */
+
+        public static List<X469OddItem> FilterBySearch(string searchText, List<X469OddItem> source)
+        {
+            List<X469OddItem> listData = new List<X469OddItem>();
+            if (!String.IsNullOrEmpty(searchText))
+            {
+                string[] keys = searchText.Split(' ');
+                foreach (X469OddItem d in source)
+                {
+                    if (FindSimilar(d, keys))
+                    {
+                        listData.Add(d);
+                    }
+                }
+            }
+            else
+            {
+                foreach (X469OddItem d in source)
+                {
+                    listData.Add(d);
+                }
+            }
+            return listData;
+        }
+
+        private static bool FindSimilar(X469OddItem d, string[] keys)
+        {
+            LevenshteinDistance tool = LevenshteinDistance.DefaultInstance;
+            float cmpRatio = 0.75f;
+            string tmp;
+            // 0ahl 0ahl  高三位表示存在，低三位表示最终结果 
+            // 低三位分别表示 a, h, l，当 l 与其他同时存在，需要满足 l, h 或者 l, a
+            int b = 0;
+            int tmpB = 0;
+            foreach (string k in keys)
+            {
+                if (!String.IsNullOrEmpty(k))
+                {
+                    if (k.StartsWith("l:"))
+                    {
+                        b |= 0x10;
+                        tmp = k.Substring(2);
+                        if (tool.Cmp(tmp, d.a26) > cmpRatio || d.a26.Contains(tmp))
+                        {
+                            b |= 0x01;
+                        }
+                    }
+                    else if (k.StartsWith("h:"))
+                    {
+                        b |= 0x20;
+                        tmp = k.Substring(2);
+                        if (tool.Cmp(tmp, d.a2) > cmpRatio || d.a2.Contains(tmp))
+                        {
+                            b |= 0x2;
+                        }
+                    }
+                    else if (k.StartsWith("a:"))
+                    {
+                        b |= 0x40;
+                        tmp = k.Substring(2);
+                        if (tool.Cmp(tmp, d.a3) > cmpRatio || d.a3.Contains(tmp))
+                        {
+                            b |= 0x4;
+                        }
+                    }
+                    else
+                    {
+                        return tool.Cmp(k, d.a26) > cmpRatio
+                            || tool.Cmp(k, d.a2) > cmpRatio
+                            || tool.Cmp(k, d.a3) > cmpRatio
+                            || d.a26.Contains(k)
+                            || d.a2.Contains(k)
+                            || d.a3.Contains(k);
+                    }
+
+                    tmpB = (b >> 4);
+                    if (((tmpB & 0x3) == 3 && (b & 0x3) == 3)
+                        || ((tmpB & 0x5) != 5) && (b & 0x5) == 5)
+                    {
+                        // 满足条件，即是联赛名跟队伍名同时存在且都各自有存在匹配情况
+                        return true;
+                    }
+                }
+            }
+            tmpB = (b >> 4);
+            return ((tmpB & 0x1) == 0 && (b & 0x6) > 0) || ((tmpB & 0x1) == 1 && (tmpB & 0x6) == 0);
+        }
+
+        public static List<X469OddItem> FilterByLeague(string leagueVal, Dictionary<string, List<X469OddItem>> odd, List<X469OddItem> source)
+        {
+            List<X469OddItem> listData = new List<X469OddItem>();
+            if (!String.IsNullOrEmpty(leagueVal) && odd.ContainsKey(leagueVal))
+            {
+                foreach (X469OddItem d in odd[leagueVal])
+                {
+                    listData.Add(d);
+                }
+            }
+            else
+            {
+                foreach (X469OddItem d in source)
+                {
+                    listData.Add(d);
+                }
+            }
+            return listData;
+        }
+
+        /* ---------------------  X469 END ---------------------------------- */
+
+        /* ---------------------  XPJ START --------------------------------- */
 
         public static List<XPJOddData> FilterBySearch(string searchText, List<XPJOddData> source)
         {
@@ -116,5 +230,6 @@ namespace Gambler.Utils
             }
             return listData;
         }
+        /* ---------------------  XPJ END ---------------------------------*/
     }
 }

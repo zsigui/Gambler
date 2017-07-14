@@ -86,9 +86,10 @@
     <Compile Include="Module\X469\Model\X469User.cs" />
     <Compile Include="Module\X469\X469Client.cs" />
     <Compile Include="Module\X469\X469Config.cs" />
+    <Compile Include="Module\X469\X469DataParser.cs" />
     <Compile Include="Module\X469\X469ErrorMsg.cs" />
     <Compile Include="Module\X469\X469VerifyCode.cs" />
-    <Compile Include="Module\XPJ\Model\XPJAccount.cs" />
+    <Compile Include="Module\IntegratedAccount.cs" />
     <Compile Include="Module\XPJ\Model\XPJOddData.cs" />
     <Compile Include="Module\XPJ\XPJDataParser.cs" />
     <Compile Include="UI\DialogAddH8Cookie.cs">
@@ -97,10 +98,16 @@
     <Compile Include="UI\DialogAddH8Cookie.Designer.cs">
       <DependentUpon>DialogAddH8Cookie.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\DialogConfirm.cs">
+    <Compile Include="UI\X469\X469DialogConfirm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\DialogConfirm.Designer.cs">
+    <Compile Include="UI\X469\X469DialogConfirm.Designer.cs">
+      <DependentUpon>X469DialogConfirm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\XPJ\DialogConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\XPJ\DialogConfirm.Designer.cs">
       <DependentUpon>DialogConfirm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\FormAddUser.cs">
@@ -115,10 +122,16 @@
     <Compile Include="UI\FormAutoBetSetting.Designer.cs">
       <DependentUpon>FormAutoBetSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\FormInfo.cs">
+    <Compile Include="UI\X469\FormX469Info.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\FormInfo.Designer.cs">
+    <Compile Include="UI\X469\FormX469Info.Designer.cs">
+      <DependentUpon>FormX469Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\XPJ\FormInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\XPJ\FormInfo.Designer.cs">
       <DependentUpon>FormInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\FormMapItem.cs">
@@ -158,6 +171,7 @@
     <Compile Include="Utils\JsonUtil.cs" />
     <Compile Include="Utils\LevenshteinDistance.cs" />
     <Compile Include="Utils\Md5Util.cs" />
+    <Compile Include="Utils\MediaUtil.cs" />
     <Compile Include="Utils\SearchHelper.cs" />
     <Compile Include="Utils\SearchUtil.cs" />
     <Compile Include="Utils\StringUtil.cs" />
@@ -200,7 +214,10 @@
     <EmbeddedResource Include="UI\DialogAddH8Cookie.resx">
       <DependentUpon>DialogAddH8Cookie.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\DialogConfirm.resx">
+    <EmbeddedResource Include="UI\X469\X469DialogConfirm.resx">
+      <DependentUpon>X469DialogConfirm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\XPJ\DialogConfirm.resx">
       <DependentUpon>DialogConfirm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\FormAddUser.resx">
@@ -209,7 +226,10 @@
     <EmbeddedResource Include="UI\FormAutoBetSetting.resx">
       <DependentUpon>FormAutoBetSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\FormInfo.resx">
+    <EmbeddedResource Include="UI\X469\FormX469Info.resx">
+      <DependentUpon>FormX469Info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\XPJ\FormInfo.resx">
       <DependentUpon>FormInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\FormMain.resx">
@@ -256,6 +276,25 @@
   <ItemGroup>
     <Folder Include="Delegate\" />
     <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxWMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

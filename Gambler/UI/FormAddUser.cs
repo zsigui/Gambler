@@ -1,4 +1,5 @@
 ﻿using Gambler.Config;
+using Gambler.Module.X469;
 using Gambler.Module.XPJ.Model;
 using Gambler.Utils;
 using Gambler.XPJ;
@@ -33,17 +34,18 @@ namespace Gambler.UI
             return sInstance;
         }
 
-        private XPJAccount _account;
+        private IntegratedAccount _account;
 
         public FormAddUser()
         {
             InitializeComponent();
+            CB_Type.SelectedIndex = 0;
         }
 
         /// <summary>
         /// 新添加的账号
         /// </summary>
-        public XPJAccount Account
+        public IntegratedAccount Account
         {
             get
             {
@@ -93,41 +95,85 @@ namespace Gambler.UI
             }
 
             BTN_Add.Enabled = false;
+            _account.Type = CB_Type.SelectedIndex;
             // 开启线程验证登录 
             ThreadUtil.RunOnThread(() =>
             {
-                _account.newClient().Login(
-                    (data) =>
-                    {
-                        _account.GetClient().GetUserInfo((d) =>
-                        {
-                            Console.WriteLine("当前金币余额: " + d.money);
-                            _account.Money = d.money;
-                        }, null, null);
-                        MessageBox.Show("添加用户成功!");
-                        Invoke(new Action(()=> {
-                            FormMain.GetInstance().AddXPJUserToList(_account);
-                            Close();
-                        }));
-                    },
-                    (status, code, msg) =>
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            BTN_Add.Enabled = true;
-                        }));
-                        LogUtil.Write("Http: " + status + ", 错误码: " + code + ", 错误消息: " + msg);
-                        MessageBox.Show("登录失败，请检查后重试！");
-                    },
-                    (err) =>
-                    {
-                        Invoke(new Action(() =>
-                        {
-                            BTN_Add.Enabled = true;
-                        }));
-                        LogUtil.Write(err);
-                        MessageBox.Show("登录失败，请检查后重试！");
-                    });
+                switch (_account.Type)
+                {
+                    case AcccountType.XPJ155:
+                        #region 新葡京155
+                        _account.GetClient<XPJClient>().Login(
+                            (data) =>
+                            {
+                                _account.GetClient<XPJClient>().GetUserInfo((d) =>
+                                {
+                                    Console.WriteLine("当前金币余额: " + d.money);
+                                    _account.Money = d.money;
+                                }, null, null);
+                                MessageBox.Show("添加用户成功!");
+                                Invoke(new Action(() =>
+                                {
+                                    FormMain.GetInstance().AddUserToList(_account);
+                                    Close();
+                                }));
+                            },
+                            (status, code, msg) =>
+                            {
+                                Invoke(new Action(() =>
+                                {
+                                    BTN_Add.Enabled = true;
+                                }));
+                                MessageBox.Show("登录失败，请检查后重试！");
+                            },
+                            (err) =>
+                            {
+                                Invoke(new Action(() =>
+                                {
+                                    BTN_Add.Enabled = true;
+                                }));
+                                LogUtil.Write(err);
+                                MessageBox.Show("登录失败，请检查后重试！");
+                            });
+                        #endregion
+                        break;
+                    case AcccountType.XPJ469:
+                        #region 新葡京469
+                        _account.GetClient<X469Client>().Login(
+                           (data) =>
+                           {
+                               _account.GetClient<X469Client>().GetUserInfo((d) =>
+                               {
+                                   Console.WriteLine("当前金币余额: " + d.money);
+                                   _account.Money = Convert.ToDouble(d.money);
+                               }, null, null);
+                               MessageBox.Show("添加用户成功!");
+                               Invoke(new Action(() =>
+                               {
+                                   FormMain.GetInstance().AddUserToList(_account);
+                                   Close();
+                               }));
+                           },
+                           (status, code, msg) =>
+                           {
+                               Invoke(new Action(() =>
+                               {
+                                   BTN_Add.Enabled = true;
+                               }));
+                               MessageBox.Show("登录失败，请检查后重试！");
+                           },
+                           (err) =>
+                           {
+                               Invoke(new Action(() =>
+                               {
+                                   BTN_Add.Enabled = true;
+                               }));
+                               LogUtil.Write(err);
+                               MessageBox.Show("登录失败，请检查后重试！");
+                           });
+                        #endregion
+                        break;
+                }
             });
 
         }
@@ -164,7 +210,7 @@ namespace Gambler.UI
         {
             if (_account == null)
             {
-                _account = new XPJAccount();
+                _account = new IntegratedAccount();
             };
         }
 

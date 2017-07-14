@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,15 @@ namespace Gambler.Module
 {
     public class BaseClient
     {
+
+        protected WebProxy _proxy;
+        public WebProxy Proxy
+        {
+            set
+            {
+                _proxy = value;
+            }
+        }
         /// <summary>
         /// 统一构造键值对字典
         /// </summary>

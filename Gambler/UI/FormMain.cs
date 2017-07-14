@@ -1,4 +1,5 @@
 ﻿using Gambler.Config;
+using Gambler.Module;
 using Gambler.Module.HF;
 using Gambler.Module.HF.Model;
 using Gambler.Module.X469;
@@ -33,27 +34,60 @@ namespace Gambler
         }
 
         #region 账号区
-        private Dictionary<string, XPJAccount> _xpjUserDict;
+        private List<IntegratedAccount> _xpjUserDict;
 
-        private void AddXPJAccount(XPJAccount user)
+        private void AddAccount(IntegratedAccount user)
         {
             if (_xpjUserDict == null)
             {
-                _xpjUserDict = new Dictionary<string, XPJAccount>();
+                _xpjUserDict = new List<IntegratedAccount>();
             }
-            RemoveXPJAccount(user.Account);
-            _xpjUserDict.Add(user.Account, user);
+            RemoveAccount(user);
+            _xpjUserDict.Add(user);
         }
 
-        private void RemoveXPJAccount(string name)
+        private void RemoveAccount(IntegratedAccount account)
         {
-            if (_xpjUserDict != null && _xpjUserDict.ContainsKey(name))
+            int index = FindIndex(account);
+            if (index > -1)
             {
-                _xpjUserDict.Remove(name);
+                _xpjUserDict.RemoveAt(index);
             }
         }
 
-        public void LoadXPJAccounts()
+        private void RemoveAccountByName(string name)
+        {
+            if (HasAccount())
+            {
+                IntegratedAccount account;
+                for (int i = _xpjUserDict.Count - 1; i >= 0; i--)
+                {
+                    account = _xpjUserDict[i];
+                    if (account.Account.Equals(name))
+                        _xpjUserDict.RemoveAt(i);
+                }
+            }
+        }
+
+        private int FindIndex(IntegratedAccount account)
+        {
+            if (account != null && HasAccount())
+            {
+                IntegratedAccount tmp;
+                for (int i = _xpjUserDict.Count - 1; i >= 0; i--)
+                {
+                    tmp = _xpjUserDict[i];
+                    if (account.Account.Equals(tmp.Account)
+                        && account.Type == tmp.Type)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        public void LoadAccounts()
         {
             ThreadUtil.RunOnThread(() =>
             {
@@ -62,30 +96,45 @@ namespace Gambler
                 LogUtil.Write("LoadXPJAccounts数据：data = " + data);
                 if (String.IsNullOrEmpty(data))
                     return;
-                Dictionary<string, XPJAccount> accounts = JsonUtil.fromJson<Dictionary<string, XPJAccount>>(data);
+                List<IntegratedAccount> accounts = JsonUtil.fromJson<List<IntegratedAccount>>(data);
                 LogUtil.Write("经过data转换后的dict对象: " + accounts);
                 if (accounts != null && accounts.Count > 0)
                 {
                     // 对所有账号执行登录操作
-                    Dictionary<string, XPJAccount> tmpAccounts = new Dictionary<string, XPJAccount>();
-                    foreach (KeyValuePair<string, XPJAccount> entry in accounts)
+                    List<IntegratedAccount> tmpAccounts = new List<IntegratedAccount>();
+                    foreach (IntegratedAccount account in accounts)
                     {
-                        entry.Value.newClient().Login((ret) =>
+                        if (account.Type == AcccountType.XPJ155)
                         {
-                            LogUtil.Write("登录成功，添加项: " + entry.Key);
-                            entry.Value.GetClient().GetUserInfo((d) =>
+                            account.GetClient<XPJClient>().Login((ret) =>
                             {
-                                LogUtil.Write(entry.Value.Account + "金币余额: " + d.money);
-                                entry.Value.Money = d.money;
-                            }, null, null);
+                                LogUtil.Write("登录成功，添加项: " + account.Account);
+                                account.GetClient<XPJClient>().GetUserInfo((d) =>
+                                {
+                                    account.Money = d.money;
+                                }, null, null);
                             // 将返回成功的添加的字典中
-                            tmpAccounts.Add(entry.Key, entry.Value);
-                        }, null, null);
+                            tmpAccounts.Add(account);
+                            }, null, null);
+                        }
+                        else if (account.Type == AcccountType.XPJ469)
+                        {
+                            account.GetClient<X469Client>().Login((ret) =>
+                            {
+                                LogUtil.Write("登录成功，添加项: " + account.Account);
+                                account.GetClient<X469Client>().GetUserInfo((d) =>
+                                {
+                                    account.Money = Convert.ToDouble(d.money);
+                                }, null, null);
+                                // 将返回成功的添加的字典中
+                                tmpAccounts.Add(account);
+                            }, null, null);
+                        }
                     }
                     Invoke(new Action(() => {
-                        foreach (XPJAccount account in accounts.Values)
+                        foreach (IntegratedAccount account in tmpAccounts)
                         {
-                            AddXPJUserToList(account);
+                            AddUserToList(account);
                         }
                     }));
                     
@@ -94,10 +143,10 @@ namespace Gambler
             });
         }
 
-        public void SaveXPJAccounts()
+        public void SaveAccounts()
         {
             string data = "";
-            if (HasXPJAccount())
+            if (HasAccount())
                 data = JsonUtil.toJson(_xpjUserDict);
             FileUtil.WriteContentToFilePath(GlobalSetting.XPJ_USER_PATH, data);
             LogUtil.Write("将数据写入了XpjUser文件中操作完毕");
@@ -107,17 +156,20 @@ namespace Gambler
         /// 添加账号到主界面的列表中
         /// </summary>
         /// <param name="user">新增账号</param>
-        public void AddXPJUserToList(XPJAccount user)
+        public void AddUserToList(IntegratedAccount user)
         {
-            if (_xpjUserDict != null && _xpjUserDict.ContainsKey(user.Account))
+            int index = FindIndex(user);
+            if (index > - 1)
             {
-                CLB_XPJUser.Items.Remove(user.Account);
+                _xpjUserDict.RemoveAt(index);
+                CLB_XPJUser.Items.RemoveAt(index);
             }
-            AddXPJAccount(user);
-            CLB_XPJUser.SetItemChecked(CLB_XPJUser.Items.Add(user.Account), user.IsChecked);
+            AddAccount(user);
+            CLB_XPJUser.SetItemChecked(CLB_XPJUser.Items.Add(String.Format("{0} [{1}]",
+                user.Account, user.Type == AcccountType.XPJ469? "www.469355.com" : "www.1559501.com")), user.IsChecked);
         }
 
-        public bool HasXPJAccount()
+        public bool HasAccount()
         {
             return _xpjUserDict != null && _xpjUserDict.Count > 0;
         }
@@ -126,22 +178,11 @@ namespace Gambler
         /// 获取当前存在的XPJ账号列表，需要先调用HasXPJAccount()进行判断
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<XPJAccount> ObtainAccounts()
+        public IEnumerable<IntegratedAccount> ObtainAccounts()
         {
-            return _xpjUserDict.Values;
+            return _xpjUserDict;
         }
-
-        /// <summary>
-        /// 获取指定账号名的账号，需要先调用HasXPJAccount()进行判断
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public XPJAccount ObtainAccountByName(string name)
-        {
-            if (!_xpjUserDict.ContainsKey(name))
-                return null;
-            return _xpjUserDict[name];
-        }
+        
         #endregion
 
 
@@ -168,7 +209,8 @@ namespace Gambler
         private System.Threading.Timer _h8DataTimer;
         private HFClient _h8Client;
         // 选择关注的直播赛事列表
-        private List<string> _checkedLiveList = new List<string>();
+        private List<string> _uncheckedList = new List<string>();
+        private List<string> _midList = new List<string>();
         private bool _isInErr = false;
         // 为了避免事件的重复请求
         private List<string> _networkingList = new List<string>();
@@ -180,17 +222,13 @@ namespace Gambler
                 new Action<Dictionary<string, HFSimpleMatch>>((data) => {
 
                     DGV_Live.Rows.Clear();
-                    if (data == null || data.Count == 0)
+                    _midList.Clear();
+                    if (data != null && data.Count > 0)
                     {
-                        _checkedLiveList.Clear();
-                    }
-                    else
-                    {
-                        _checkedLiveList.Clear();
                         DataGridViewRow dr;
                         foreach (HFSimpleMatch m in data.Values)
                         {
-                            _checkedLiveList.Add(m.MID);
+                            _midList.Add(m.MID);
                             dr = new DataGridViewRow();
                             dr.CreateCells(DGV_Live);
                             dr.Cells[0].Value = m.MID;
@@ -208,8 +246,13 @@ namespace Gambler
                             dr.Cells[3].Value = m.League;
                             dr.Cells[4].Value = m.Home;
                             dr.Cells[5].Value = m.Away;
-                            dr.Cells[6].Value = true;
+                            dr.Cells[6].Value = !_uncheckedList.Contains(m.MID);
                             DGV_Live.Rows.Add(dr);
+                        }
+                        for (int i = _uncheckedList.Count - 1; i >= 0; i--)
+                        {
+                            if (!_midList.Contains(_uncheckedList[i]))
+                                _uncheckedList.RemoveAt(i);
                         }
                     }
                 }),
@@ -248,14 +291,7 @@ namespace Gambler
                             (eventData) =>
                             {
                                 _networkingList.Remove(entry.Key);
-//                                 LogUtil.Write(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}，下一事件请求ID：{5}",
-//                                     m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
-//                                 if (CB_MoreEvent.Checked)
-//                                 {
-//                                     Output(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}",
-//                                     m.League, m.Home, m.Away, eventData.Info), Color.Blue);
-//                                 }
-                                if (_checkedLiveList.Contains(eventData.MID.ToString()))
+                                if (!_uncheckedList.Contains(eventData.MID.ToString()))
                                 {
                                     Output(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}",
                                         m.League, m.Home, m.Away, eventData.Info, eventData.CID), Color.DarkRed);
@@ -283,6 +319,14 @@ namespace Gambler
         }
 
         private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】";
+
+        private void PlayVoice(string path)
+        {
+            WMP_Player.URL = Application.StartupPath + path;
+            WMP_Player.Ctlcontrols.play();
+        }
+
+        #region 球赛事件
         private void DealWithTargetMatch(HFSimpleMatch m, string cid, string info)
         {
             ThreadUtil.WorkOnUI<object>(this, new Action(() =>
@@ -290,15 +334,17 @@ namespace Gambler
                 if (HFLiveEventIdNote.PEN1.Equals(cid) && !info.Contains(HFLiveEventIdNote.CONFIRM)
                 && !info.Contains(HFLiveEventIdNote.CANCEL))
                 {
-
+                    PlayVoice("\\Resources\\Voice\\ke_dui_ke_neng_dian_qiu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队可能点球"), Color.Wheat);
                     HandleAutoBetEvent(m, true, false);
                     ForceMessageBox(String.Format("【{0}】{1}(主队) 可能点球", m.League, m.Home));
+
                 }
                 else if (HFLiveEventIdNote.PEN2.Equals(cid) && !info.Contains(HFLiveEventIdNote.CONFIRM)
                 && !info.Contains(HFLiveEventIdNote.CANCEL))
                 {
+                    PlayVoice("\\Resources\\Voice\\zhu_dui_ke_neng_dian_qiu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队可能点球"), Color.Wheat);
                     HandleAutoBetEvent(m, true, false);
@@ -308,6 +354,7 @@ namespace Gambler
                 else if (HFLiveEventIdNote.PEN1.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
                 {
                     // 主队点球
+                    PlayVoice("\\Resources\\Voice\\zhu_dui_dian_qiu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球"), Color.Red);
                     HandleAutoBetEvent(m, true);
@@ -316,6 +363,7 @@ namespace Gambler
                 else if (HFLiveEventIdNote.PEN2.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
                 {
                     // 客队点球
+                    PlayVoice("\\Resources\\Voice\\ke_dui_dian_qiu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球"), Color.Red);
                     HandleAutoBetEvent(m, false);
@@ -323,26 +371,30 @@ namespace Gambler
                 }
                 else if (HFLiveEventIdNote.PEN1.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CANCEL))
                 {
-                    // 主队点球
+                    PlayVoice("\\Resources\\Voice\\ke_neng_dian_qiu_qu_xiao.mp3");
+                    // 主队点球取消
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球取消"), Color.Red);
                     ForceMessageBox(String.Format("【{0}】{1}(主队)-取消点球", m.League, m.Home));
                 }
                 else if (HFLiveEventIdNote.PEN2.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CANCEL))
                 {
-                    // 客队点球
+                    // 客队点球取消
+                    PlayVoice("\\Resources\\Voice\\ke_neng_dian_qiu_qu_xiao.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球取消"), Color.Red);
                     ForceMessageBox(String.Format("【{0}】{1}(客队)-取消点球", m.League, m.Away));
                 }
                 else if (HFLiveEventIdNote.MPEN1.Equals(cid))
                 {
+                    PlayVoice("\\Resources\\Voice\\zhu_dui_dian_qiu_shi_wu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "主队点球失误"), Color.OliveDrab);
                     ForceMessageBox(String.Format("【{0}】{1}(主队)-点球失误", m.League, m.Home));
                 }
                 else if (HFLiveEventIdNote.MPEN2.Equals(cid))
                 {
+                    PlayVoice("\\Resources\\Voice\\ke_dui_dian_qiu_shi_wu.mp3");
                     Output(String.Format(REGEX_FORMAT,
                         m.Score, m.Time, m.League, m.Home, m.Away, "客队点球失误"), Color.OliveDrab);
                     ForceMessageBox(String.Format("【{0}】{1}(客队)-点球失误", m.League, m.Home));
@@ -459,8 +511,8 @@ namespace Gambler
                 }
             }));
         }
+        #endregion
 
-        
         private void HandleAutoBetEvent(HFSimpleMatch m, bool isHome)
         {
             HandleAutoBetEvent(m, isHome, true);
@@ -487,12 +539,12 @@ namespace Gambler
             // 修改为只有设置了自动下注才自动显示
             if (showBet && GlobalSetting.GetInstance().IsAutoBet)
             {
-                if (HasXPJAccount())
-                {
-                    FormInfo.NewInstance().Show();
-
-                    FormInfo.NewInstance().AutoRequest(new string[] { league, home, away }, isHome);
-                }
+//                 if (HasAccount())
+//                 {
+//                     FormInfo.NewInstance().Show();
+// 
+//                     FormInfo.NewInstance().AutoRequest(new string[] { league, home, away }, isHome);
+//                 }
 
                 // 其他
             }
@@ -655,26 +707,14 @@ namespace Gambler
 
         private void TSMI_User_Remove_Click(object sender, EventArgs e)
         {
-            if (TC_User.SelectedIndex == TAB_XPJ)
+            if (CLB_XPJUser.SelectedIndices != null && CLB_XPJUser.SelectedIndices.Count > 0)
             {
-                if (CLB_XPJUser.SelectedIndices != null && CLB_XPJUser.SelectedIndices.Count > 0)
+                
+                for (int index = CLB_XPJUser.SelectedIndices.Count - 1; index >= 0; index--)
                 {
-                    List<string> toBeRemoved = new List<string>(CLB_XPJUser.SelectedItems.Count);
-                    foreach (object item in CLB_XPJUser.SelectedItems)
-                    {
-                        if (item is string)
-                        {
-                            toBeRemoved.Add((string)item);
-                        }
-                    }
-
-                    foreach (string item in toBeRemoved)
-                    {
-                        RemoveXPJAccount(item);
-                        CLB_XPJUser.Items.Remove(item);
-                    }
+                    _xpjUserDict.RemoveAt(index);
+                    CLB_XPJUser.Items.RemoveAt(index);
                 }
-               
             }
         }
 
@@ -689,16 +729,18 @@ namespace Gambler
 
         private void TSMI_Live_CheckAll_Click(object sender, EventArgs e)
         {
-            if (DGV_Live.Rows.Count == 0 || _h8Client == null
-                || _h8Client.LiveMatchs == null)
+            if (_midList.Count == 0)
                 return;
-            if (_checkedLiveList != null && _checkedLiveList.Count == DGV_Live.Rows.Count)
+
+            
+            if (_uncheckedList.Count == 0)
             {
                 foreach (DataGridViewRow r in DGV_Live.Rows)
                 {
                     r.Cells[6].Value = false;
                 }
-                _checkedLiveList.Clear();
+                _uncheckedList.Clear();
+                _uncheckedList.AddRange(_midList);
             }
             else
             {
@@ -706,7 +748,7 @@ namespace Gambler
                 {
                     r.Cells[6].Value = true;
                 }
-                _checkedLiveList.AddRange(_h8Client.LiveMatchs.Keys);
+                _uncheckedList.Clear();
             }
         }
 
@@ -723,26 +765,39 @@ namespace Gambler
         
         private void BTN_JumpBet_Click(object sender, EventArgs e)
         {
-            FormInfo.NewInstance().Show();
+            int index = CLB_XPJUser.SelectedIndex;
+            if (index > -1)
+            {
+                IntegratedAccount account = _xpjUserDict[index];
+                switch (account.Type)
+                {
+                    case AcccountType.XPJ155:
+                        FormInfo.NewInstance().Show(account.GetClient<XPJClient>());
+                        break;
+                    case AcccountType.XPJ469:
+                        FormX469Info.NewInstance().Show(account.GetClient<X469Client>());
+                        break;
+                }
+            }
         }
         #endregion
         
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            LoadXPJAccounts();
+            LoadAccounts();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SaveXPJAccounts();
+            SaveAccounts();
             GlobalSetting.GetInstance().Save();
         }
 
         private void CLB_XPJUser_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (HasXPJAccount())
-                _xpjUserDict[CLB_XPJUser.Items[e.Index].ToString()].IsChecked = (e.NewValue == CheckState.Checked);
+            if (HasAccount())
+                _xpjUserDict[e.Index].IsChecked = (e.NewValue == CheckState.Checked);
         }
 
         private void TSMI_AddCookie_Click(object sender, EventArgs e)
@@ -884,6 +939,25 @@ namespace Gambler
         private void RTB_Output_MouseLeave(object sender, EventArgs e)
         {
             _canScroll = true;
+        }
+
+        private void DGV_Live_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex > -1 && e.ColumnIndex == 6)
+            {
+                DataGridViewCell cell = DGV_Live.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                bool after = (bool)cell.EditedFormattedValue;
+                string key = _midList[e.RowIndex];
+
+                if (after)
+                {
+                    _uncheckedList.Remove(key);
+                }
+                else
+                {
+                    _uncheckedList.Add(key);
+                }
+            }
         }
     }
 }

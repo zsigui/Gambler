@@ -45,6 +45,7 @@ namespace Gambler.UI
         private Dictionary<string, List<XPJOddData>> _oddDataDict;
         private List<XPJOddData> _allSourceData;
         private List<XPJOddData> _showDataList;
+        private XPJClient _client;
 
         /// <summary>
         /// 1 按时间排序 2 按联盟排序
@@ -58,12 +59,18 @@ namespace Gambler.UI
         private string[] _autoSearcwhKey;
         private bool _isHomePen = false;
 
+        public void Show(XPJClient client)
+        {
+            _client = client;
+            Show();
+        }
+
         /// <summary>
         /// 初始化配置
         /// </summary>
         private void InitOnStart()
         {
-            if (!FormMain.GetInstance().HasXPJAccount())
+            if (_client == null)
             {
                 DialogResult r = MessageBox.Show("请先添加登录至少一个新葡京网账号！有账号请按‘是’添加，无账号请按‘否’先注册", "提示",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
@@ -580,8 +587,7 @@ namespace Gambler.UI
 
             // 请求网络，此时先暂停定时器
             RefreshState(0);
-            FormMain.GetInstance().ObtainAccounts().First().GetClient()
-                    .GetAllOddData(_gameType,
+            _client.GetAllOddData(_gameType,
                     _sortType,
                     (ret) =>
                     {

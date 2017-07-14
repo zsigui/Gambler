@@ -30,18 +30,9 @@ namespace Gambler.XPJ
         //
         private string _account;
         private string _password;
-        private WebProxy _proxy;
-
         private string _session;
         private string _jsessionId;
 
-        public WebProxy Proxy
-        {
-            set
-            {
-                _proxy = value;
-            }
-        }
 
         public XPJClient(string account, string password)
         {

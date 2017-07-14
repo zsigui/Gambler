@@ -532,6 +532,10 @@ namespace Gambler.Module.HF.Model
         /// </summary>
         public const string STANDBY = "9909";
         /// <summary>
+        /// 主队可能点球情况
+        /// </summary>
+        public const string POSSIBLE_PEN1_S = "9926";
+        /// <summary>
         /// 客队可能点球情况
         /// </summary>
         public const string POSSIBLE_PEN2_S = "9927";

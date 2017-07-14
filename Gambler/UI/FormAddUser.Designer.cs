@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.CB_Type = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.TB_Password = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -52,16 +54,38 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.CB_Type);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.TB_Password);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.TB_Account);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(415, 103);
+            this.groupBox1.Size = new System.Drawing.Size(415, 132);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "账号信息";
+            // 
+            // CB_Type
+            // 
+            this.CB_Type.FormattingEnabled = true;
+            this.CB_Type.Items.AddRange(new object[] {
+            "新葡京155",
+            "新葡京469"});
+            this.CB_Type.Location = new System.Drawing.Point(114, 97);
+            this.CB_Type.Name = "CB_Type";
+            this.CB_Type.Size = new System.Drawing.Size(121, 20);
+            this.CB_Type.TabIndex = 6;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(67, 100);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(47, 12);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "类型： ";
             // 
             // TB_Password
             // 
@@ -112,7 +136,7 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Location = new System.Drawing.Point(12, 130);
+            this.groupBox2.Location = new System.Drawing.Point(12, 165);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(415, 169);
             this.groupBox2.TabIndex = 1;
@@ -186,7 +210,7 @@
             // BTN_Add
             // 
             this.BTN_Add.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BTN_Add.Location = new System.Drawing.Point(167, 307);
+            this.BTN_Add.Location = new System.Drawing.Point(167, 342);
             this.BTN_Add.Name = "BTN_Add";
             this.BTN_Add.Size = new System.Drawing.Size(105, 30);
             this.BTN_Add.TabIndex = 2;
@@ -205,7 +229,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(439, 344);
+            this.ClientSize = new System.Drawing.Size(438, 388);
             this.Controls.Add(this.BTN_Add);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -244,5 +268,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button BTN_Add;
         private System.Windows.Forms.ErrorProvider EP_Validated;
+        private System.Windows.Forms.ComboBox CB_Type;
+        private System.Windows.Forms.Label label7;
     }
 }

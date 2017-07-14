@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Gambler.Module.X469;
+using Gambler.Utils;
+using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Gambler

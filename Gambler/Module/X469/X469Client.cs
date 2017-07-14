@@ -4,6 +4,7 @@ using Gambler.Utils.Interface;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Gambler.Module.X469
@@ -117,16 +118,18 @@ namespace Gambler.Module.X469
         {
             Dictionary<string, string> bodyDict = ConstructKeyValDict(
                  "username", _account,
-                 "password", _password,
+                 "passwd", _password,
                  "captcha", code);
             HttpUtil.Post(X469Config.URL_LOGIN, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
-                    return JsonUtil.fromJson<X469Login>(IOUtil.ReadString(data));
+                    string str = IOUtil.ReadString(data);
+                    return JsonUtil.fromJson<X469Login>(str.Substring(1, str.Length - 2));
                 },
                (statusCode, data, cookies) =>
                {
 
+                   Console.WriteLine("LoginByCode.Data = " + data);
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null)
                    {
                        if (data.result.Equals("1") || data.result.Equals("2"))
@@ -174,7 +177,8 @@ namespace Gambler.Module.X469
             HttpUtil.Post(X469Config.URL_USER, _headers, _cookies, _proxy, null,
                 (data) =>
                 {
-                    return JsonUtil.fromJson<X469User>(IOUtil.ReadString(data));
+                    string str = IOUtil.ReadString(data);
+                    return JsonUtil.fromJson<X469User>(str.Substring(1, str.Length - 2));
                 },
                (statusCode, data, cookies) =>
                {
@@ -201,22 +205,18 @@ namespace Gambler.Module.X469
         public void GetOddData(string action, int pageNo, string leagues,
             OnSuccessHandler<X469OddData> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            if (String.IsNullOrEmpty(_uid))
-            {
-                // 先获取uid
-                return;
-            }
-            Dictionary<string, string> bodyDict = ConstructKeyValDict(
+            Dictionary<string, string> queryDict = ConstructKeyValDict(
                 "action", action,
                 "page", pageNo.ToString(),
                 "data", "json",
                 "uid", _uid,
                 "keyword", leagues,
-                "_", String.Format("{0}", TimeUtil.CurrentTimeMillis() / 1000));
-            HttpUtil.Get(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, bodyDict,
+                "_", String.Format("{0}", TimeUtil.CurrentTimeMillis()));
+            HttpUtil.Get(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
                 (data) =>
                 {
-                    return JsonUtil.fromJson<X469OddData>(IOUtil.ReadString(data));
+                    string str = IOUtil.ReadString(data);
+                    return JsonUtil.fromJson<X469OddData>(str.Substring(1, str.Length - 3));
                 },
                (statusCode, data, cookies) =>
                {
@@ -244,16 +244,27 @@ namespace Gambler.Module.X469
         private void GetAllOddDataByPage(string action, int page, X469OddData fromLast,
             OnSuccessHandler<X469OddData> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            Dictionary<string, string> bodyDict = ConstructKeyValDict(
+            if (String.IsNullOrEmpty(_uid))
+            {
+                GetUID((data)=> {
+                    Console.WriteLine("GetAllOddDataByPage 获取完uid后备执行,uid = " + data);
+                    GetAllOddDataByPage(action, page, fromLast,
+                               onSuccess, onFail, onError);
+                }, null, null);
+                return;
+            }
+            Dictionary<string, string> queryDict = ConstructKeyValDict(
                 "action", action,
                 "page", page.ToString(),
                 "data", "json",
                 "uid", _uid,
-                "_", String.Format("{0}", TimeUtil.CurrentTimeMillis() / 1000));
-            HttpUtil.Post(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, bodyDict,
+                "_", String.Format("{0}", TimeUtil.CurrentTimeMillis()));
+            HttpUtil.Get(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
                 (data) =>
                 {
-                    return JsonUtil.fromJson<X469OddData>(IOUtil.ReadString(data));
+                    // 此处结果会多出 "();"，所以要从1下标开始并减去3长度
+                    string str = IOUtil.ReadString(data);
+                    return JsonUtil.fromJson<X469OddData>(str.Substring(1, str.Length - 3));
                 },
                (statusCode, data, cookies) =>
                {
@@ -311,7 +322,7 @@ namespace Gambler.Module.X469
                 "mid", req.mid,
                 "auto", req.autoOpt ? "1": "0"
                 );
-            HttpUtil.Post(X469Config.URL_BET, _headers, _cookies, _proxy, bodyDict,
+            HttpUtil.Post(X469Config.URL_BET, _headers, _cookies, queryDict, _proxy, bodyDict,
                 (data) =>
                 {
                     return IOUtil.ReadString(data);
@@ -321,13 +332,43 @@ namespace Gambler.Module.X469
 
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null)
                    {
-                       if (data.Contains("false|"))
+                       if (data.Contains("false|") && !data.Contains("未登录"))
                        {
                            RespOnFail(onFail, statusCode, BaseError.I_C_BAD_HTTP_REQUEST, data.Substring(6));
                            return;
                        }
                        RespOnSuccess(onSuccess, data);
                        return;
+                   }
+
+                   RespOnFail(onFail, statusCode, BaseError.I_C_BAD_RESP_DATA, BaseError.C_BAD_RESP_DATA);
+               },
+               (e) =>
+               {
+                   RespOnError(onError, e);
+               });
+        }
+
+        public void GetUID(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            HttpUtil.Get(X469Config.URL_SPORT, _headers, _cookies, _proxy, null,
+                (data) =>
+                {
+                    return IOUtil.ReadString(data);
+                },
+               (statusCode, data, cookies) =>
+               {
+                   if (HttpUtil.IsCodeSucc(statusCode) && !String.IsNullOrEmpty(data))
+                   {
+                       Regex regex = new Regex("uid=([^\"]*)");
+                       Match m = regex.Match(data);
+                       GroupCollection gc = m.Groups;
+                       if (gc.Count > 1)
+                       {
+                           _uid = gc[1].Value;
+                           RespOnSuccess(onSuccess, _uid);
+                           return;
+                       }
                    }
 
                    RespOnFail(onFail, statusCode, BaseError.I_C_BAD_RESP_DATA, BaseError.C_BAD_RESP_DATA);

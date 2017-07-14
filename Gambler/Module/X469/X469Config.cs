@@ -24,7 +24,7 @@ namespace Gambler.Module.X469
          * 
          * 请求登录 <br />
          * GET: action=checklogin
-         * POST : username、password、captcha 
+         * POST : username、passwd、captcha 
          * 登录成功会set-Cookie: sid=?
          * 返回：result = 0 用户名密码错误  1/2 验证码错误 3 登录成功 5 请求失败 6 账号被禁用 7 账号审核中
          * 
@@ -52,6 +52,14 @@ namespace Gambler.Module.X469
          **/
         public static readonly string URL_ODD_DATA = "https://a600g.lq2222.org/sport/football.aspx";
 
+        /**
+         * 用于获取后续下注的uid
+         * GET：无
+         * COOKIE: sid (由登录后设置)
+         * 
+         * 返回：返回的HTML解析获取Url中的uid参数
+         */
+        public static readonly string URL_SPORT = "https://www.469355.com/sport.aspx";
         /**
          * 进行博彩下注 <br />
          * 

@@ -38,6 +38,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.MS_Menu = new System.Windows.Forms.MenuStrip();
             this.TSMI_File = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_File_Setting = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,13 +55,11 @@
             this.TSMI_Output_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.BTN_JumpBet = new System.Windows.Forms.Button();
-            this.TC_User = new System.Windows.Forms.TabControl();
-            this.TP_XPJ = new System.Windows.Forms.TabPage();
             this.CLB_XPJUser = new System.Windows.Forms.CheckedListBox();
             this.CMS_User = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.TSMI_UserAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_UserRemove = new System.Windows.Forms.ToolStripMenuItem();
+            this.BTN_JumpBet = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.CB_MoreEvent = new System.Windows.Forms.CheckBox();
             this.DGV_Live = new System.Windows.Forms.DataGridView();
@@ -79,6 +78,7 @@
             this.SS_Bottom = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Load = new System.Windows.Forms.ToolStripProgressBar();
+            this.WMP_Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.MS_Menu.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.CMS_Output.SuspendLayout();
@@ -87,8 +87,6 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.TC_User.SuspendLayout();
-            this.TP_XPJ.SuspendLayout();
             this.CMS_User.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DGV_Live)).BeginInit();
@@ -98,6 +96,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SS_Bottom.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WMP_Player)).BeginInit();
             this.SuspendLayout();
             // 
             // MS_Menu
@@ -205,7 +204,7 @@
             this.RTB_Output.AutoWordSelection = true;
             this.RTB_Output.ContextMenuStrip = this.CMS_Output;
             this.RTB_Output.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.RTB_Output.Location = new System.Drawing.Point(10, 20);
+            this.RTB_Output.Location = new System.Drawing.Point(10, 45);
             this.RTB_Output.Name = "RTB_Output";
             this.RTB_Output.ReadOnly = true;
             this.RTB_Output.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
@@ -250,8 +249,8 @@
             // groupBox3
             // 
             this.groupBox3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox3.Controls.Add(this.CLB_XPJUser);
             this.groupBox3.Controls.Add(this.BTN_JumpBet);
-            this.groupBox3.Controls.Add(this.TC_User);
             this.groupBox3.Location = new System.Drawing.Point(12, 8);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(309, 305);
@@ -259,48 +258,14 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "用户列表";
             // 
-            // BTN_JumpBet
-            // 
-            this.BTN_JumpBet.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BTN_JumpBet.Location = new System.Drawing.Point(10, 264);
-            this.BTN_JumpBet.Name = "BTN_JumpBet";
-            this.BTN_JumpBet.Size = new System.Drawing.Size(286, 31);
-            this.BTN_JumpBet.TabIndex = 3;
-            this.BTN_JumpBet.Text = "跳转对应下注界面";
-            this.BTN_JumpBet.UseVisualStyleBackColor = true;
-            this.BTN_JumpBet.Click += new System.EventHandler(this.BTN_JumpBet_Click);
-            // 
-            // TC_User
-            // 
-            this.TC_User.Controls.Add(this.TP_XPJ);
-            this.TC_User.Location = new System.Drawing.Point(11, 22);
-            this.TC_User.Name = "TC_User";
-            this.TC_User.SelectedIndex = 0;
-            this.TC_User.Size = new System.Drawing.Size(285, 239);
-            this.TC_User.TabIndex = 0;
-            // 
-            // TP_XPJ
-            // 
-            this.TP_XPJ.Controls.Add(this.CLB_XPJUser);
-            this.TP_XPJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TP_XPJ.Location = new System.Drawing.Point(4, 22);
-            this.TP_XPJ.Name = "TP_XPJ";
-            this.TP_XPJ.Padding = new System.Windows.Forms.Padding(3);
-            this.TP_XPJ.Size = new System.Drawing.Size(277, 213);
-            this.TP_XPJ.TabIndex = 0;
-            this.TP_XPJ.Text = "新葡京";
-            this.TP_XPJ.UseVisualStyleBackColor = true;
-            // 
             // CLB_XPJUser
             // 
             this.CLB_XPJUser.ContextMenuStrip = this.CMS_User;
-            this.CLB_XPJUser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.CLB_XPJUser.FormattingEnabled = true;
-            this.CLB_XPJUser.Location = new System.Drawing.Point(3, 3);
+            this.CLB_XPJUser.Location = new System.Drawing.Point(10, 24);
             this.CLB_XPJUser.Name = "CLB_XPJUser";
-            this.CLB_XPJUser.Size = new System.Drawing.Size(271, 207);
-            this.CLB_XPJUser.TabIndex = 0;
-            this.CLB_XPJUser.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CLB_XPJUser_ItemCheck);
+            this.CLB_XPJUser.Size = new System.Drawing.Size(286, 228);
+            this.CLB_XPJUser.TabIndex = 5;
             // 
             // CMS_User
             // 
@@ -323,6 +288,17 @@
             this.TSMI_UserRemove.Size = new System.Drawing.Size(141, 22);
             this.TSMI_UserRemove.Text = "删除选中(&D)";
             this.TSMI_UserRemove.Click += new System.EventHandler(this.TSMI_User_Remove_Click);
+            // 
+            // BTN_JumpBet
+            // 
+            this.BTN_JumpBet.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.BTN_JumpBet.Location = new System.Drawing.Point(10, 264);
+            this.BTN_JumpBet.Name = "BTN_JumpBet";
+            this.BTN_JumpBet.Size = new System.Drawing.Size(286, 31);
+            this.BTN_JumpBet.TabIndex = 3;
+            this.BTN_JumpBet.Text = "跳转对应下注界面";
+            this.BTN_JumpBet.UseVisualStyleBackColor = true;
+            this.BTN_JumpBet.Click += new System.EventHandler(this.BTN_JumpBet_Click);
             // 
             // groupBox1
             // 
@@ -388,6 +364,7 @@
             this.DGV_Live.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DGV_Live.Size = new System.Drawing.Size(720, 245);
             this.DGV_Live.TabIndex = 1;
+            this.DGV_Live.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_Live_CellContentClick);
             this.DGV_Live.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_Live_CellMouseDoubleClick);
             // 
             // DGC_ID
@@ -535,11 +512,22 @@
             this.TSPB_Load.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.TSPB_Load.Visible = false;
             // 
+            // WMP_Player
+            // 
+            this.WMP_Player.Enabled = true;
+            this.WMP_Player.Location = new System.Drawing.Point(985, 4);
+            this.WMP_Player.Name = "WMP_Player";
+            this.WMP_Player.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("WMP_Player.OcxState")));
+            this.WMP_Player.Size = new System.Drawing.Size(75, 23);
+            this.WMP_Player.TabIndex = 0;
+            this.WMP_Player.Visible = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1083, 577);
+            this.Controls.Add(this.WMP_Player);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.MS_Menu);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -559,8 +547,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
-            this.TC_User.ResumeLayout(false);
-            this.TP_XPJ.ResumeLayout(false);
             this.CMS_User.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -572,6 +558,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.SS_Bottom.ResumeLayout(false);
             this.SS_Bottom.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WMP_Player)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -590,9 +577,6 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button BTN_JumpBet;
-        private System.Windows.Forms.TabControl TC_User;
-        private System.Windows.Forms.TabPage TP_XPJ;
-        private System.Windows.Forms.CheckedListBox CLB_XPJUser;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.DataGridView DGV_Live;
         private System.Windows.Forms.Button BTN_Refresh;
@@ -621,6 +605,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Tool;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Tool_Map;
+        private AxWMPLib.AxWindowsMediaPlayer WMP_Player;
+        private System.Windows.Forms.CheckedListBox CLB_XPJUser;
     }
 }
 
