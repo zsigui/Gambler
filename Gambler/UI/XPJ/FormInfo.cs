@@ -274,40 +274,6 @@ namespace Gambler.UI
                         case BetType.HalfConcedePoints:
                             // 暂不支持
                             break;
-                        case BetType.OddOrEven:
-                            bool isOdd = false;
-                            for (int i = 0; i < _showDataList.Count; i++)
-                            {
-                                data = _showDataList[i];
-                                if (JudgeIsOdd(data.scoreC, data.scoreH))
-                                {
-                                    if (mostOdd < data.ior_EOO)
-                                    {
-                                        mostOdd = data.ior_EOO;
-                                        mostIndex = i;
-                                    }
-                                    isOdd = true;
-                                }
-                                else
-                                {
-                                    if (mostOdd < data.ior_EOE)
-                                    {
-                                        mostOdd = data.ior_EOE;
-                                        mostIndex = i;
-                                    }
-                                    isOdd = false;
-                                }
-                            }
-                            if (mostIndex != -1 && mostOdd >= GlobalSetting.GetInstance().AutoBetRate)
-                            {
-                                RB_Whole.Checked = true;
-                                RB_Half.Checked = false;
-                                if (isOdd)
-                                    ShowOdd(_showDataList[mostIndex]);
-                                else
-                                    ShowEven(_showDataList[mostIndex]);
-                            }
-                            break;
                     }
                 }
             }

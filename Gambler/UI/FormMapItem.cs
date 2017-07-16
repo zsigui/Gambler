@@ -44,7 +44,6 @@ namespace Gambler.UI
             RTB_MapItems.Text = "";
             RTB_MapItems.Enabled = false;
             CB_ItemKey.Enabled = false;
-            BTN_DelMapItem.Enabled = false;
         }
 
         private void ResetTextUI(Dictionary<string, string> dict)
@@ -58,101 +57,26 @@ namespace Gambler.UI
                     RTB_MapItems.AppendText(String.Format("{0}={1}\n", pair.Key, pair.Value));
                 }
             }
-            BTN_DelMapItem.Enabled = true;
             RTB_MapItems.Enabled = true;
             BTN_Save.Enabled = true;
         }
 
         private void Init()
         {
-            Dictionary<string, Dictionary<string, string>> mapDict = GlobalSetting.GetInstance().MapItemDict;
-            CB_ItemKey.Items.Clear();
-            if (mapDict.Keys.Count > 0)
+            CB_ItemKey.SelectedIndex = 0;
+            if (GlobalSetting.GetInstance().FirstMapKey.Equals(CB_ForCopy.Items[0].ToString()))
             {
-                string selKey = GlobalSetting.GetInstance().MapItemKey;
-                int i = -1;
-                int selIndex = -1;
-                foreach (string key in mapDict.Keys)
-                {
-                    if (String.IsNullOrEmpty(key))
-                        continue;
-
-                    i++;
-                    CB_ItemKey.Items.Add(key);
-                    if (key.Equals(selKey))
-                    {
-                        selIndex = i;
-                    }
-                }
-                if (CB_ItemKey.Items.Count == 0)
-                {
-                    SetNoDataUI();
-                    return;
-                }
-
-                if (selIndex == -1) {
-                    CB_ItemKey.SelectedIndex = 0;
-                    selKey = CB_ItemKey.SelectedItem.ToString();
-                }
-                else
-                {
-                    CB_ItemKey.SelectedIndex = selIndex;
-                }
-                CB_ItemKey.Enabled = true;
-                RTB_MapItems.Enabled = true;
-                Dictionary<string, string> dict = mapDict[selKey];
-                ResetTextUI(dict);
-                
-            }
-            else
+                CB_ForCopy.SelectedIndex = 0;
+            } else
             {
-                SetNoDataUI();
-
-            }
-
-        }
-
-        private void BTN_AddMapItem_Click(object sender, EventArgs e)
-        {
-            string itemKey = TB_MapKeyItem.Text;
-            if (String.IsNullOrEmpty(itemKey))
-            {
-                MessageBox.Show("请输入新映射组的组名");
-                return;
-            }
-            GlobalSetting.GetInstance().AddItemKey(itemKey);
-            int index = CB_ItemKey.Items.Add(itemKey);
-            CB_ItemKey.SelectedIndex = index;
-            CB_ItemKey.Enabled = true;
-            TB_MapKeyItem.Text = "";
-        }
-
-        private void BTN_DelMapItem_Click(object sender, EventArgs e)
-        {
-            if (CB_ItemKey.SelectedIndex == -1)
-            {
-                MessageBox.Show("请选择要删除的组别");
-                return;
-            }
-            string delItem = CB_ItemKey.SelectedItem.ToString();
-            int selIndex = CB_ItemKey.SelectedIndex;
-            CB_ItemKey.Items.RemoveAt(selIndex);
-            GlobalSetting.GetInstance().DelItemKey(delItem);
-            if (CB_ItemKey.Items.Count == 0)
-            {
-                SetNoDataUI();
-            }
-            else
-            {
-                CB_ItemKey.SelectedIndex = 0;
+                CB_ForCopy.SelectedIndex = 1;
             }
         }
-
+        
         private void BTN_Save_Click(object sender, EventArgs e)
         {
             string content = RTB_MapItems.Text;
             string itemKey = CB_ItemKey.SelectedItem.ToString();
-            LogUtil.Write("content = " + RTB_MapItems.Text + ", selInde = " + CB_ItemKey.SelectedIndex + ", SelItem = " + CB_ItemKey.SelectedItem.ToString());
             if (!String.IsNullOrEmpty(content) && !String.IsNullOrEmpty(itemKey))
             {
                 Dictionary<string, string> item = new Dictionary<string, string>();
@@ -184,7 +108,6 @@ namespace Gambler.UI
         {
             if (CB_ItemKey.SelectedIndex != -1)
             {
-                GlobalSetting.GetInstance().MapItemKey = CB_ItemKey.SelectedItem.ToString();
                 Dictionary<string, string> tmp = GlobalSetting.GetInstance().GetMapItem(CB_ItemKey.SelectedItem.ToString());
                 ResetTextUI(tmp);
             }
@@ -194,13 +117,18 @@ namespace Gambler.UI
                 CB_ItemKey.Text = "";
                 RTB_MapItems.Enabled = false;
                 BTN_Save.Enabled = false;
-                BTN_DelMapItem.Enabled = false;
             }
         }
 
         private void FormMapItem_FormClosing(object sender, FormClosingEventArgs e)
         {
             sInstance = null;
+        }
+
+        private void CB_ForCopy_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CB_ForCopy.SelectedIndex > -1)
+                GlobalSetting.GetInstance().FirstMapKey = CB_ForCopy.SelectedItem.ToString();
         }
     }
 }

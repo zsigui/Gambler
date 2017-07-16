@@ -65,6 +65,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bet\BManager.cs" />
+    <Compile Include="Bet\Task\BetMatchInfo.cs" />
+    <Compile Include="Bet\Task\ITask.cs" />
+    <Compile Include="Bet\Task\X159BetTask.cs" />
+    <Compile Include="Bet\Task\X159ValidDataTask.cs" />
+    <Compile Include="Bet\Task\X469BetTask.cs" />
+    <Compile Include="Bet\Task\X469ValidDataTask.cs" />
     <Compile Include="Config\GlobalSetting.cs" />
     <Compile Include="Module\BaseClient.cs" />
     <Compile Include="Module\BaseError.cs" />
@@ -97,6 +104,12 @@
     </Compile>
     <Compile Include="UI\DialogAddH8Cookie.Designer.cs">
       <DependentUpon>DialogAddH8Cookie.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\DialogNotify.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\DialogNotify.Designer.cs">
+      <DependentUpon>DialogNotify.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\X469\X469DialogConfirm.cs">
       <SubType>Form</SubType>
@@ -213,6 +226,9 @@
     <Compile Include="Utils\ValueParse.cs" />
     <EmbeddedResource Include="UI\DialogAddH8Cookie.resx">
       <DependentUpon>DialogAddH8Cookie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\DialogNotify.resx">
+      <DependentUpon>DialogNotify.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\X469\X469DialogConfirm.resx">
       <DependentUpon>X469DialogConfirm.cs</DependentUpon>

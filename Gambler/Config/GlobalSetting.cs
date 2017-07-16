@@ -31,16 +31,20 @@ namespace Gambler.Config
         private readonly string IS_AUTO_BET = "isAutoBet";
         private readonly string IS_SHOW_BET_DIALOG = "isShowBetDialog";
         private readonly string BET_TYPE = "betType";
-        private readonly string BET_MONEY_LEAST = "leastBetMoney";
-        private readonly string BET_MONEY_MOST = "mostBetMoney";
+        private readonly string SECOND_BET_TYPE = "secondBetType";
+        private readonly string BET_MONEY = "betMoney";
         private readonly string AUTO_BET_RATE = "autoBetRate";
         private readonly string BET_METHOD = "betMethod";
         private readonly string IS_SHOW_HALF_ODD_FIRST = "isShowHalfOddFirst";
         private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
         private readonly string HF_ACCOUNT = "hfAccount";
+        /// <summary>
+        /// 首选映射组的键名
+        /// </summary>
+        private readonly string FIRST_COPY_MAP = "firstCopyMap";
 
-        private readonly string MAP_ITEM_KEY = "mapItemKey";
-
+        public const string X469_KEY = "469355.com";
+        public const string X159_KEY = "1559501.com";
         private Dictionary<string, object> _settings;
 
 
@@ -64,14 +68,14 @@ namespace Gambler.Config
                 _settings.Add(IS_AUTO_BET, null);
                 _settings.Add(IS_SHOW_BET_DIALOG, null);
                 _settings.Add(BET_TYPE, null);
-                _settings.Add(BET_MONEY_LEAST, null);
-                _settings.Add(BET_MONEY_MOST, null);
+                _settings.Add(SECOND_BET_TYPE, null);
+                _settings.Add(BET_MONEY, null);
                 _settings.Add(BET_METHOD, null);
                 _settings.Add(IS_SHOW_HALF_ODD_FIRST, null);
                 _settings.Add(IS_AUTO_ACCEPT_BEST_ODD, null);
                 _settings.Add(HF_ACCOUNT, null);
                 _settings.Add(AUTO_BET_RATE, null);
-                _settings.Add(MAP_ITEM_KEY, null);
+                _settings.Add(FIRST_COPY_MAP, X469_KEY);
             }
             LoadMap();
         }
@@ -96,14 +100,14 @@ namespace Gambler.Config
 
         #region 属性
         /// <summary>
-        /// 直播赛事列表页面的自动刷新间隔时间（单位：秒），默认30
+        /// 直播赛事列表页面的自动刷新间隔时间（单位：秒），默认60
         /// </summary>
         public int AutoRefreshTime
         {
             get
             {
                 object o = _settings[AUTO_REFRESH_TIME];
-                return o == null ? 30 : Convert.ToInt32(o);
+                return o == null ? 60 : Convert.ToInt32(o);
             }
             set
             {
@@ -161,19 +165,18 @@ namespace Gambler.Config
         }
 
         /// <summary>
-        /// 自动下注时启动，最大下注金额，单位：元
-        /// 注意当比最小下注金额低时，视同等于最小下注金额
+        /// 自动下注时启动，下注金额，单位：元
         /// </summary>
-        public int MostBetMoney
+        public int BetMoney
         {
             get
             {
-                object o = _settings[BET_MONEY_MOST];
-                return o == null ? 50 : Convert.ToInt32(o);
+                object o = _settings[BET_MONEY];
+                return o == null ? 10 : Convert.ToInt32(o);
             }
             set
             {
-                _settings[BET_MONEY_MOST] = value;
+                _settings[BET_MONEY] = value;
             }
         }
 
@@ -194,23 +197,7 @@ namespace Gambler.Config
         }
 
         /// <summary>
-        /// 自动下注时启动，最小下注金额，单位：元
-        /// </summary>
-        public int LeastBetMoney
-        {
-            get
-            {
-                object o = _settings[BET_MONEY_LEAST];
-                return o == null ? 50 : Convert.ToInt32(o);
-            }
-            set
-            {
-                _settings[BET_MONEY_LEAST] = value;
-            }
-        }
-
-        /// <summary>
-        /// 自动下注时启动，下注类型
+        /// 自动下注时启动，首选下注类型
         /// </summary>
         public BetType GameBetType
         {
@@ -218,11 +205,28 @@ namespace Gambler.Config
             {
 
                 object o = _settings[BET_TYPE];
-                return o == null ? BetType.BigOrSmall : (BetType)(Enum.ToObject(typeof(BetType), o));
+                return o == null ? BetType.ConcedePoints : (BetType)(Enum.ToObject(typeof(BetType), o));
             }
             set
             {
                 _settings[BET_TYPE] = value;
+            }
+        }
+
+        /// <summary>
+        /// 自动下注时启动，下注类型
+        /// </summary>
+        public BetType SecondBetType
+        {
+            get
+            {
+
+                object o = _settings[SECOND_BET_TYPE];
+                return o == null ? BetType.None : (BetType)(Enum.ToObject(typeof(BetType), o));
+            }
+            set
+            {
+                _settings[SECOND_BET_TYPE] = value;
             }
         }
 
@@ -287,16 +291,16 @@ namespace Gambler.Config
             }
         }
 
-        public string MapItemKey
+        public string FirstMapKey
         {
             get
             {
-                object o = _settings[MAP_ITEM_KEY];
-                return o == null ? (_mapDict != null && _mapDict.Count > 0 ? _mapDict.First().Key : "") : (string)o;
+                object o = _settings[FIRST_COPY_MAP];
+                return o == null ? X469_KEY : (string)o;
             }
             set
             {
-                _settings[MAP_ITEM_KEY] = value;
+                _settings[FIRST_COPY_MAP] = value;
             }
         }
         #endregion
@@ -319,27 +323,24 @@ namespace Gambler.Config
             {
                 _mapDict = new Dictionary<string, Dictionary<string, string>>();
             }
+            if (!_mapDict.ContainsKey(X469_KEY))
+            {
+                _mapDict.Clear();
+                _mapDict.Add(X469_KEY, new Dictionary<string, string>());
+                _mapDict.Add(X159_KEY, new Dictionary<string, string>());
+            }
         }
 
         private void SaveMap()
         {
 
             string content = JsonUtil.toJson(_mapDict);
-            LogUtil.Write("SaveMap: " + content);
             FileUtil.WriteContentToFilePath(MAP_PATH, content);
         }
 
         public Dictionary<string, Dictionary<string, string>> MapItemDict
         {
             get { return _mapDict; }
-        }
-
-        public void DelItemKey(string key)
-        {
-            if (_mapDict.ContainsKey(key))
-            {
-                _mapDict.Remove(key);
-            }
         }
 
         public void AddItemKey(string key)
@@ -388,14 +389,8 @@ namespace Gambler.Config
             return null;
         }
 
-        /// <summary>
-        /// 尝试获取映射表中的映射值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns>当获取不到映射值，返回传入的key值</returns>
-        public string GetMapValue(string key)
+        public string GetMapValue(string itemKey, string key)
         {
-            string itemKey = MapItemKey;
             if (String.IsNullOrEmpty(itemKey))
                 return key;
             Dictionary<string, string> tmpKeyVal;
@@ -408,6 +403,16 @@ namespace Gambler.Config
                 }
             }
             return key;
+        }
+
+        /// <summary>
+        /// 尝试获取映射表中的映射值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>当获取不到映射值，返回传入的key值</returns>
+        public string GetMapValue(string key)
+        {
+            return GetMapValue(FirstMapKey, key);
         }
         #endregion
     }
@@ -436,41 +441,38 @@ namespace Gambler.Config
     /// </summary>
     public enum BetType
     {
-        
-        /// <summary>
-        /// 单双
-        /// </summary>
-        OddOrEven = 1,
+
+        None,
 
         /// <summary>
         /// 大小 - 全场
         /// </summary>
-        BigOrSmall = 2,
+        BigOrSmall,
 
         /// <summary>
         /// 让球 - 全场
         /// </summary>
-        ConcedePoints = 3,
+        ConcedePoints,
 
         /// <summary>
         /// 独赢 - 全场
         /// </summary>
-        Capot = 4,
+        Capot,
 
         /// <summary>
         /// 大小 - 半场
         /// </summary>
-        HalfBigOrSmall = 5,
+        HalfBigOrSmall,
 
         /// <summary>
         /// 让球 - 半场
         /// </summary>
-        HalfConcedePoints = 6,
+        HalfConcedePoints,
 
         /// <summary>
         /// 独赢 - 半场
         /// </summary>
-        HalfCapot = 7,
+        HalfCapot,
     }
     #endregion
 }

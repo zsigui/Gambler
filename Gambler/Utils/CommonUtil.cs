@@ -37,18 +37,20 @@ namespace Gambler.Utils
             string content = rtb.Text;
             int start = rtb.SelectionStart;
             int end = start;
+            char tmp;
+            char[] splits = new char[] { '\n', ' ', '(', ')', '（', '）', '[', ']', '【', '】' };
             while (start > 0)
             {
-                if (content[start - 1] != '\n'
-                    && content[start - 1] != ' ')
+                tmp = content[start - 1];
+                if (!splits.Contains(tmp))
                     start--;
                 else break;
             }
             int len = content.Length - 1;
             while (end < len)
             {
-                if (content[end + 1] != '\n'
-                    && content[end + 1] != ' ')
+                tmp = content[end + 1];
+                if (!splits.Contains(tmp))
                     end++;
                 else break;
             }

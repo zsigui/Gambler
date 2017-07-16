@@ -106,7 +106,7 @@ namespace Gambler.Utils
             }
 
             // 添加Cookie信息，与Header分开处理
-            proxy = new WebProxy("127.0.0.1", 8888);
+            //proxy = new WebProxy("127.0.0.1", 8888);
             if (proxy != null)
             {
                 request.Proxy = proxy;
@@ -247,7 +247,6 @@ namespace Gambler.Utils
             Dictionary<string, string> queryDict, ConvertDataHandler<P> converData,
             OnFinishHandler<P> onFinish, OnErrorHandler onError)
         {
-            Console.WriteLine("请求地址：" + requestUrl);
             RequestSync(requestUrl, Method.GET, headers, cookies, null, queryDict, null, null, converData, onFinish, onError);
         }
 

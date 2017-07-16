@@ -17,8 +17,7 @@ namespace Gambler.UI
         // 1千万
         private readonly int MIN_MONEY = 50;
         private readonly int MOST_MONEY = 10000000;
-        private string _leastContent;
-        private string _mostContent;
+        private string _moneyContent;
 
         public FormAutoBetSetting()
         {
@@ -29,17 +28,42 @@ namespace Gambler.UI
 
         private void InitVal()
         {
-            CB_Type.SelectedIndex = (int)GlobalSetting.GetInstance().GameBetType - 1;
-            if (GlobalSetting.GetInstance().GameBetMethod == BetMethod.EveryTime)
+            switch(GlobalSetting.GetInstance().GameBetType)
             {
-                RB_EveryTime.Checked = true;
+                case BetType.BigOrSmall:
+                    CB_Type.SelectedIndex = 0;
+                    break;
+                case BetType.HalfBigOrSmall:
+                    CB_Type.SelectedIndex = 1;
+                    break;
+                case BetType.HalfConcedePoints:
+                    CB_Type.SelectedIndex = 3;
+                    break;
+                case BetType.ConcedePoints:
+                default:
+                    CB_Type.SelectedIndex = 2;
+                    break;
             }
-            else
+            switch(GlobalSetting.GetInstance().SecondBetType)
             {
-                RB_Random.Checked = true;
+                case BetType.BigOrSmall:
+                    CB_SecondType.SelectedIndex = 1;
+                    break;
+                case BetType.HalfBigOrSmall:
+                    CB_SecondType.SelectedIndex = 2;
+                    break;
+                case BetType.ConcedePoints:
+                    CB_SecondType.SelectedIndex = 3;
+                    break;
+                case BetType.HalfConcedePoints:
+                    CB_SecondType.SelectedIndex = 4;
+                    break;
+                case BetType.None:
+                default:
+                    CB_SecondType.SelectedIndex = 0;
+                    break;
             }
-            TB_LeastMoney.Text = GlobalSetting.GetInstance().LeastBetMoney.ToString();
-            TB_MostMoney.Text = GlobalSetting.GetInstance().MostBetMoney.ToString();
+            TB_Money.Text = GlobalSetting.GetInstance().BetMoney.ToString();
             TB_Rate.Text = GlobalSetting.GetInstance().AutoBetRate.ToString();
         }
 
@@ -53,10 +77,42 @@ namespace Gambler.UI
         private void SaveConfig()
         {
             GlobalSetting gs = GlobalSetting.GetInstance();
-            gs.LeastBetMoney = (String.IsNullOrEmpty(_leastContent) ? MIN_MONEY : Int32.Parse(_leastContent));
-            gs.MostBetMoney = (String.IsNullOrEmpty(_mostContent) ? MOST_MONEY : Int32.Parse(_mostContent));
-            gs.GameBetMethod = (RB_EveryTime.Checked ? BetMethod.EveryTime : BetMethod.Random);
-            gs.GameBetType = (CB_Type.SelectedIndex == -1 ? BetType.BigOrSmall : (BetType)(CB_Type.SelectedIndex + 1));
+            gs.BetMoney = (String.IsNullOrEmpty(_moneyContent) ? MIN_MONEY : Int32.Parse(_moneyContent));
+            switch(CB_Type.SelectedIndex)
+            {
+                case 0:
+                    gs.GameBetType = BetType.BigOrSmall;
+                    break;
+                case 1:
+                    gs.GameBetType = BetType.HalfBigOrSmall;
+                    break;
+                case 3:
+                    gs.GameBetType = BetType.HalfConcedePoints;
+                    break;
+                case 2:
+                default:
+                    gs.GameBetType = BetType.ConcedePoints;
+                    break;
+            }
+            switch(CB_SecondType.SelectedIndex)
+            {
+                case 1:
+                    gs.SecondBetType = BetType.BigOrSmall;
+                    break;
+                case 2:
+                    gs.SecondBetType = BetType.HalfBigOrSmall;
+                    break;
+                case 3:
+                    gs.SecondBetType = BetType.ConcedePoints;
+                    break;
+                case 4:
+                    gs.SecondBetType = BetType.HalfConcedePoints;
+                    break;
+                case 0:
+                default:
+                    gs.SecondBetType = BetType.None;
+                    break;
+            }
             float rate = gs.AutoBetRate;
             if (!String.IsNullOrEmpty(TB_Rate.Text))
             {
@@ -71,31 +127,17 @@ namespace Gambler.UI
             Close();
         }
 
-        private void TB_MostMoney_TextChanged(object sender, EventArgs e)
+        private void TB_Money_TextChanged(object sender, EventArgs e)
         {
-            Match m = Regex.Match(TB_MostMoney.Text, @"^\d*$");
+            Match m = Regex.Match(TB_Money.Text, @"^\d*$");
             if (!m.Success)
             {
-                TB_MostMoney.Text = _leastContent;
-                TB_MostMoney.SelectionStart = TB_MostMoney.Text.Length;
+                TB_Money.Text = _moneyContent;
+                TB_Money.SelectionStart = TB_Money.Text.Length;
             }
             else
             {
-                _leastContent = TB_MostMoney.Text;
-            }
-        }
-
-        private void TB_LeastMoney_TextChanged(object sender, EventArgs e)
-        {
-            Match m = Regex.Match(TB_LeastMoney.Text, @"^\d*$");
-            if (!m.Success)
-            {
-                TB_LeastMoney.Text = _mostContent;
-                TB_LeastMoney.SelectionStart = TB_LeastMoney.Text.Length;
-            }
-            else
-            {
-                _mostContent = TB_LeastMoney.Text;
+                _moneyContent = TB_Money.Text;
             }
         }
     }

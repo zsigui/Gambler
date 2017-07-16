@@ -76,10 +76,8 @@ namespace Gambler.UI
             _accounts = new List<IntegratedAccount>();
             _moneys = new List<double>();
             BTN_Confirm.Enabled = true;
-            foreach (IntegratedAccount account in FormMain.GetInstance().ObtainAccounts())
+            foreach (IntegratedAccount account in FormMain.GetInstance().ObtainAccounts(-1))
             {
-                if (account.Type != AcccountType.XPJ155)
-                    continue;
                 money = account.IsChecked ? 0 : CalculateBetMoney((int)account.Money);
                 _accounts.Add(account);
                 _moneys.Add(money);
@@ -115,13 +113,9 @@ namespace Gambler.UI
 
         private int CalculateBetMoney(int money)
         {
-            int most = GlobalSetting.GetInstance().MostBetMoney;
-            int least = GlobalSetting.GetInstance().LeastBetMoney;
-            most = Math.Min(most, money);
-            least = Math.Min(most, least);
-            if (most == least)
-                return most;
-            return new Random().Next(least, most);
+            if (GlobalSetting.GetInstance().BetMoney > money)
+                return money;
+            return GlobalSetting.GetInstance().BetMoney;
         }
 
         private void BTN_Confirm_Click(object sender, EventArgs e)

@@ -33,10 +33,9 @@
             this.RTB_MapItems = new System.Windows.Forms.RichTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.BTN_AddMapItem = new System.Windows.Forms.Button();
-            this.TB_MapKeyItem = new System.Windows.Forms.TextBox();
             this.BTN_Save = new System.Windows.Forms.Button();
-            this.BTN_DelMapItem = new System.Windows.Forms.Button();
+            this.CB_ForCopy = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -51,6 +50,9 @@
             // CB_ItemKey
             // 
             this.CB_ItemKey.FormattingEnabled = true;
+            this.CB_ItemKey.Items.AddRange(new object[] {
+            "469355.com",
+            "1559501.com"});
             this.CB_ItemKey.Location = new System.Drawing.Point(154, 24);
             this.CB_ItemKey.Name = "CB_ItemKey";
             this.CB_ItemKey.Size = new System.Drawing.Size(136, 20);
@@ -85,23 +87,6 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "（P.S. 映射格式形如 “key=val”，一行一个，注意键值之间只有一个“=”号）";
             // 
-            // BTN_AddMapItem
-            // 
-            this.BTN_AddMapItem.Location = new System.Drawing.Point(525, 50);
-            this.BTN_AddMapItem.Name = "BTN_AddMapItem";
-            this.BTN_AddMapItem.Size = new System.Drawing.Size(87, 23);
-            this.BTN_AddMapItem.TabIndex = 5;
-            this.BTN_AddMapItem.Text = "添加新映射组";
-            this.BTN_AddMapItem.UseVisualStyleBackColor = true;
-            this.BTN_AddMapItem.Click += new System.EventHandler(this.BTN_AddMapItem_Click);
-            // 
-            // TB_MapKeyItem
-            // 
-            this.TB_MapKeyItem.Location = new System.Drawing.Point(512, 23);
-            this.TB_MapKeyItem.Name = "TB_MapKeyItem";
-            this.TB_MapKeyItem.Size = new System.Drawing.Size(100, 21);
-            this.TB_MapKeyItem.TabIndex = 6;
-            // 
             // BTN_Save
             // 
             this.BTN_Save.Location = new System.Drawing.Point(230, 360);
@@ -112,25 +97,35 @@
             this.BTN_Save.UseVisualStyleBackColor = true;
             this.BTN_Save.Click += new System.EventHandler(this.BTN_Save_Click);
             // 
-            // BTN_DelMapItem
+            // CB_ForCopy
             // 
-            this.BTN_DelMapItem.Location = new System.Drawing.Point(308, 22);
-            this.BTN_DelMapItem.Name = "BTN_DelMapItem";
-            this.BTN_DelMapItem.Size = new System.Drawing.Size(100, 22);
-            this.BTN_DelMapItem.TabIndex = 8;
-            this.BTN_DelMapItem.Text = "删除当前映射组";
-            this.BTN_DelMapItem.UseVisualStyleBackColor = true;
-            this.BTN_DelMapItem.Click += new System.EventHandler(this.BTN_DelMapItem_Click);
+            this.CB_ForCopy.FormattingEnabled = true;
+            this.CB_ForCopy.Items.AddRange(new object[] {
+            "469355.com",
+            "1559501.com"});
+            this.CB_ForCopy.Location = new System.Drawing.Point(473, 24);
+            this.CB_ForCopy.Name = "CB_ForCopy";
+            this.CB_ForCopy.Size = new System.Drawing.Size(121, 20);
+            this.CB_ForCopy.TabIndex = 8;
+            this.CB_ForCopy.SelectedIndexChanged += new System.EventHandler(this.CB_ForCopy_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(342, 27);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(125, 12);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "自动复制首选映射组：";
             // 
             // FormMapItem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(653, 404);
-            this.Controls.Add(this.BTN_DelMapItem);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.CB_ForCopy);
             this.Controls.Add(this.BTN_Save);
-            this.Controls.Add(this.TB_MapKeyItem);
-            this.Controls.Add(this.BTN_AddMapItem);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.RTB_MapItems);
@@ -155,9 +150,8 @@
         private System.Windows.Forms.RichTextBox RTB_MapItems;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button BTN_AddMapItem;
-        private System.Windows.Forms.TextBox TB_MapKeyItem;
         private System.Windows.Forms.Button BTN_Save;
-        private System.Windows.Forms.Button BTN_DelMapItem;
+        private System.Windows.Forms.ComboBox CB_ForCopy;
+        private System.Windows.Forms.Label label4;
     }
 }
