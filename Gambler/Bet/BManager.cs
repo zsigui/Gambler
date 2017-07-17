@@ -1,6 +1,7 @@
 ﻿using Gambler.Bet.Task;
 using Gambler.Model.XPJ;
 using Gambler.Module.X469.Model;
+using Gambler.Module.XPJ.Model;
 using Gambler.Utils;
 using System;
 using System.Collections.Concurrent;
@@ -17,7 +18,6 @@ namespace Gambler.Bet
 
         private volatile static BManager sInstance;
         private static object syncRoot = new object();
-        private static object syncThread = new object();
 
         public static BManager Instance
         {
@@ -37,7 +37,8 @@ namespace Gambler.Bet
 
         private BManager() { }
 
-        private const int MAX_THREAD_COUNT = 1;
+        private const int MAX_THREAD_COUNT = 2;
+        private Thread[] _threads = new Thread[MAX_THREAD_COUNT];
         private ConcurrentQueue<ITask> _taskQueue = new ConcurrentQueue<ITask>();
 
         /*-------------------DATA START------------------------*/
@@ -49,14 +50,28 @@ namespace Gambler.Bet
         /*--------------------DATA END-------------------------*/
 
         private volatile bool isRunning = false;
-        private int workThreadCount = 0;
+        private List<TaskType> _workingType = new List<TaskType>();
+        private List<TaskType> _waitType = new List<TaskType>();
 
 
         public void Add(ITask task)
         {
-            LogUtil.Write("添加执行任务，类型: " + task.GetType());
+            //LogUtil.Write("添加执行任务，类型: " + task.GetType());
             task.AddCount();
-            _taskQueue.Enqueue(task);
+            lock (syncRoot)
+            {
+                TaskType type = task.GetType();
+                if (!_waitType.Contains(type) && !_workingType.Contains(type))
+                {
+                    if (type == TaskType.X159_VALID_DATA
+                        || type == TaskType.X469_VALID_DATA)
+                    {
+                        LogUtil.Write("添加X469_VALID_DATA");
+                        _waitType.Add(type);
+                    }
+                    _taskQueue.Enqueue(task);
+                }
+            }
         }
 
         public void Start(ITask task)
@@ -66,40 +81,46 @@ namespace Gambler.Bet
             ForceStartTask();
         }
 
-        private void Stop()
+        public void Stop()
         {
             isRunning = false;
+            for (int i = MAX_THREAD_COUNT - 1; i >= 0; i--)
+            {
+                if (_threads[i] != null && _threads[i].IsAlive)
+                {
+                    _threads[i].Interrupt();
+                }
+                _threads[i] = null;
+            }
         }
         
         private void ForceStartTask()
         {
-            LogUtil.Write("强制执行任务，当前任务数: " + _taskQueue.Count + ", 当前线程数：" + workThreadCount + ", isRunning = " + isRunning);
-            if (isRunning && !_taskQueue.IsEmpty && workThreadCount < MAX_THREAD_COUNT)
+            for (int i = MAX_THREAD_COUNT - 1; i > 0; i--)
             {
+                if (_threads[i] != null && _threads[i].IsAlive)
+                    continue;
                 LogUtil.Write("准备开启新线程执行任务!");
-                ThreadUtil.RunOnThread(new ThreadStart(() =>
+                _threads[i] = ThreadUtil.RunOnThread(new ThreadStart(() =>
                 {
                     
                     ITask task;
-                    while (isRunning && _taskQueue.TryDequeue(out task))
+                    while (isRunning)
                     {
-                        LogUtil.Write("剩余任务数: " + _taskQueue.Count + "\n当前执行任务: " + task.GetType()
-                            + ", 任务是否超时:" + task.IsOvertime());
-                        HandleTask(task);
-                        ForceStartTask();
-                    }
-
-                    lock (syncThread)
-                    {
-                        workThreadCount--;
-                        LogUtil.Write("任务线程数减少，当前线程数：" + workThreadCount);
-                        if (workThreadCount == 0) isRunning = false;
+                        if (_taskQueue.TryDequeue(out task))
+                        {
+                            HandleTask(task);
+                        }
+                        try
+                        {
+                            Thread.Sleep(20);
+                        }
+                        catch (Exception e)
+                        {
+                            LogUtil.Write(e);
+                        }
                     }
                 }));
-                lock (syncThread)
-                {
-                    workThreadCount++;
-                }
             }
         }
 
@@ -108,17 +129,36 @@ namespace Gambler.Bet
         {
             if (task.IsOvertime())
                 return;
-
             long cT = CurrentTime();
+            TaskType type = task.GetType();
             switch (task.GetType())
             {
+                case TaskType.X469_BET:
+                case TaskType.YL5_BET:
+                    LogUtil.Write("X469_BET 或者 YL5_BET 获取不到数据，准备添加再来");
+                    // 两者具有相同的请求数据结构
+                    // 判断预备数据是否为空，为空，则添加验证数据任务，并重新将本任务移入
+                    if (_x469Data != null && _x469Data.Count != 0
+                        && (cT - _x469DataRecordTime > DATA_UPDATE_DIFF))
+                    {
+                        task.Work(_x469Data);
+                    }
+                    else
+                    {
+                        Add(new X469ValidDataTask());
+                        Add(task);
+                    }
+                    break;
                 case TaskType.X469_VALID_DATA:
                     if (_x469Data == null || _x469Data.Count == 0 
                         || (cT - _x469DataRecordTime > DATA_UPDATE_DIFF))
                     {
-                        LogUtil.Write("执行获取X469Data任务");
+                        _waitType.Remove(type);
+                        _workingType.Add(type);
+                        LogUtil.Write("执行X469_VALID_DATA任务开始");
                         task.Work();
-                        LogUtil.Write("执行获取X469Data任务,获取数据结果：" + (task.GetData() == null ? "null": "success"));
+                        LogUtil.Write("执行X469_VALID_DATA任务结束");
+                        _workingType.Remove(type);
                         if (task.GetData() != null)
                         {
                             _x469Data = task.GetData() as List<X469OddItem>;
@@ -126,58 +166,51 @@ namespace Gambler.Bet
                         }
                         else
                         {
-                            Add(task);
+                            LogUtil.Write("X469_VALID_DATA获取不到数据，准备添加再来");
+                            if (!_workingType.Contains(type)
+                                    && !_waitType.Contains(type)
+                                    && (FormMain.GetInstance().ContainsAccount(AcccountType.XPJ469)
+                                    || FormMain.GetInstance().ContainsAccount(AcccountType.YL5789)))
+                                Add(task);
                         }
-                    } else
-                    {
-                        LogUtil.Write("已经有X469Data了");
-                    }
 
-                    break;
-
-                case TaskType.X469_BET:
-                    // 判断预备数据是否为空，为空，则添加验证数据任务，并重新将本任务移入
-                    if ((_x469Data == null || _x469Data.Count == 0
-                        || (cT - _x469DataRecordTime > DATA_UPDATE_DIFF))
-                        && !task.IsOverCount())
-                    {
-                        LogUtil.Write("执行获取自动Bet任务，先添加获取数据任务");
-                        Add(new X469ValidDataTask(task));
-                        Start(task);
-                    }
-                    else
-                    {
-                        LogUtil.Write("执行获取自动Bet任务主体");
-                        task.Work(_x469Data);
                     }
                     break;
                 case TaskType.X159_BET:
+                    if (_x159Data != null && _x159Data.Count != 0
+                        && (cT - _x159DataRecordTime <= DATA_UPDATE_DIFF))
+                    {
+                        task.Work(_x159Data);
+                    }
+                    else
+                    {
+                        Add(new X159ValidDataTask());
+                        Add(task);
+                    }
+                    break;
+                case TaskType.X159_VALID_DATA:
                     if (_x159Data == null || _x159Data.Count == 0
                         || (cT - _x159DataRecordTime > DATA_UPDATE_DIFF))
                     {
+                        _waitType.Remove(type);
+                        _workingType.Add(type);
                         task.Work();
+                        _workingType.Remove(type);
                         if (task.GetData() != null)
                         {
+                            LogUtil.Write("X159_VALID_DATA 数据添加成功");
                             _x159Data = task.GetData() as List<OddItem>;
                             _x159DataRecordTime = cT;
                         }
                         else
                         {
-                            Add(task);
+                            LogUtil.Write("X159_VALID_DATA获取不到数据，准备添加再来");
+                            if (!_workingType.Contains(type)
+                                    && !_waitType.Contains(type)
+                                    && FormMain.GetInstance().ContainsAccount(AcccountType.XPJ155))
+                                Add(task);
                         }
-                    }
-                    break;
-                case TaskType.X159_VALID_DATA:
-                    if ((_x159Data == null || _x159Data.Count == 0
-                        || (cT - _x159DataRecordTime > DATA_UPDATE_DIFF))
-                        && !task.IsOverCount())
-                    {
-                        Add(new X159ValidDataTask(task));
-                        Start(task);
-                    }
-                    else
-                    {
-                        task.Work(_x159Data);
+
                     }
                     break;
             }

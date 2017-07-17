@@ -10,18 +10,20 @@ namespace Gambler.Utils
 {
     class ThreadUtil
     {
-        public static void RunOnThread(ThreadStart method)
+        public static Thread RunOnThread(ThreadStart method)
         {
             Thread thread = new Thread(method);
             thread.IsBackground = true;
             thread.Start();
+            return thread;
         }
 
-        public static void RunOnThread(ThreadStart method, object parameter)
+        public static Thread RunOnThread(ThreadStart method, object parameter)
         {
             Thread thread = new Thread(method);
             thread.IsBackground = true;
             thread.Start(parameter);
+            return thread;
         }
 
         public static void RunBgWorker(DoWorkEventHandler workHandler, RunWorkerCompletedEventHandler afterWorkHandler)

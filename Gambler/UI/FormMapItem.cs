@@ -64,12 +64,21 @@ namespace Gambler.UI
         private void Init()
         {
             CB_ItemKey.SelectedIndex = 0;
-            if (GlobalSetting.GetInstance().FirstMapKey.Equals(CB_ForCopy.Items[0].ToString()))
+            string key = GlobalSetting.GetInstance().FirstMapKey;
+            if (!String.IsNullOrEmpty(key))
             {
-                CB_ForCopy.SelectedIndex = 0;
-            } else
-            {
-                CB_ForCopy.SelectedIndex = 1;
+                if (key.Equals(CB_ForCopy.Items[0].ToString()))
+                {
+                    CB_ForCopy.SelectedIndex = 0;
+                }
+                else if (key.Equals(CB_ForCopy.Items[1].ToString()))
+                {
+                    CB_ForCopy.SelectedIndex = 1;
+                }
+                else
+                {
+                    CB_ForCopy.SelectedIndex = 2;
+                }
             }
         }
         

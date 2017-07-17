@@ -1,4 +1,7 @@
-﻿using Gambler.Config;
+﻿using Gambler.Bet;
+using Gambler.Bet.Task;
+using Gambler.Config;
+using Gambler.Module.XPJ.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,14 +19,15 @@ namespace Gambler.UI
     {
         private string _content = "";
 
+        private bool isFirst = true;
+
         public FormSetting()
         {
             InitializeComponent();
             GlobalSetting gs = GlobalSetting.GetInstance();
             TB_AutoRefreshTime.Text = gs.AutoRefreshTime.ToString();
-            CB_AutoSaveUser.Checked = gs.IsAutoSaveUser;
-            CB_AutoBet.Checked = gs.IsAutoBet;
-            CB_ShowBetDialog.Checked = gs.IsShowBetDialog;
+            CB_AutoSaveUser.Checked  =  gs.IsAutoSaveUser;
+            CB_AutoBet.Checked = isFirst = gs.IsAutoBet;
         }
 
         private void TB_AutoRefreshTime_TextChanged(object sender, EventArgs e)
@@ -60,28 +64,39 @@ namespace Gambler.UI
 
         private void CB_AutoBet_CheckedChanged(object sender, EventArgs e)
         {
+            Console.WriteLine("isFIrst = " + isFirst);
+            if (isFirst)
+            {
+                isFirst = false;
+                return;
+            }
             if (CB_AutoBet.Checked)
             {
                 FormAutoBetSetting dialog = new FormAutoBetSetting();
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     GlobalSetting.GetInstance().IsAutoBet = CB_AutoBet.Checked = true;
+                    if (GlobalSetting.GetInstance().IsAutoBet)
+                    {
+                        bool[] contains = FormMain.GetInstance().ContainsAccount(new int[] { AcccountType.XPJ155, AcccountType.XPJ469, AcccountType.YL5789 });
+                        if (contains[0])
+                            BManager.Instance.Start(new X159ValidDataTask());
+                        if (contains[1] || contains[2])
+                            BManager.Instance.Start(new X469ValidDataTask());
+                    }
                 }
                 else
                 {
                     GlobalSetting.GetInstance().IsAutoBet = CB_AutoBet.Checked = false;
                 }
             }
+            else
+                GlobalSetting.GetInstance().IsAutoBet = false;
         }
 
         private void CB_AutoSaveUser_CheckedChanged(object sender, EventArgs e)
         {
             GlobalSetting.GetInstance().IsAutoSaveUser = CB_AutoSaveUser.Checked;
-        }
-
-        private void CB_AutoBetDialog_CheckedChanged(object sender, EventArgs e)
-        {
-            GlobalSetting.GetInstance().IsShowBetDialog = CB_ShowBetDialog.Checked;
         }
     }
 }

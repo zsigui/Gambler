@@ -1,17 +1,20 @@
 ﻿using Gambler.Module.X469.Model;
+using Gambler.Module.YL5;
 using Gambler.Utils;
 using Gambler.Utils.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gambler.Module.X469
 {
-    public class X469Client : BaseClient
+    public class YL5Client : BaseClient
     {
-
         //
         private string _account;
         private string _password;
@@ -30,7 +33,7 @@ namespace Gambler.Module.X469
             }
         }
 
-        public X469Client(string account, string password)
+        public YL5Client(string account, string password)
         {
             _account = account;
             _password = password;
@@ -65,52 +68,7 @@ namespace Gambler.Module.X469
 
         public void Login(OnSuccessHandler<X469Login> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            Login(4, onSuccess, onFail, onError);
-        }
-
-        public void Login(int retryCount, OnSuccessHandler<X469Login> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
-        {
-
-            Dictionary<string, string> queryDict = ConstructKeyValDict("_r", "" + new Random().NextDouble());
-
-            HttpUtil.Get<byte[]>(X469Config.URL_VERICODE, _headers, _cookies, _proxy, queryDict,
-               (data) =>
-               {
-                   return IOUtil.Read(data);
-               },
-               (statusCode, data, cookies) =>
-               {
-                   if (HttpUtil.IsCodeSucc(statusCode) && data != null)
-                   {
-                       _cookies.Add(cookies);
-                       string vc = _verifyCode.ParseCode(data);
-                       Console.WriteLine("验证码: " + vc);
-                       if (String.IsNullOrEmpty(vc) || vc.Length != 4)
-                       {
-                           if (retryCount == 0)
-                           {
-                               if (onFail != null)
-                                   onFail.Invoke(statusCode, BaseError.I_C_FAIL_TO_VERIFY_CODE, BaseError.C_FAIL_TO_VERIFY_CODE);
-                               return;
-                           }
-
-                           Login(retryCount - 1, onSuccess, onFail, onError);
-
-                           // 重新进行验证码请求
-                       }
-                       else
-                       {
-                           LoginByCode(vc, retryCount, onSuccess, onFail, onError);
-                       }
-                       return;
-                   }
-
-                   RespOnFail(onFail, statusCode, BaseError.I_C_FAIL_TO_VERIFY_CODE, "");
-               },
-               (e) =>
-               {
-                   RespOnError(onError, e);
-               });
+            LoginByCode("6666", 4, onSuccess, onFail, onError);
         }
 
         public void LoginByCode(string code, int retryCount,
@@ -120,7 +78,7 @@ namespace Gambler.Module.X469
                  "username", _account,
                  "passwd", _password,
                  "captcha", code);
-            HttpUtil.Post(X469Config.URL_LOGIN, _headers, _cookies, _proxy, bodyDict,
+            HttpUtil.Post(YL5Config.URL_LOGIN, _headers, _cookies, _proxy, bodyDict,
                 (data) =>
                 {
                     string str = IOUtil.ReadString(data);
@@ -140,7 +98,7 @@ namespace Gambler.Module.X469
                                return;
                            }
 
-                           Login(retryCount - 1, onSuccess, onFail, onError);
+                           LoginByCode(code, retryCount - 1, onSuccess, onFail, onError);
                            return;
                        }
                        else if (data.result.Equals("3"))
@@ -160,7 +118,7 @@ namespace Gambler.Module.X469
                        {
                            RespOnFail(onFail, statusCode, BaseError.I_C_BAD_RESP_DATA, BaseError.C_BAD_RESP_DATA);
                        }
-                       
+
                        return;
                    }
 
@@ -174,7 +132,7 @@ namespace Gambler.Module.X469
 
         public void GetUserInfo(OnSuccessHandler<X469User> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            HttpUtil.Post(X469Config.URL_USER, _headers, _cookies, _proxy, null,
+            HttpUtil.Post(YL5Config.URL_USER, _headers, _cookies, _proxy, null,
                 (data) =>
                 {
                     string str = IOUtil.ReadString(data);
@@ -212,7 +170,7 @@ namespace Gambler.Module.X469
                 "uid", _uid,
                 "keyword", leagues,
                 "_", String.Format("{0}", TimeUtil.CurrentTimeMillis()));
-            HttpUtil.Get(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
+            HttpUtil.Get(YL5Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
                 (data) =>
                 {
                     string str = IOUtil.ReadString(data);
@@ -246,7 +204,8 @@ namespace Gambler.Module.X469
         {
             if (String.IsNullOrEmpty(_uid))
             {
-                GetUID((data)=> {
+                GetUID((data) =>
+                {
                     Console.WriteLine("GetAllOddDataByPage 获取完uid后备执行,uid = " + data);
                     GetAllOddDataByPage(action, page, fromLast,
                                onSuccess, onFail, onError);
@@ -259,7 +218,7 @@ namespace Gambler.Module.X469
                 "data", "json",
                 "uid", _uid,
                 "_", String.Format("{0}", TimeUtil.CurrentTimeMillis()));
-            HttpUtil.Get(X469Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
+            HttpUtil.Get(YL5Config.URL_ODD_DATA, _headers, _cookies, _proxy, queryDict,
                 (data) =>
                 {
                     // 此处结果会多出 "();"，所以要从1下标开始并减去3长度
@@ -271,8 +230,8 @@ namespace Gambler.Module.X469
 
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null)
                    {
-                        // 设置首页数据或者添加新页数据
-                        if (fromLast == null)
+                       // 设置首页数据或者添加新页数据
+                       if (fromLast == null)
                        {
                            fromLast = data;
                        }
@@ -283,9 +242,9 @@ namespace Gambler.Module.X469
 
                        if (Convert.ToInt32(data.totalpage) > page)
                        {
-                            // 有多页，获取下一页的数据
-                            GetAllOddDataByPage(action, page + 1, fromLast,
-                               onSuccess, onFail, onError);
+                           // 有多页，获取下一页的数据
+                           GetAllOddDataByPage(action, page + 1, fromLast,
+                              onSuccess, onFail, onError);
                        }
                        else
                        {
@@ -320,9 +279,9 @@ namespace Gambler.Module.X469
                 "rate", Convert.ToString(req.rate),
                 "ltype", req.ltype,
                 "mid", req.mid,
-                "auto", req.autoOpt ? "1": "0"
+                "auto", req.autoOpt ? "1" : "0"
                 );
-            HttpUtil.Post(X469Config.URL_BET, _headers, _cookies, queryDict, _proxy, bodyDict,
+            HttpUtil.Post(YL5Config.URL_BET, _headers, _cookies, queryDict, _proxy, bodyDict,
                 (data) =>
                 {
                     return IOUtil.ReadString(data);
@@ -332,6 +291,7 @@ namespace Gambler.Module.X469
 
                    if (HttpUtil.IsCodeSucc(statusCode) && data != null)
                    {
+                       LogUtil.Write("YL5Client.DoBet返回结果：" + data);
                        if (data.Contains("false|"))
                        {
                            RespOnFail(onFail, statusCode, BaseError.I_C_BAD_HTTP_REQUEST, data.Substring(6));
@@ -342,7 +302,6 @@ namespace Gambler.Module.X469
                            RespOnFail(onFail, statusCode, BaseError.I_C_BAD_HTTP_REQUEST, "账户需要重新登录");
                            return;
                        }
-
                        RespOnSuccess(onSuccess, data);
                        return;
                    }
@@ -357,7 +316,7 @@ namespace Gambler.Module.X469
 
         public void GetUID(OnSuccessHandler<string> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
-            HttpUtil.Get(X469Config.URL_SPORT, _headers, _cookies, _proxy, null,
+            HttpUtil.Get(YL5Config.URL_SPORT, _headers, _cookies, _proxy, null,
                 (data) =>
                 {
                     return IOUtil.ReadString(data);

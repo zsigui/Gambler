@@ -52,7 +52,8 @@
             this.CB_ItemKey.FormattingEnabled = true;
             this.CB_ItemKey.Items.AddRange(new object[] {
             "469355.com",
-            "1559501.com"});
+            "1559501.com",
+            "yl5789.com"});
             this.CB_ItemKey.Location = new System.Drawing.Point(154, 24);
             this.CB_ItemKey.Name = "CB_ItemKey";
             this.CB_ItemKey.Size = new System.Drawing.Size(136, 20);
@@ -102,7 +103,8 @@
             this.CB_ForCopy.FormattingEnabled = true;
             this.CB_ForCopy.Items.AddRange(new object[] {
             "469355.com",
-            "1559501.com"});
+            "1559501.com",
+            "yl5789.com"});
             this.CB_ForCopy.Location = new System.Drawing.Point(473, 24);
             this.CB_ForCopy.Name = "CB_ForCopy";
             this.CB_ForCopy.Size = new System.Drawing.Size(121, 20);

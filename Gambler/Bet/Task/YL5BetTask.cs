@@ -1,5 +1,4 @@
-﻿using Gambler.Bet.Task;
-using Gambler.Config;
+﻿using Gambler.Config;
 using Gambler.Module.X469;
 using Gambler.Module.X469.Model;
 using Gambler.Module.XPJ.Model;
@@ -11,19 +10,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gambler.Bet
+namespace Gambler.Bet.Task
 {
-    public class X469BetTask : ITask
+    public class YL5BetTask : ITask
     {
         private BetMatchInfo _info;
 
-        public X469BetTask(BetMatchInfo info) : base() {
+        public YL5BetTask(BetMatchInfo info) : base() {
             if (info == null)
                 throw new ArgumentNullException("info不能为空");
             _info = info;
         }
 
-        public X469BetTask(ITask task, BetMatchInfo info) : base(task) {
+        public YL5BetTask(ITask task, BetMatchInfo info) : base(task) {
             if (info == null)
                 throw new ArgumentNullException("info不能为空");
             _info = info;
@@ -39,18 +38,18 @@ namespace Gambler.Bet
             if (param == null || !(param is List<X469OddItem>))
                 return;
             LogUtil.Write("任务执行中，类型: " + GetType());
-            List<IntegratedAccount> accounts =  FormMain.GetInstance().ObtainAccounts(AcccountType.XPJ469);
+            List<IntegratedAccount> accounts = FormMain.GetInstance().ObtainAccounts(AcccountType.YL5789);
             if (accounts == null || accounts.Count <= 0)
                 return;
-            
+
             X469ReqBetData reqData = new X469ReqBetData();
 
             GlobalSetting gs = GlobalSetting.GetInstance();
             BetType firstType = gs.GameBetType, secondType = gs.SecondBetType;
 
-            string league = gs.GetMapValue(GlobalSetting.X469_KEY, _info.league);
-            string home = gs.GetMapValue(GlobalSetting.X469_KEY, _info.home);
-            string away = gs.GetMapValue(GlobalSetting.X469_KEY, _info.away);
+            string league = gs.GetMapValue(GlobalSetting.YL5_KEY, _info.league);
+            string home = gs.GetMapValue(GlobalSetting.YL5_KEY, _info.home);
+            string away = gs.GetMapValue(GlobalSetting.YL5_KEY, _info.away);
 
             List<X469OddItem> items = param as List<X469OddItem>;
             items = SearchByInfo(items, league, home, away);
@@ -69,28 +68,31 @@ namespace Gambler.Bet
             if (String.IsNullOrEmpty(reqData.mid))
                 // 还是查找不到适合下注的，任务失败
                 return;
-            
+
             // 执行下注请求
             foreach (IntegratedAccount acc in accounts)
             {
-                acc.GetClient<X469Client>().DoBet(reqData,
+                acc.GetClient<YL5Client>().DoBet(reqData,
                     (data) =>
                     {
                         long cs = (CurrentTime() - _firstRecordTime);
                         LogUtil.Write("下注成功! Account = " + acc.Account + ", Type = " + acc.Type);
                         ThreadUtil.WorkOnUI<string>(FormMain.GetInstance(),
-                            new Action(() => {
+                            new Action(() =>
+                            {
 
-                                new DialogNotify(String.Format("{0}[{1}]", acc.Account, acc.Type), 
+                                new DialogNotify(String.Format("{0}[{1}]", acc.Account, acc.Type),
                                     "下注成功", String.Format("耗时{0}ms", cs)).Show();
                             }), null);
-                    }, 
-                    (hc, ec, em)=> {
+                    },
+                    (hc, ec, em) =>
+                    {
                         long cs = (CurrentTime() - _firstRecordTime);
                         LogUtil.Write("Account = " + acc.Account + ", Type = " + acc.Type + " 下注失败，原因：" + em
                             + ", 当前已过去时间: " + cs + " ms");
                         ThreadUtil.WorkOnUI<string>(FormMain.GetInstance(),
-                            new Action(() => {
+                            new Action(() =>
+                            {
 
                                 new DialogNotify(String.Format("{0}[{1}]", acc.Account, acc.Type),
                                     String.Format("下注失败，耗时{0}ms", cs), em).Show();

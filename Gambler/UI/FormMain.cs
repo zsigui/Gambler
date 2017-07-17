@@ -132,6 +132,19 @@ namespace Gambler
                                 tmpAccounts.Add(account);
                             }, null, null);
                         }
+                        else if (account.Type == AcccountType.YL5789)
+                        {
+                            account.GetClient<YL5Client>().Login((ret) =>
+                            {
+                                LogUtil.Write("登录成功，添加项: " + account.Account);
+                                account.GetClient<YL5Client>().GetUserInfo((d) =>
+                                {
+                                    account.Money = Convert.ToDouble(d.money);
+                                }, null, null);
+                                // 将返回成功的添加的字典中
+                                tmpAccounts.Add(account);
+                            }, null, null);
+                        }
                     }
                     Invoke(new Action(() => {
                         foreach (IntegratedAccount account in tmpAccounts)
@@ -167,8 +180,56 @@ namespace Gambler
                 CLB_XPJUser.Items.RemoveAt(index);
             }
             AddAccount(user);
+            string type = "";
+            switch (user.Type)
+            {
+                case AcccountType.XPJ155:
+                    type = GlobalSetting.X159_KEY;
+                    break;
+                case AcccountType.XPJ469:
+                    type = GlobalSetting.X469_KEY;
+                    break;
+                case AcccountType.YL5789:
+                    type = GlobalSetting.YL5_KEY;
+                    break;
+            }
             CLB_XPJUser.SetItemChecked(CLB_XPJUser.Items.Add(String.Format("{0} [{1}]",
-                user.Account, user.Type == AcccountType.XPJ469? "www.469355.com" : "www.1559501.com")), user.IsChecked);
+                user.Account, type)), user.IsChecked);
+        }
+
+        public bool[] ContainsAccount(int[] type)
+        {
+            bool[] result = new bool[type.Length];
+            if (_xpjUserDict == null)
+                return result;
+                int i;
+            int count = 0;
+            foreach (IntegratedAccount acc in _xpjUserDict)
+            {
+                for (i = type.Length - 1; i >= 0; i--)
+                {
+                    if (!result[i] &&  type[i] == acc.Type)
+                    {
+                        result[i] = true;
+                        count++;
+                        if (count == type.Length)
+                            return result;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public bool ContainsAccount(int type)
+        {
+            if (_xpjUserDict == null)
+                return false;
+            foreach (IntegratedAccount acc in _xpjUserDict)
+            {
+                if (acc.Type == type)
+                    return true;
+            }
+            return false;
         }
 
         public bool HasAccount()
@@ -464,14 +525,10 @@ namespace Gambler
                         case HFLiveEventIdNote.AT1:
                             Output(String.Format(REGEX_FORMAT,
                                 m.Score, m.Time, m.League, m.Home, m.Away, "主队发起进攻"), Color.DarkGreen);
-                            HandleAutoBetEvent(m, true);
-                            ForceMessageDialog(m.League, m.Home, "", "主队发起进攻");
                             break;
                         case HFLiveEventIdNote.AT2:
                             Output(String.Format(REGEX_FORMAT,
                                 m.Score, m.Time, m.League, m.Home, m.Away, "客队发起进攻"), Color.DarkGreen);
-                            HandleAutoBetEvent(m, false);
-                            ForceMessageDialog(m.League, "", m.Away, "客队发起进攻");
                             break;
                         case HFLiveEventIdNote.DANGER1:
                         case HFLiveEventIdNote.DAT1:
@@ -562,13 +619,13 @@ namespace Gambler
                     info.home = m.Home;
                     info.away = m.Away;
                     info.isHomePen = isHome;
-                    BManager.Instance.Add(new X469BetTask(info));
-                    BManager.Instance.Start(new X159BetTask(info));
-                }
-                else
-                {
-                    BManager.Instance.Add(new X469ValidDataTask());
-                    BManager.Instance.Start(new X159ValidDataTask());
+                    bool[] result = ContainsAccount(new int[] { AcccountType.XPJ155, AcccountType.XPJ469, AcccountType.YL5789 });
+                    if (result[0])
+                        BManager.Instance.Start(new X159BetTask(info));
+                    if (result[1])
+                        BManager.Instance.Start(new X469BetTask(info));
+                    if (result[2])
+                        BManager.Instance.Start(new YL5BetTask(info));
                 }
             }
 
@@ -609,6 +666,15 @@ namespace Gambler
                         RefreshBtn(0);
                         return;
                     }
+                    if (GlobalSetting.GetInstance().IsAutoBet)
+                    {
+                        bool[] contains = ContainsAccount(new int[] { AcccountType.XPJ155, AcccountType.XPJ469, AcccountType.YL5789 });
+                        if (contains[0])
+                            BManager.Instance.Start(new X159ValidDataTask());
+                        if (contains[1] || contains[2])
+                            BManager.Instance.Start(new X469ValidDataTask());
+                    }
+
                     _h8DataTimer.Change(Timeout.Infinite, 1000);
                     _autoRefreshCuountdown = GlobalSetting.GetInstance().AutoRefreshTime;
                     
@@ -627,10 +693,6 @@ namespace Gambler
                                 _lastGetDataTime = curTime;
                                 UpdateDGVData(_h8Client.LiveMatchs);
                                 DoGetLiveMatchAfterGetData(true);
-
-
-                                BManager.Instance.Add(new X469ValidDataTask());
-                                BManager.Instance.Start(new X159ValidDataTask());
                             }
                             else if (curTime - _lastGetDataTime > DEFAULT_EMPTY_TIME_DIFF)
                             {
@@ -809,6 +871,12 @@ namespace Gambler
                     case AcccountType.XPJ469:
                         FormX469Info.NewInstance().Show(account.GetClient<X469Client>());
                         break;
+                    case AcccountType.YL5789:
+                        FormYL5Info.NewInstance().Show(account.GetClient<YL5Client>());
+                        break;
+                    default:
+                        MessageBox.Show("对不起，此类型网站暂不支持UI显示，仅限于自动下注");
+                        break;
                 }
             }
         }
@@ -822,6 +890,7 @@ namespace Gambler
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            BManager.Instance.Stop();
             SaveAccounts();
             GlobalSetting.GetInstance().Save();
         }

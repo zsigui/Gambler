@@ -40,7 +40,7 @@ namespace Gambler.Bet
             return _data;
         }
 
-        public bool IsOvertime()
+        public virtual bool IsOvertime()
         {
             return (CurrentTime() - _firstRecordTime) > OVERTIME;
         }
@@ -67,6 +67,7 @@ namespace Gambler.Bet
         X469_VALID_DATA,
         X159_VALID_DATA,
         X469_BET,
-        X159_BET
+        X159_BET,
+        YL5_BET
     }
 }

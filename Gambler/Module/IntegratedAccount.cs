@@ -57,6 +57,9 @@ namespace Gambler.Module.XPJ.Model
                 case AcccountType.XPJ469:
                     _client = new X469Client(Account, Password);
                     break;
+                case AcccountType.YL5789:
+                    _client = new YL5Client(Account, Password);
+                    break;
             }
             if (Proxy != null && _client != null)
             {
@@ -82,5 +85,6 @@ namespace Gambler.Module.XPJ.Model
     {
         public const int XPJ155 = 0;
         public const int XPJ469 = 1;
+        public const int YL5789 = 2;
     }
 }

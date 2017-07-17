@@ -1,6 +1,7 @@
 ﻿using Gambler.Config;
 using Gambler.Module.X469;
 using Gambler.Module.XPJ.Model;
+using Gambler.Module.YL5;
 using Gambler.Utils;
 using Gambler.XPJ;
 using System;
@@ -103,7 +104,7 @@ namespace Gambler.UI
                 {
                     case AcccountType.XPJ155:
                         #region 新葡京155
-                        _account.GetClient<XPJClient>().Login(
+                        _account.newClient<XPJClient>().Login(
                             (data) =>
                             {
                                 _account.GetClient<XPJClient>().GetUserInfo((d) =>
@@ -139,10 +140,46 @@ namespace Gambler.UI
                         break;
                     case AcccountType.XPJ469:
                         #region 新葡京469
-                        _account.GetClient<X469Client>().Login(
+                        _account.newClient<X469Client>().Login(
                            (data) =>
                            {
                                _account.GetClient<X469Client>().GetUserInfo((d) =>
+                               {
+                                   Console.WriteLine("当前金币余额: " + d.money);
+                                   _account.Money = Convert.ToDouble(d.money);
+                               }, null, null);
+                               MessageBox.Show("添加用户成功!");
+                               Invoke(new Action(() =>
+                               {
+                                   FormMain.GetInstance().AddUserToList(_account);
+                                   Close();
+                               }));
+                           },
+                           (status, code, msg) =>
+                           {
+                               Invoke(new Action(() =>
+                               {
+                                   BTN_Add.Enabled = true;
+                               }));
+                               MessageBox.Show("登录失败，请检查后重试！");
+                           },
+                           (err) =>
+                           {
+                               Invoke(new Action(() =>
+                               {
+                                   BTN_Add.Enabled = true;
+                               }));
+                               LogUtil.Write(err);
+                               MessageBox.Show("登录失败，请检查后重试！");
+                           });
+                        #endregion
+                        break;
+                    case AcccountType.YL5789:
+                        #region YL5789
+                        _account.newClient<YL5Client>().Login(
+                           (data) =>
+                           {
+                               _account.GetClient<YL5Client>().GetUserInfo((d) =>
                                {
                                    Console.WriteLine("当前金币余额: " + d.money);
                                    _account.Money = Convert.ToDouble(d.money);

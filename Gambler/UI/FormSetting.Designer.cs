@@ -32,7 +32,6 @@
             this.TB_AutoRefreshTime = new System.Windows.Forms.TextBox();
             this.CB_AutoSaveUser = new System.Windows.Forms.CheckBox();
             this.CB_AutoBet = new System.Windows.Forms.CheckBox();
-            this.CB_ShowBetDialog = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -74,23 +73,11 @@
             this.CB_AutoBet.UseVisualStyleBackColor = true;
             this.CB_AutoBet.CheckedChanged += new System.EventHandler(this.CB_AutoBet_CheckedChanged);
             // 
-            // CB_ShowBetDialog
-            // 
-            this.CB_ShowBetDialog.AutoSize = true;
-            this.CB_ShowBetDialog.Location = new System.Drawing.Point(42, 138);
-            this.CB_ShowBetDialog.Name = "CB_ShowBetDialog";
-            this.CB_ShowBetDialog.Size = new System.Drawing.Size(108, 16);
-            this.CB_ShowBetDialog.TabIndex = 4;
-            this.CB_ShowBetDialog.Text = "显示下注确认框";
-            this.CB_ShowBetDialog.UseVisualStyleBackColor = true;
-            this.CB_ShowBetDialog.CheckedChanged += new System.EventHandler(this.CB_AutoBetDialog_CheckedChanged);
-            // 
             // FormSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(325, 178);
-            this.Controls.Add(this.CB_ShowBetDialog);
+            this.ClientSize = new System.Drawing.Size(327, 135);
             this.Controls.Add(this.CB_AutoBet);
             this.Controls.Add(this.CB_AutoSaveUser);
             this.Controls.Add(this.TB_AutoRefreshTime);
@@ -112,6 +99,5 @@
         private System.Windows.Forms.TextBox TB_AutoRefreshTime;
         private System.Windows.Forms.CheckBox CB_AutoSaveUser;
         private System.Windows.Forms.CheckBox CB_AutoBet;
-        private System.Windows.Forms.CheckBox CB_ShowBetDialog;
     }
 }

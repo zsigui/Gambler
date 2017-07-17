@@ -38,7 +38,7 @@ namespace Gambler.Bet.Task
         {
             if(param == null || !(param is List<XPJOddData>))
                 return;
-
+            LogUtil.Write("任务执行中，类型: " + GetType());
             List<IntegratedAccount> accounts = FormMain.GetInstance().ObtainAccounts(AcccountType.XPJ469);
             if (accounts == null || accounts.Count <= 0)
                 return;
@@ -89,8 +89,8 @@ namespace Gambler.Bet.Task
             List<XPJOddData> result = new List<XPJOddData>();
             foreach (XPJOddData item in items)
             {
-                if (item.league.Equals(league) &&
-                    item.home.Equals(home) && item.guest.Equals(away))
+                if (item.league.Contains(league) &&
+                    item.home.Contains(home) && item.guest.Contains(away))
                     result.Add(item);
             }
             return result;
@@ -240,7 +240,7 @@ namespace Gambler.Bet.Task
             }
             int scoreHome = Convert.ToInt32(sh) + (homePen ? 1 : 0);
             int scoreAway = Convert.ToInt32(sa) + (homePen ? 0 : 1);
-            int diff = Math.Abs(scoreAway - scoreHome);
+            int diff = homeConcede ? scoreHome - scoreAway : scoreAway - scoreHome;
 
             if (homeConcede)
             {
@@ -269,7 +269,7 @@ namespace Gambler.Bet.Task
                 // 客让主
                 if (homePen)
                 {
-                    tmpRate = Convert.ToDouble(rh);
+                    tmpRate = rh;
                     if (diff < odds[0] && diff < odds[1] && tmpRate > lastRate
                         && tmpRate > GlobalSetting.GetInstance().AutoBetRate)
                     {
@@ -278,7 +278,7 @@ namespace Gambler.Bet.Task
                 }
                 else
                 {
-                    tmpRate = Convert.ToDouble(ra);
+                    tmpRate = ra;
                     if (diff > odds[0] && diff > odds[1] && tmpRate > lastRate
                         && tmpRate > GlobalSetting.GetInstance().AutoBetRate)
                     {

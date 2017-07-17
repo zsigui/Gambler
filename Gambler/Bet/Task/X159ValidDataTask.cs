@@ -1,4 +1,5 @@
 ﻿using Gambler.Module.XPJ.Model;
+using Gambler.Utils;
 using Gambler.XPJ;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,14 @@ namespace Gambler.Bet.Task
             return TaskType.X159_VALID_DATA;
         }
 
+        public override bool IsOvertime()
+        {
+            return false;
+        }
+
         public override void Work(object param = null)
         {
+            LogUtil.Write("任务执行中，类型: " + GetType());
             List<IntegratedAccount> accounts = FormMain.GetInstance().ObtainAccounts(AcccountType.XPJ155);
             if (accounts == null || accounts.Count <= 0)
                 return;

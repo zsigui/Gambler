@@ -45,6 +45,7 @@ namespace Gambler.Config
 
         public const string X469_KEY = "469355.com";
         public const string X159_KEY = "1559501.com";
+        public const string YL5_KEY = "yl5789.com";
         private Dictionary<string, object> _settings;
 
 
@@ -316,9 +317,9 @@ namespace Gambler.Config
         private void LoadMap()
         {
             string content = FileUtil.ReadContentFromFilePath(MAP_PATH);
-            if (String.IsNullOrEmpty(content))
-                return;
-            _mapDict = JsonUtil.fromJson<Dictionary<string, Dictionary<string, string>>>(content);
+            if (!String.IsNullOrEmpty(content))
+                _mapDict = JsonUtil.fromJson<Dictionary<string, Dictionary<string, string>>>(content);
+
             if (_mapDict == null)
             {
                 _mapDict = new Dictionary<string, Dictionary<string, string>>();
@@ -328,6 +329,7 @@ namespace Gambler.Config
                 _mapDict.Clear();
                 _mapDict.Add(X469_KEY, new Dictionary<string, string>());
                 _mapDict.Add(X159_KEY, new Dictionary<string, string>());
+                _mapDict.Add(YL5_KEY, new Dictionary<string, string>());
             }
         }
 

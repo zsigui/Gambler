@@ -72,7 +72,8 @@
             this.CB_Type.FormattingEnabled = true;
             this.CB_Type.Items.AddRange(new object[] {
             "新葡京155",
-            "新葡京469"});
+            "新葡京469",
+            "YL5789"});
             this.CB_Type.Location = new System.Drawing.Point(114, 97);
             this.CB_Type.Name = "CB_Type";
             this.CB_Type.Size = new System.Drawing.Size(121, 20);

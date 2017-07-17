@@ -72,6 +72,7 @@
     <Compile Include="Bet\Task\X159ValidDataTask.cs" />
     <Compile Include="Bet\Task\X469BetTask.cs" />
     <Compile Include="Bet\Task\X469ValidDataTask.cs" />
+    <Compile Include="Bet\Task\YL5BetTask.cs" />
     <Compile Include="Config\GlobalSetting.cs" />
     <Compile Include="Module\BaseClient.cs" />
     <Compile Include="Module\BaseError.cs" />
@@ -99,6 +100,10 @@
     <Compile Include="Module\IntegratedAccount.cs" />
     <Compile Include="Module\XPJ\Model\XPJOddData.cs" />
     <Compile Include="Module\XPJ\XPJDataParser.cs" />
+    <Compile Include="Module\YL5\YL5Client.cs" />
+    <Compile Include="Module\YL5\YL5Config.cs" />
+    <Compile Include="Module\YL5\YL5ErrorMsg.cs" />
+    <Compile Include="Module\YL5\YL5VerifyCode.cs" />
     <Compile Include="UI\DialogAddH8Cookie.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -176,6 +181,18 @@
     </Compile>
     <Compile Include="UI\Widget\WidgetLeagues.Designer.cs">
       <DependentUpon>WidgetLeagues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\YL5\FormYL5Info.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\YL5\FormYL5Info.Designer.cs">
+      <DependentUpon>FormYL5Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\YL5\YL5DialogConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\YL5\YL5DialogConfirm.Designer.cs">
+      <DependentUpon>YL5DialogConfirm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\CommonUtil.cs" />
     <Compile Include="Utils\Interface\AbsVerifyCode.cs" />
@@ -275,6 +292,12 @@
     <EmbeddedResource Include="UI\Widget\WidgetLeagues.resx">
       <DependentUpon>WidgetLeagues.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\YL5\FormYL5Info.resx">
+      <DependentUpon>FormYL5Info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\YL5\YL5DialogConfirm.resx">
+      <DependentUpon>YL5DialogConfirm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -290,7 +313,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Delegate\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>

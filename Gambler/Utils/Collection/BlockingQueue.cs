@@ -47,6 +47,22 @@ namespace Gambler.Utils
             }
         }
 
+        public int Count
+        {
+            get
+            {
+                return queue.Count;
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return Count == 0;
+            }
+        }
+
         bool closing;
         public void Close()
         {
