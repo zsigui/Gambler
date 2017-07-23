@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using HtmlAgilityPack;
+using System.Collections.Concurrent;
 
 namespace Gambler.Module.HF
 {
@@ -71,6 +72,21 @@ namespace Gambler.Module.HF
             }
             _cookies.Add(new Cookie("tt", "" + new Random().NextDouble(), "/", HFConfig.URL_DOMAIN));
             _cookies.Add(new Cookie("vcode", "1", "/", HFConfig.URL_DOMAIN));
+        }
+
+        public HFSimpleMatch GetMatchById(string mid)
+        {
+            HFSimpleMatch value = null;
+            if (LiveMatchs == null || !LiveMatchs.TryGetValue(mid, out value)) {
+                value = new HFSimpleMatch();
+                value.MID = mid;
+            }
+            return value;
+        }
+
+        public bool IsEmptyLive()
+        {
+            return _liveIdsQueue == null || _liveIdsQueue.IsEmpty;
         }
 
         protected void RespOnFail<T>(OnFailedHandler callback, int httpStatus, HFRespBase<T> data)
@@ -391,6 +407,8 @@ namespace Gambler.Module.HF
             if (LiveMatchs == null)
                 LiveMatchs = new Dictionary<string, HFSimpleMatch>();
 
+            HashSet<string> keys = new HashSet<string>(LiveMatchs.Keys);
+
             LiveMatchs.Clear();
 
             foreach (HFSimpleMatch m in matchList)
@@ -399,6 +417,15 @@ namespace Gambler.Module.HF
                 {
                     LiveMatchs.Add(m.MID, m);
                 }
+                if (!keys.Contains(m.MID))
+                {
+                    keys.Add(m.MID);
+                    EnqueueLiveIds(m.MID, -1);
+                }
+            }
+            foreach(string s in _liveIdsQueue)
+            {
+                LogUtil.Write("s: " + s);
             }
         }
 
@@ -420,7 +447,7 @@ namespace Gambler.Module.HF
                 _liveNewsetEventIds.Add(matchId, newsetEId);
             }
         }
-
+        /*
         public void GetAllLiveEvent(string matchId, OnSuccessHandler<List<HFLiveEvent>> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             Dictionary<string, string> queryDict = ConstructKeyValDict(
@@ -446,7 +473,9 @@ namespace Gambler.Module.HF
                     RespOnError(onError, e);
                 });
         }
+        */
 
+        /*
         public void GetSpecLiveEvent(string matchId, int startEventId,
             OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
@@ -476,7 +505,100 @@ namespace Gambler.Module.HF
                     RespOnError(onError, e);
                 });
         }
+        */
 
+        private ConcurrentQueue<string> _liveIdsQueue = new ConcurrentQueue<string>();
+
+        public void GetSpecLiveEvent(OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            string key;
+            if (!_liveIdsQueue.IsEmpty && _liveIdsQueue.TryDequeue(out key))
+            {
+                string[] ks = key.Split(',');
+                if (!ks[1].Equals("-1"))
+                {
+                    GetSpecLiveEvent(ks[0], Convert.ToInt32(ks[1]), onSuccess, onFail, onError);
+                }
+                else
+                {
+                    Dictionary<string, string> queryDict = ConstructKeyValDict(
+                    "matchId", ks[0],
+                    "_", TimeUtil.CurrentTimeMillis() + "");
+                    HttpUtil.Get(HFConfig.URL_REAL_TIME, null, null, queryDict,
+                        (data) =>
+                        {
+                            string s = IOUtil.ReadString(data);
+                            //LogUtil.Write("请求处理:" + key + ", 返回数据：" + s);
+                            return JsonUtil.fromJson<List<HFLiveEvent>>(s);
+                        },
+                        (statusCode, data, cookies) =>
+                        {
+                            if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.Count > 0)
+                            {
+                                HFLiveEvent ev = data[data.Count - 1];
+                                GetSpecLiveEvent(ks[0], ev.EID, onSuccess, onFail, onError);
+                                return;
+                            }
+                            EnqueueLiveIds(ks[0], -1);
+                            RespOnFail(onFail, statusCode);
+                        },
+                        (e) =>
+                        {
+                            EnqueueLiveIds(ks[0], -1);
+                            RespOnError(onError, e);
+                        });
+                }
+            }
+            else
+            {
+                if (onFail != null)
+                    onFail.Invoke(200, HFErrorMsg.I_C_EXEC_EXCEPTION, HFErrorMsg.C_EXEC_EXCEPTION);
+            }
+        }
+
+        private void EnqueueLiveIds(string matchId, int eventId)
+        {
+            if (LiveMatchs.ContainsKey(matchId))
+            {
+                _liveIdsQueue.Enqueue(String.Format("{0},{1}", matchId, eventId));
+            }
+        }
+
+        public void GetSpecLiveEvent(string matchId, int startEventId,
+           OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
+        {
+            Dictionary<string, string> queryDict = ConstructKeyValDict(
+                "matchId", matchId,
+                "startEventId", startEventId + "",
+                "endEventId", (startEventId + 20) + "",
+                "_", TimeUtil.CurrentTimeMillis() + "");
+            HttpUtil.Get(HFConfig.URL_REAL_TIME, null, null, queryDict,
+                (data) =>
+                {
+                    string s = IOUtil.ReadString(data);
+                    //LogUtil.Write("请求处理:" + matchId + ", 返回数据：" + s);
+                    return JsonUtil.fromJson<List<HFLiveEvent>>(s);
+                },
+                (statusCode, data, cookies) =>
+                {
+                    if (HttpUtil.IsCodeSucc(statusCode) && data != null && data.Count > 0)
+                    {
+                        HFLiveEvent ev = data[0];
+                        EnqueueLiveIds(matchId, ev.EID);
+                        RespOnSuccess(onSuccess, ev);
+                        return;
+                    }
+                    EnqueueLiveIds(matchId, startEventId);
+                    RespOnFail(onFail, statusCode);
+                },
+                (e) =>
+                {
+                    EnqueueLiveIds(matchId, -1);
+                    RespOnError(onError, e);
+                });
+        }
+
+        /*
         public void GetSpecLiveEvent(string matchId, OnSuccessHandler<HFLiveEvent> onSuccess, OnFailedHandler onFail, OnErrorHandler onError)
         {
             int startId;
@@ -512,5 +634,6 @@ namespace Gambler.Module.HF
                     });
             }
         }
+        */
     }
 }

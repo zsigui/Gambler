@@ -200,6 +200,7 @@
     <Compile Include="Utils\IOUtil.cs" />
     <Compile Include="Utils\JsonUtil.cs" />
     <Compile Include="Utils\LevenshteinDistance.cs" />
+    <Compile Include="Utils\Manager\LiveThreadManager.cs" />
     <Compile Include="Utils\Md5Util.cs" />
     <Compile Include="Utils\MediaUtil.cs" />
     <Compile Include="Utils\SearchHelper.cs" />

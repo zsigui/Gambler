@@ -8,6 +8,7 @@ using Gambler.Module.X469;
 using Gambler.Module.XPJ.Model;
 using Gambler.UI;
 using Gambler.Utils;
+using Gambler.Utils.Manager;
 using Gambler.XPJ;
 using System;
 using System.Collections.Generic;
@@ -288,8 +289,6 @@ namespace Gambler
         private List<string> _uncheckedList = new List<string>();
         private List<string> _midList = new List<string>();
         private bool _isInErr = false;
-        // 为了避免事件的重复请求
-        private List<string> _networkingList = new List<string>();
 
         private void UpdateDGVData(Dictionary<string, HFSimpleMatch> matchs)
         {
@@ -343,54 +342,16 @@ namespace Gambler
                 DoInitAndLoginH8();
                 return;
             }
-            if (_liveTimer != null)
-            {
-                if (resetTimer)
-                {
-                    _liveTimer.Change(1000, 1000);
-                }
-                return;
-            }
-            _liveTimer = ThreadUtil.RunOnTimer((state) =>
-            {
-                if (_h8Client.LiveMatchs != null)
-                {
-                    Dictionary<string, HFSimpleMatch> lives = new Dictionary<string, HFSimpleMatch>(_h8Client.LiveMatchs);
-                    foreach (KeyValuePair<string, HFSimpleMatch> entry in lives)
-                    {
-                        if (_networkingList.Contains(entry.Key))
-                            continue;
-                        _networkingList.Add(entry.Key);
-                        HFSimpleMatch m = entry.Value;
-                        _h8Client.GetSpecLiveEvent(entry.Key,
-                            (eventData) =>
-                            {
-                                _networkingList.Remove(entry.Key);
-                                if (!_uncheckedList.Contains(eventData.MID.ToString()))
-                                {
-                                   // Output(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}",
-                                     //   m.League, m.Home, m.Away, eventData.Info, eventData.CID), Color.DarkRed);
-                                    DealWithTargetMatch(m, eventData.CID, eventData.Info);
-                                }
 
-                            },
-                            (hc, ec, em) => {
-                                _networkingList.Remove(entry.Key);
-                            },
-                            (e) => {
-                                _networkingList.Remove(entry.Key);
-                            });
-                    }
-                }
-                else
-                {
-                    LogUtil.Write("当前直播列表为空，停止直播任务事件监听");
-                    _liveTimer.Change(Timeout.Infinite, 1000);
-                }
-            },
-            null,
-            0,
-            1000);
+            LogUtil.Write("1");
+            if ((_h8Client.LiveMatchs == null || _h8Client.LiveMatchs.Count == 0)
+                && LiveThreadManager.Instance.isRunning)
+                LiveThreadManager.Instance.Stop();
+            LogUtil.Write("2");
+            if (LiveThreadManager.Instance.isRunning)
+                return;
+            LogUtil.Write("3");
+            LiveThreadManager.Instance.Start(_h8Client);
         }
 
         private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】";
@@ -402,11 +363,30 @@ namespace Gambler
         }
 
         #region 球赛事件
+
+        public void UpdateLiveMatch(HFLiveEvent eventData, HFSimpleMatch m)
+        {
+            if (!_uncheckedList.Contains(m.MID))
+            {
+                LogUtil.Write(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}, 下一请求ID：{5}",
+                     m.League, m.Home, m.Away, eventData.Info, eventData.CID, eventData.EID));
+                DealWithTargetMatch(m, eventData.CID, eventData.Info);
+            }
+        }
         private void DealWithTargetMatch(HFSimpleMatch m, string cid, string info)
         {
             ThreadUtil.WorkOnUI<object>(this, new Action(() =>
             {
-                if (HFLiveEventIdNote.POSSIBLE_PEN1_S.Equals(cid))
+                if (HFLiveEventIdNote.POSSIBLE_PENALTY.Equals(cid))
+                {
+                    PlayVoice("\\Resources\\Voice\\ke_neng_dian_qiu.mp3");
+                    Output(String.Format(REGEX_FORMAT,
+                        m.Score, m.Time, m.League, m.Home, m.Away, "可能点球"), Color.DarkOrange);
+                    HandleAutoBetEvent(m, true, false);
+                    new DialogNotify(m.League, String.Format("{0}(主) v.s. {1}(客)", m.Home, m.Away),
+                        "【事件】可能点球").Show();
+                }
+                else if (HFLiveEventIdNote.POSSIBLE_PEN1_S.Equals(cid))
                 {
                     PlayVoice("\\Resources\\Voice\\ke_neng_zhu_dui_zha_dan.mp3");
                     Output(String.Format(REGEX_FORMAT,
@@ -440,7 +420,8 @@ namespace Gambler
                     HandleAutoBetEvent(m, true, false);
                     ForceMessageDialog(m.League, "", m.Away, "客队可能点球");
                 }
-                else if (HFLiveEventIdNote.PEN1.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
+                else if ((HFLiveEventIdNote.PEN1.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
+                    || info.Contains("penaltyhome"))
                 {
                     // 主队点球
                     PlayVoice("\\Resources\\Voice\\zhu_dui_dian_qiu.mp3");
@@ -449,7 +430,8 @@ namespace Gambler
                     HandleAutoBetEvent(m, true);
                     ForceMessageDialog(m.League, m.Home, "", "主队进行点球");
                 }
-                else if (HFLiveEventIdNote.PEN2.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
+                else if ((HFLiveEventIdNote.PEN2.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
+                    || info.Contains("penaltyaway"))
                 {
                     // 客队点球
                     PlayVoice("\\Resources\\Voice\\ke_dui_dian_qiu.mp3");
@@ -492,14 +474,14 @@ namespace Gambler
                 {
                     // 主队点球得分
                     Output(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分"), Color.DarkGreen);
+                        m.Score, m.Time, m.League, m.Home, m.Away, "主队点球得分"), Color.DarkRed);
                     ForceMessageDialog(m.League, m.Home, "", "主队点球得分");
                 }
                 else if (HFLiveEventIdNote.GOAL_PEN2.Equals(cid) && info.EndsWith(HFLiveEventIdNote.CONFIRM))
                 {
                     // 客队点球得分
                     Output(String.Format(REGEX_FORMAT,
-                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分"), Color.DarkGreen);
+                        m.Score, m.Time, m.League, m.Home, m.Away, "客队点球得分"), Color.DarkRed);
                     ForceMessageDialog(m.League, "", m.Away, "客队点球得分");
                 }
                 else if (CB_MoreEvent.Checked)
@@ -890,6 +872,7 @@ namespace Gambler
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            LiveThreadManager.Instance.Stop();
             BManager.Instance.Stop();
             SaveAccounts();
             GlobalSetting.GetInstance().Save();

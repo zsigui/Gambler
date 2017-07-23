@@ -49,6 +49,8 @@ namespace Gambler.Module.HF
          * 
          * PS.需要登录后，使用登录获取的数据请求H8的信息，参数 action = h8 & username = " + getUserCookie("username") + "&oid=" + getUserCookie("oid")+"&lottoType=PC&r="+Math.random()
          * lottoType : 登录代理，移动设备PM，计算机PC
+         * http://spgrhi2n.mywinday.com
+         * http://sp93qyw7.mywinday.com
          */
         public static readonly string URL_H8_HOST = "http://sp4ywqb1.mywinday.com/";
         /*
