@@ -286,7 +286,7 @@ namespace Gambler
         private System.Threading.Timer _h8DataTimer;
         private HFClient _h8Client;
         // 选择关注的直播赛事列表
-        private List<string> _uncheckedList = new List<string>();
+        public List<string> _uncheckedList = new List<string>();
         private List<string> _midList = new List<string>();
         private bool _isInErr = false;
 
@@ -343,15 +343,7 @@ namespace Gambler
                 return;
             }
 
-            LogUtil.Write("1");
-            if ((_h8Client.LiveMatchs == null || _h8Client.LiveMatchs.Count == 0)
-                && LiveThreadManager.Instance.isRunning)
-                LiveThreadManager.Instance.Stop();
-            LogUtil.Write("2");
-            if (LiveThreadManager.Instance.isRunning)
-                return;
-            LogUtil.Write("3");
-            LiveThreadManager.Instance.Start(_h8Client);
+            LiveThreadManager2.Instance.Start(_h8Client);
         }
 
         private static readonly string REGEX_FORMAT = "【{0}】-【{1}】-【{2}】-【{3}】（主）vs.【{4}】（客）-【{5}】";
@@ -366,6 +358,8 @@ namespace Gambler
 
         public void UpdateLiveMatch(HFLiveEvent eventData, HFSimpleMatch m)
         {
+            if (m == null)
+                return;
             if (!_uncheckedList.Contains(m.MID))
             {
                 LogUtil.Write(String.Format("联赛:{0}，{1}（主队） vs {2} (客队)，事件信息：{3}，事件ID：{4}, 下一请求ID：{5}",
@@ -872,7 +866,7 @@ namespace Gambler
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            LiveThreadManager.Instance.Stop();
+            LiveThreadManager2.Instance.Stop();
             BManager.Instance.Stop();
             SaveAccounts();
             GlobalSetting.GetInstance().Save();

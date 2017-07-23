@@ -10,12 +10,17 @@ namespace Gambler.Utils
 {
     public class LogUtil
     {
+        static bool IsDebug = false;
+
         /// <summary>
         /// 程序开始时调用进行Log输出配置
         /// </summary>
         public static void Initial()
         {
-            LogThread.GetOrInit().Initial();
+            if (IsDebug)
+            {
+                LogThread.GetOrInit().Initial();
+            }
         }
 
         /// <summary>
@@ -24,8 +29,11 @@ namespace Gambler.Utils
         /// <param name="logContent">日志内容</param>
         public static void Write(string logContent)
         {
-            Console.WriteLine(logContent);
-            LogThread.GetOrInit().Write(null, logContent, Log4NetLevel.Info, null);
+            if (IsDebug)
+            {
+                Console.WriteLine(logContent);
+                LogThread.GetOrInit().Write(null, logContent, Log4NetLevel.Info, null);
+            }
         }
 
         /// <summary>
@@ -34,10 +42,12 @@ namespace Gambler.Utils
         /// <param name="e">抛出异常信息</param>
         public static void Write(Exception e)
         {
-            
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            LogThread.GetOrInit().Write(null, null, Log4NetLevel.Info, e);
+
+            if (IsDebug)
+            {
+                Console.WriteLine(e.StackTrace);
+                LogThread.GetOrInit().Write(null, null, Log4NetLevel.Info, e);
+            }
         }
 
         /// <summary>
@@ -47,7 +57,8 @@ namespace Gambler.Utils
         /// <param name="logContent">日志内容</param>
         public static void Write(Type type, string logContent)
         {
-            LogThread.GetOrInit().Write(type, logContent, Log4NetLevel.Info, null);
+            if (IsDebug)
+                LogThread.GetOrInit().Write(type, logContent, Log4NetLevel.Info, null);
         }
 
         /// <summary>
@@ -57,7 +68,8 @@ namespace Gambler.Utils
         /// <param name="log4Level">记录日志等级，枚举</param>
         public static void Write(string logContent, Log4NetLevel log4Level)
         {
-            LogThread.GetOrInit().Write(null, logContent, log4Level, null);
+            if (IsDebug)
+                LogThread.GetOrInit().Write(null, logContent, log4Level, null);
         }
 
         /// <summary>
@@ -68,7 +80,8 @@ namespace Gambler.Utils
         /// <param name="exception">抛出异常</param>
         public static void Write(Type type, string logContent, Exception exception)
         {
-            LogThread.GetOrInit().Write(type, logContent, Log4NetLevel.Info, exception);
+            if (IsDebug)
+                LogThread.GetOrInit().Write(type, logContent, Log4NetLevel.Info, exception);
         }
 
         /// <summary>
@@ -80,7 +93,8 @@ namespace Gambler.Utils
         /// <param name="exception">抛出异常</param>
         public void Write(Type type, string logContent, LogUtil.Log4NetLevel log4Level, Exception exception)
         {
-            LogThread.GetOrInit().Write(type, logContent, log4Level, exception);
+            if (IsDebug)
+                LogThread.GetOrInit().Write(type, logContent, log4Level, exception);
         }
 
         /// <summary>
