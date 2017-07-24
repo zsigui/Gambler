@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Bet\BManager.cs" />
     <Compile Include="Bet\Task\BetMatchInfo.cs" />
+    <Compile Include="Bet\Task\IBetTask.cs" />
     <Compile Include="Bet\Task\ITask.cs" />
     <Compile Include="Bet\Task\X159BetTask.cs" />
     <Compile Include="Bet\Task\X159ValidDataTask.cs" />

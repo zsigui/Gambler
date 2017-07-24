@@ -6,27 +6,15 @@ using Gambler.UI;
 using Gambler.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gambler.Bet.Task
 {
-    public class YL5BetTask : ITask
+    public class YL5BetTask : IBetTask
     {
-        private BetMatchInfo _info;
 
-        public YL5BetTask(BetMatchInfo info) : base() {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
+        public YL5BetTask(BetMatchInfo info) : base(info) {}
 
-        public YL5BetTask(ITask task, BetMatchInfo info) : base(task) {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
+        public YL5BetTask(ITask task, BetMatchInfo info) : base(task, info) {}
 
         public override TaskType GetType()
         {
@@ -51,6 +39,9 @@ namespace Gambler.Bet.Task
             string home = gs.GetMapValue(GlobalSetting.YL5_KEY, _info.home);
             string away = gs.GetMapValue(GlobalSetting.YL5_KEY, _info.away);
 
+            if (!CanBetByBehavior(home, away))
+                return;
+            
             List<X469OddItem> items = param as List<X469OddItem>;
             items = SearchByInfo(items, league, home, away);
 

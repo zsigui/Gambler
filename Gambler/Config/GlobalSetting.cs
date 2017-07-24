@@ -37,6 +37,7 @@ namespace Gambler.Config
         private readonly string BET_METHOD = "betMethod";
         private readonly string IS_SHOW_HALF_ODD_FIRST = "isShowHalfOddFirst";
         private readonly string IS_AUTO_ACCEPT_BEST_ODD = "isAutoAcceptBestOdd";
+        private readonly string BET_BEHAVIOR = "betBehavior";
         private readonly string HF_ACCOUNT = "hfAccount";
         /// <summary>
         /// 首选映射组的键名
@@ -77,6 +78,7 @@ namespace Gambler.Config
                 _settings.Add(HF_ACCOUNT, null);
                 _settings.Add(AUTO_BET_RATE, null);
                 _settings.Add(FIRST_COPY_MAP, X469_KEY);
+                _settings.Add(BET_BEHAVIOR, 0);
             }
             LoadMap();
         }
@@ -190,6 +192,23 @@ namespace Gambler.Config
             {
                 object o = _settings[AUTO_BET_RATE];
                 return o == null ? 1.0f : (float)Convert.ToDouble(o);
+            }
+            set
+            {
+                _settings[AUTO_BET_RATE] = value;
+            }
+        }
+
+        public int BetBehavior
+        {
+            get
+            {
+                if (!_settings.ContainsKey(BET_BEHAVIOR))
+                {
+                    _settings.Add(BET_BEHAVIOR, 0);
+                }
+                object o = _settings[BET_BEHAVIOR];
+                return Convert.ToInt32(o);
             }
             set
             {
@@ -477,4 +496,13 @@ namespace Gambler.Config
         HalfCapot,
     }
     #endregion
+
+    public class BetBehavior
+    {
+        public const int BOTH = 0;
+
+        public const int FIRST_PEN = 1;
+
+        public const int FIRST_TEAM = 2;
+    }
 }

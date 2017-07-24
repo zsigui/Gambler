@@ -24,6 +24,11 @@ namespace Gambler.Bet.Task
         public string away;
 
         /// <summary>
+        /// 直播赛事ID
+        /// </summary>
+        public string mid;
+
+        /// <summary>
         /// 是否是主队点球，否则为客队点球
         /// </summary>
         public bool isHomePen;

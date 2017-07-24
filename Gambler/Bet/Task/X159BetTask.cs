@@ -12,22 +12,12 @@ using System.Threading.Tasks;
 
 namespace Gambler.Bet.Task
 {
-    public class X159BetTask : ITask
+    public class X159BetTask : IBetTask
     {
 
-        private BetMatchInfo _info;
+        public X159BetTask(BetMatchInfo info) : base(info) {}
 
-        public X159BetTask(BetMatchInfo info) : base() {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
-
-        public X159BetTask(ITask task, BetMatchInfo info) : base(task) {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
+        public X159BetTask(ITask task, BetMatchInfo info) : base(task, info) {}
 
         public override TaskType GetType()
         {
@@ -51,6 +41,8 @@ namespace Gambler.Bet.Task
             string league = gs.GetMapValue(GlobalSetting.X159_KEY, _info.league);
             string home = gs.GetMapValue(GlobalSetting.X159_KEY, _info.home);
             string away = gs.GetMapValue(GlobalSetting.X159_KEY, _info.away);
+
+            if (!CanBetByBehavior(home, away)) return;
 
             List<XPJOddData> items = param as List<XPJOddData>;
             items = SearchByInfo(items, league, home, away);

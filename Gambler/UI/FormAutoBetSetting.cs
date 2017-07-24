@@ -65,6 +65,7 @@ namespace Gambler.UI
             }
             TB_Money.Text = GlobalSetting.GetInstance().BetMoney.ToString();
             TB_Rate.Text = GlobalSetting.GetInstance().AutoBetRate.ToString();
+            CB_Behavior.SelectedIndex = GlobalSetting.GetInstance().BetBehavior;
         }
 
         private void BTN_Confirm_Click(object sender, EventArgs e)
@@ -139,6 +140,12 @@ namespace Gambler.UI
             {
                 _moneyContent = TB_Money.Text;
             }
+        }
+
+        private void CB_Behavior_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CB_Behavior.SelectedIndex > -1)
+                GlobalSetting.GetInstance().BetBehavior = CB_Behavior.SelectedIndex;
         }
     }
 }

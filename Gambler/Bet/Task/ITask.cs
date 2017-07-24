@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gambler.Bet
 {
@@ -34,7 +30,7 @@ namespace Gambler.Bet
         public abstract void Work(object param = null);
        
         public new abstract TaskType GetType();
-
+        
         public object GetData()
         {
             return _data;

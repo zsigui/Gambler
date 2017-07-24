@@ -18,6 +18,7 @@ namespace Gambler.Bet
 
         private volatile static BManager sInstance;
         private static object syncRoot = new object();
+        public Dictionary<string, string> betCountDict = new Dictionary<string, string>();
 
         public static BManager Instance
         {

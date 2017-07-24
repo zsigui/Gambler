@@ -7,27 +7,15 @@ using Gambler.UI;
 using Gambler.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gambler.Bet
 {
-    public class X469BetTask : ITask
+    public class X469BetTask : IBetTask
     {
-        private BetMatchInfo _info;
 
-        public X469BetTask(BetMatchInfo info) : base() {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
+        public X469BetTask(BetMatchInfo info) : base(info) {}
 
-        public X469BetTask(ITask task, BetMatchInfo info) : base(task) {
-            if (info == null)
-                throw new ArgumentNullException("info不能为空");
-            _info = info;
-        }
+        public X469BetTask(ITask task, BetMatchInfo info) : base(task, info) {}
 
         public override TaskType GetType()
         {
@@ -47,10 +35,12 @@ namespace Gambler.Bet
 
             GlobalSetting gs = GlobalSetting.GetInstance();
             BetType firstType = gs.GameBetType, secondType = gs.SecondBetType;
-
+            
             string league = gs.GetMapValue(GlobalSetting.X469_KEY, _info.league);
             string home = gs.GetMapValue(GlobalSetting.X469_KEY, _info.home);
             string away = gs.GetMapValue(GlobalSetting.X469_KEY, _info.away);
+
+            if (!CanBetByBehavior(home, away)) return;
 
             List<X469OddItem> items = param as List<X469OddItem>;
             items = SearchByInfo(items, league, home, away);

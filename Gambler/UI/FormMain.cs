@@ -594,6 +594,7 @@ namespace Gambler
                     info.league = m.League;
                     info.home = m.Home;
                     info.away = m.Away;
+                    info.mid = m.MID;
                     info.isHomePen = isHome;
                     bool[] result = ContainsAccount(new int[] { AcccountType.XPJ155, AcccountType.XPJ469, AcccountType.YL5789 });
                     if (result[0])

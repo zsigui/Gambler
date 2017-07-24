@@ -368,12 +368,12 @@ namespace Gambler.Module.HF
             InitDefaultH8Cookie();
             // 各个参数含义还有待理解
             Dictionary<string, string> queryDict = ConstructKeyValDict(
-                "ov", "1",
+                "ov", "0",
                 "ot", "r",
                 "mt", "0",
                 "t", "" + TimeUtil.CurrentTimeMillis(),
-                "tf", "-1",
-                "TFStatus", "0",
+                "tf", "2",
+                "TFStatus", "1",
                 "update", "false",
                 "r", "1889011725");
             HttpUtil.Post(HFConfig.URL_ODD_DATA_BS, _headers, _cookiesForH8, queryDict, null,

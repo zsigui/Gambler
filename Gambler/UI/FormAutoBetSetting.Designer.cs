@@ -39,6 +39,8 @@
             this.TB_Rate = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.CB_SecondType = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.CB_Behavior = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -83,7 +85,7 @@
             // label4
             // 
             this.label4.Font = new System.Drawing.Font("宋体", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(37, 173);
+            this.label4.Location = new System.Drawing.Point(37, 189);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(337, 33);
             this.label4.TabIndex = 8;
@@ -91,7 +93,7 @@
             // 
             // BTN_Confirm
             // 
-            this.BTN_Confirm.Location = new System.Drawing.Point(216, 221);
+            this.BTN_Confirm.Location = new System.Drawing.Point(216, 230);
             this.BTN_Confirm.Name = "BTN_Confirm";
             this.BTN_Confirm.Size = new System.Drawing.Size(79, 34);
             this.BTN_Confirm.TabIndex = 9;
@@ -102,7 +104,7 @@
             // BTN_Cancel
             // 
             this.BTN_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BTN_Cancel.Location = new System.Drawing.Point(116, 221);
+            this.BTN_Cancel.Location = new System.Drawing.Point(116, 230);
             this.BTN_Cancel.Name = "BTN_Cancel";
             this.BTN_Cancel.Size = new System.Drawing.Size(75, 34);
             this.BTN_Cancel.TabIndex = 10;
@@ -149,6 +151,28 @@
             this.CB_SecondType.Size = new System.Drawing.Size(121, 20);
             this.CB_SecondType.TabIndex = 15;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(81, 158);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(65, 12);
+            this.label5.TabIndex = 16;
+            this.label5.Text = "下注行为：";
+            // 
+            // CB_Behavior
+            // 
+            this.CB_Behavior.FormattingEnabled = true;
+            this.CB_Behavior.Items.AddRange(new object[] {
+            "两边下注",
+            "首次下注",
+            "首队下注"});
+            this.CB_Behavior.Location = new System.Drawing.Point(153, 155);
+            this.CB_Behavior.Name = "CB_Behavior";
+            this.CB_Behavior.Size = new System.Drawing.Size(121, 20);
+            this.CB_Behavior.TabIndex = 17;
+            this.CB_Behavior.SelectedIndexChanged += new System.EventHandler(this.CB_Behavior_SelectedIndexChanged);
+            // 
             // FormAutoBetSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -156,6 +180,8 @@
             this.CancelButton = this.BTN_Cancel;
             this.ClientSize = new System.Drawing.Size(402, 277);
             this.ControlBox = false;
+            this.Controls.Add(this.CB_Behavior);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.CB_SecondType);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TB_Rate);
@@ -191,5 +217,7 @@
         private System.Windows.Forms.TextBox TB_Rate;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox CB_SecondType;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox CB_Behavior;
     }
 }
